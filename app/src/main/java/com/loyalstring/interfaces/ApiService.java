@@ -19,6 +19,8 @@ import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.modelclasses.Productmodel;
 import com.loyalstring.modelclasses.RequestBodyBill;
 import com.loyalstring.modelclasses.ScannedDataToService;
+import com.loyalstring.modelclasses.StockVerificationFilterModel;
+import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 import com.loyalstring.modelclasses.jjjresponse;
 
 
@@ -89,5 +91,9 @@ public interface ApiService {
 
     @POST("api/RFIDDevice/AddRFID")
     Call<List<ScannedDataToService>> AddAllScannedData(@Body List<ScannedDataToService> scannedDataToService);
+
+
+    @POST("api/ProductMaster/GetCombinedSV")
+    Call<StockVerificationFilterModelResponse> stockVarification(@Body StockVerificationFilterModel stockVerificationFilterModel);
 
 }

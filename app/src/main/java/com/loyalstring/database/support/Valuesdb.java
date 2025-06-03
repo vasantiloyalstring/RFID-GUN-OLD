@@ -20,6 +20,7 @@ public class Valuesdb extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = 1;
     public static String CATTABLE = "categorytable";
     public static String C_CATEGORY = "category";
+    public static String C_CATEGORYID = "categoryId";
     public static String C_PRODUCT = "product";
     public static String BOXTABLE = "boxtable";
     public static String C_BOX = "boxname";
@@ -296,6 +297,46 @@ public class Valuesdb extends SQLiteOpenHelper {
         }
 
         return productList;
+    }
+
+    public List<String> getCategoryByCounter(String counter) {
+        List<String> categoryList = new ArrayList<>();
+        SQLiteDatabase database = getReadableDatabase();
+
+        // Create the table if not exists (optional safety)
+        String createCategoryTableQuery = "CREATE TABLE IF NOT EXISTS " + COUNTER_TABLE + " ("
+                + COUNTER_NAME + " TEXT,"
+                + C_CATEGORY + " TEXT,"
+                + "PRIMARY KEY (" + COUNTER_NAME + ", " + COUNTER_TABLE + ")"
+                + ")";
+        database.execSQL(createCategoryTableQuery);
+
+        // Define the columns to retrieve
+        String[] projection = {C_CATEGORY};
+
+        // Filter by counter
+        String selection = COUNTER_NAME + "=?";
+        String[] selectionArgs = {counter};
+
+        // Query the database
+        Cursor cursor = database.query(
+                COUNTER_TABLE,  // Table name
+                projection,      // Columns to return
+                selection,       // WHERE clause
+                selectionArgs,   // WHERE args
+                null, null, null // GroupBy, Having, OrderBy
+        );
+
+        // Parse result
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String category = cursor.getString(cursor.getColumnIndexOrThrow(C_CATEGORY));
+                categoryList.add(category);
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        return categoryList;
     }
 
 

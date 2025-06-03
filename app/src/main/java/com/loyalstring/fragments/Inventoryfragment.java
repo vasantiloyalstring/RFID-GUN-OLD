@@ -5,6 +5,7 @@ import static com.loyalstring.MainActivity.binarySearch;
 import static com.loyalstring.MainActivity.decimalFormat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -44,7 +45,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.gson.Gson;
 import com.loyalstring.Adapters.InventoryBottomAdaptor;
 import com.loyalstring.Adapters.InventoryTopAdaptor;
+import com.loyalstring.Apis.ApiManager;
+import com.loyalstring.Apis.ApiProcess;
+import com.loyalstring.Apis.RetrofitClient;
 import com.loyalstring.Excels.InventoryExcelCreation;
+import com.loyalstring.LatestApis.LoginApiSupport.Clients;
+import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.apiresponse.Rfidresponse;
@@ -54,20 +60,32 @@ import com.loyalstring.database.support.Valuesdb;
 import com.loyalstring.databinding.FragmentInventoryfragmentBinding;
 import com.loyalstring.fsupporters.Globalcomponents;
 import com.loyalstring.fsupporters.MyApplication;
+import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.SaveCallback;
+import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.Issuemode;
 import com.loyalstring.modelclasses.Itemmodel;
+import com.loyalstring.modelclasses.MatchQuantityRequest;
+import com.loyalstring.modelclasses.ScannedDataToService;
+import com.loyalstring.modelclasses.StockVerificationFilter;
+import com.loyalstring.modelclasses.StockVerificationFilterModel;
+import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.network.NetworkUtils;
 import com.loyalstring.readersupport.KeyDwonFragment;
 import com.loyalstring.tools.StringUtils;
 import com.rscja.deviceapi.entity.UHFTAGInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -82,6 +100,10 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
     FragmentInventoryfragmentBinding b;
     MainActivity mainActivity;
     MyApplication myapp;
+    List<Itemmodel> itemmodelList=new ArrayList<>();;
+
+    NetworkUtils networkUtils;
+    ApiManager apiManager;
 
     HashMap<String, Itemmodel> totalitems = new HashMap<>();
     HashMap<String, Itemmodel> filtereditems = new HashMap<>();
@@ -134,6 +156,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
     List<Issuemode> issueitem = new ArrayList<>();
     List<Rfidresponse.ItemModel> rfidList = new ArrayList<>();
     ProgressDialog maindialog;
+    SharedPreferencesManager sharedPreferencesManager;
 
 
     @Override
@@ -142,6 +165,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
         b = FragmentInventoryfragmentBinding.inflate(inflater, container, false);
         mainActivity = (MainActivity) getActivity();
+        sharedPreferencesManager = new SharedPreferencesManager(getActivity());
 
         globalcomponents = new Globalcomponents();
         storageClass = new StorageClass(getActivity());
@@ -154,6 +178,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
         entryDatabase = new EntryDatabase(getActivity());
+        itemmodelList = entryDatabase.getAllSavedItems();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -493,6 +518,171 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             }
         });
 
+        b.stockVerification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                topmatch.clear();
+                bottommatch.clear();
+
+                String categoty="";
+                String product="";
+                String counterName="";
+                Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+                String clientCode = clients.getClientCode();
+                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    String key = entry.getKey();
+                    Itemmodel item = entry.getValue();
+                    categoty=item.getCategory();
+                    product=item.getProduct();
+                    counterName=item.getCounterName();
+                    if (item.getAvlQty() == item.getMatchQty()) {
+                        topmatch.put(key, item);
+                    }
+                }
+                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    String key = entry.getKey();
+                    Itemmodel item = entry.getValue();
+                    categoty=item.getCategory();
+                    product=item.getProduct();
+                    if (item.getAvlQty() == item.getMatchQty()) {
+                        bottommatch.put(key, item);
+                    }
+                }
+                List<MatchQuantityRequest> matchQuantityRequestList = new ArrayList<>();
+
+
+
+
+                int categoryId=0;
+                int productId=0;
+                int designId=0;
+                int purityId=0;
+                int counterId=0;
+
+
+                for (int i=0; i<itemmodelList.size(); i++) {
+                    Log.d("@@ category", "category" + itemmodelList.get(i).getCategory());
+                    Log.d("@@ category", "category categoty" + categoty);
+                    if (itemmodelList.get(i).getCategory().equalsIgnoreCase(categoty)) {
+                        categoryId = itemmodelList.get(i).getCategoryId();
+                        break;
+                    }
+                }
+
+                    for (int i1=0; i1<itemmodelList.size(); i1++) {
+                        if (itemmodelList.get(i1).getProduct().equalsIgnoreCase(product)) {
+                            productId = itemmodelList.get(i1).getProductId();
+                            break;
+                        }
+                    }
+
+                for (int i2=0; i2<itemmodelList.size(); i2++) {
+
+                    if(itemmodelList.get(i2).getCounterName().equalsIgnoreCase(counterName))
+                    {
+                        counterId= Integer.parseInt(itemmodelList.get(i2).getCounterId());
+
+                    }
+
+                    designId=0;
+                    purityId=0;
+
+
+                }
+
+                Log.d("@@ categoryId","categoryId"+categoryId);
+                Log.d("@@ productId","productId"+productId);
+                Log.d("@@ categoryId","categoryId"+purityId);
+                Log.d("@@ categoryId","categoryId"+designId);
+               Log.d("@@ categoryId","categoryId"+counterId);
+
+
+                StockVerificationFilterModel stockVerificationFilterModel = new StockVerificationFilterModel();
+                StockVerificationFilter stockVerificationFilter = new StockVerificationFilter();
+                stockVerificationFilter.setId(1);
+                stockVerificationFilter.setCreatedOn("02/06/2025");
+                stockVerificationFilter.setLastUpdated("");
+                stockVerificationFilter.setStatusType(true);
+                stockVerificationFilter.setClientCode(clientCode);
+                stockVerificationFilter.setCounterId(counterId);
+                stockVerificationFilter.setCategoryId(categoryId);
+                stockVerificationFilter.setProductId(productId);
+                stockVerificationFilter.setDesignId(designId);
+                stockVerificationFilter.setPurityId(purityId);
+                stockVerificationFilter.setGrossWeight("string");
+                stockVerificationFilter.setNetWeight("string");
+                stockVerificationFilter.setQuantity("string");
+                stockVerificationFilter.setItemCode("string");
+
+
+                MatchQuantityRequest matchQuantityRequest = new MatchQuantityRequest();
+
+                List<String> itemCodes = new ArrayList<>();
+                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    Itemmodel item = entry.getValue();
+                    if (item.getAvlQty() == item.getMatchQty()) {
+
+
+                        itemCodes.add(item.getItemCode());
+                        Log.d("@@ itemcode", "@@" + item.getItemCode());
+                    }
+                }
+
+// Set once after loop
+                matchQuantityRequest.setClientCode(clientCode);
+                matchQuantityRequest.setItemCodes(itemCodes);
+
+                stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
+                stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
+
+
+                networkUtils = new NetworkUtils(getActivity());
+
+              ApiProcess  apiprocess = new ApiProcess();
+                ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+                apiManager = new ApiManager(apiService);
+                if (networkUtils.isNetworkAvailable()) {
+                    apiManager.stockVarificationDataData(stockVerificationFilterModel, new interfaces.FetchAllVerificxationData() {
+                        @Override
+                        public void onSuccess(StockVerificationFilterModelResponse result) {
+                           // if (!result=null) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() -> {
+                                    new AlertDialog.Builder(activity)
+                                            .setTitle("Success")
+                                            .setMessage("Stock status has be updated to the server")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                });
+                            }
+                                //  entryDatabase.makerfidentry(getActivity(), app, result);
+                                // rfidList.addAll(result);
+                                Log.e("RfidListCheck", "Rfid Scanned data: " + result);
+                            //}
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() -> {
+                                    new AlertDialog.Builder(activity)
+                                            .setTitle("Error")
+                                            .setMessage("Stock status has not uploaded. something went wrong")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                });
+                            }
+                        }
+                    });
+                }
+
+
+            }
+        });
+
         b.unlabelled.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -647,8 +837,37 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             public void onClick(View view) {
 
                 List<Itemmodel> ibottomlist = new ArrayList<>();
-                ibottomlist.clear();
-                ibottomlist.addAll(bottommap.values());
+                List<Itemmodel> iToplist = new ArrayList<>();
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                String todayStr = sdf.format(new Date());
+                long timestamp = 0;
+
+                try {
+                    Date date = sdf.parse(todayStr);
+                    if (date != null) {
+                        timestamp = date.getTime();
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+// Delete existing items for today's date only (not all dates)
+                Log.d("@@1", "@@1 " + timestamp);
+                entryDatabase.deleteItemsByDate(timestamp);
+
+// Set EntryDate to each item in the map and add to list
+                for (Map.Entry<String, Itemmodel> entry : topmap.entrySet()) {
+                    Itemmodel item = entry.getValue();
+                    item.setEntryDate(timestamp);
+                    iToplist.add(item);
+                }
+
+// Delete existing items for today's date only (not all dates)
+                // entryDatabase.deleteItemsByDate(timestamp);
+
+// Save updated list
+                entryDatabase.saveItem(iToplist);
+
+
                 if (mainActivity.mReader.isInventorying()) {
                     Toast.makeText(mainActivity, "stop scanning before save", Toast.LENGTH_SHORT).show();
                     return;
@@ -2099,6 +2318,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 newItem.setTotalGwt(item.getGrossWt());
                 newItem.setTotalStonewt(item.getStoneWt());
                 newItem.setTotalNwt(item.getNetWt());
+                newItem.setItemCode(item.getItemCode());
                // int pcs = 0;
                 String pcsStr = item.getPcs();
 
@@ -2145,6 +2365,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 for (Itemmodel it : pauselist) {
                     if (it.getTidValue().equals(item.getTidValue())) {
                         newItem.setMatchQty(it.getMatchQty());
+                        newItem.setItemCode(it.getItemCode());
                         item.setMatchQty(it.getMatchQty());
                         if (it.getMatchQty() > 0) {
                             tempDatas.add(it.getTidValue());
@@ -2222,6 +2443,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
                 aggregatedItem.setTotPcs(aggregatedItem.getTotPcs() + pcs);
                 aggregatedItem.setCategory(aggregatedItem.getCategory());
+                aggregatedItem.setItemCode(aggregatedItem.getItemCode());
                 // Update count
                 aggregatedItem.setAvlQty(aggregatedItem.getAvlQty() + 1);
                 aggregatedItem.setMatchQty(aggregatedItem.getMatchQty() + item.getMatchQty());
@@ -2249,6 +2471,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 newItem.setTotalStonewt(item.getStoneWt());
                 newItem.setTotalNwt(item.getNetWt());
                 newItem.setTotPcs(item.getTotPcs());
+                newItem.setItemCode(item.getItemCode());
 
                 Gson gson = new Gson();
                 String json = gson.toJson(item);
@@ -2311,6 +2534,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 // Update weights
                 aggregatedItem.setTotalGwt(aggregatedItem.getTotalGwt() + item.getGrossWt());
                 aggregatedItem.setTotalGwt(aggregatedItem.getTotalGwt() + item.getGrossWt());
+                aggregatedItem.setItemCode(item.getItemCode());
             } else {
                 // If item doesn't exist, add it to the map
                 // Make a copy of the item and set count to 1
@@ -2318,6 +2542,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 newItem.setAvlQty(1);
                 newItem.setTotalGwt(item.getGrossWt());
                 newItem.setTotPcs(Integer.parseInt(item.getPcs()));
+                newItem.setItemCode(item.getItemCode());
                 // Add to aggregatedItems map
                 aggregatedItems.put(key, newItem);
             }

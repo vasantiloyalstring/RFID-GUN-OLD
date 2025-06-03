@@ -27,12 +27,48 @@ public class Itemmodel implements Parcelable {
 
     private int SKUId,totPcs,totMPcs;
 
+    private int categoryId, productId, designId, purityId;
+
+
+
 
 
     public Itemmodel() {
     }
 
-    public Itemmodel(long operationTime, long entryDate, long transactionDate, long repaymentDate, String tidValue, String epcValue, String branch, String category, String product, String purity, String diamondMetal, String diamondColor, String diamondClarity, String diamondSetting, String diamondShape, String diamondSize, String diamondCertificate, String barCode, String itemCode, String box, String huidCode, String partyCode, String description, String status, String tagTransaction, String operation, String transactionType, String invoiceNumber, String customerName, String itemAddmode, String paymentMode, String paymentDescription, String gstApplied, double diamondWt, double diamondPcs, double diamondRate, double diamondAmount, double grossWt, double stoneWt, double netWt, double makingGm, double makingPer, double fixedAmount, double fixedWastage, double stoneAmount, double mrp, double hallmarkCharges, double avlQty, double matchQty, double totalGwt, double matchGwt, double totalStonewt, double matchStonewt, double totalNwt, double matchNwt, double goldRate, double totalMaking, double itemPrice, double appliedDiscount, double itempriceAfterdiscount, double gstRate, double payableAmount, double payableAmountincgst, double itemGst, double totalBilleditems, double totalBilledgwt, double totalBilledamount, double totalBillAmountExcGst, double totalBillAmountincgst, double totalGst, double totalDiscount, double paidAmount, double balance, String gunUpdate, String webUpdate, String productCode, String CounterId, String CounterName, int totaPcs, int MatchPcs) {
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public int getProductId() {
+        return productId;
+    }
+
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public int getDesignId() {
+        return designId;
+    }
+
+    public void setDesignId(int designId) {
+        this.designId = designId;
+    }
+
+    public int getPurityId() {
+        return purityId;
+    }
+
+    public void setPurityId(int purityId) {
+        this.purityId = purityId;
+    }
+
+    public Itemmodel(long operationTime, long entryDate, long transactionDate, long repaymentDate, String tidValue, String epcValue, String branch, String category, String product, String purity, String diamondMetal, String diamondColor, String diamondClarity, String diamondSetting, String diamondShape, String diamondSize, String diamondCertificate, String barCode, String itemCode, String box, String huidCode, String partyCode, String description, String status, String tagTransaction, String operation, String transactionType, String invoiceNumber, String customerName, String itemAddmode, String paymentMode, String paymentDescription, String gstApplied, double diamondWt, double diamondPcs, double diamondRate, double diamondAmount, double grossWt, double stoneWt, double netWt, double makingGm, double makingPer, double fixedAmount, double fixedWastage, double stoneAmount, double mrp, double hallmarkCharges, double avlQty, double matchQty, double totalGwt, double matchGwt, double totalStonewt, double matchStonewt, double totalNwt, double matchNwt, double goldRate, double totalMaking, double itemPrice, double appliedDiscount, double itempriceAfterdiscount, double gstRate, double payableAmount, double payableAmountincgst, double itemGst, double totalBilleditems, double totalBilledgwt, double totalBilledamount, double totalBillAmountExcGst, double totalBillAmountincgst, double totalGst, double totalDiscount, double paidAmount, double balance, String gunUpdate, String webUpdate, String productCode, String CounterId, String CounterName, int totaPcs, int MatchPcs, int category_Id, int product_Id,int design_Id,int purity_id) {
         OperationTime = operationTime;
         EntryDate = entryDate;
         TransactionDate = transactionDate;
@@ -113,6 +149,10 @@ public class Itemmodel implements Parcelable {
         counterName = CounterName;
         totPcs = totaPcs;
         totMPcs = MatchPcs;
+        categoryId = category_Id;
+        productId = product_Id;
+        designId = design_Id;
+        purityId = purity_id;
     }
 
     public int getTotPcs() {
@@ -255,6 +295,10 @@ public class Itemmodel implements Parcelable {
         this.counterName = oitem.getCounterName();
         this.totPcs= oitem.getTotPcs();
         this.totMPcs=oitem.getTotMPcs();
+        this.categoryId = oitem.getCategoryId();
+        this.productId = oitem.getProductId();
+        this.designId= oitem.getDesignId();
+        this.purityId=oitem.getPurityId();
 
 
     }
@@ -359,6 +403,10 @@ public class Itemmodel implements Parcelable {
         counterName = in.readString();
         totPcs=in.readInt();
         totMPcs=in.readInt();
+        categoryId = in.readInt();
+        productId = in.readInt();
+        designId = in.readInt();
+        purityId = in.readInt();
     }
 
     public static final Creator<Itemmodel> CREATOR = new Creator<Itemmodel>() {
@@ -1207,5 +1255,10 @@ public class Itemmodel implements Parcelable {
         parcel.writeString(counterId);
         parcel.writeString(counterName);
         parcel.writeInt(totPcs);
-        parcel.writeInt(totMPcs);    }
+        parcel.writeInt(totMPcs);
+        parcel.writeInt(categoryId);
+        parcel.writeInt(productId);
+        parcel.writeInt(designId);
+        parcel.writeInt(purityId);
+    }
 }

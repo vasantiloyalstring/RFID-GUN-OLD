@@ -24,6 +24,8 @@ import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.loyalstring.Adapters.ProductAdapter;
 import com.loyalstring.LatestApis.BillSupport.UpdateStatusTask;
 import com.loyalstring.LatestApis.LoginApiSupport.Clients;
@@ -55,6 +57,10 @@ import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
+import java.lang.reflect.Type;
+
+
 public class EntryDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "loyalstring.db";
     private static final int DATABASE_VERSION = 1;
@@ -80,6 +86,14 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
     String countertable = "CounterTable";
 
+    String INVENTORY_SAVE_TABLE = "InventoryTable";
+
+    String All_SAVE_TABLE = "All_SAVE_DATA";
+    private static final String COL_ID = "id";
+    private static final String COL_DATA = "data"; // Serialized object stored here
+
+    private final Gson gson = new Gson();
+
 
     public EntryDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -99,6 +113,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
         // Implementation of onUpgrade if needed
     }
 
+
     public void checkdatabase(Context mContext) {
         EntryDatabase entryDatabase = new EntryDatabase(mContext);
         SQLiteDatabase db = entryDatabase.getWritableDatabase();
@@ -113,8 +128,21 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
         createalltable(db, Employee.class, logintable);
         createalltable(db, Clients.class, clienttable);
+     //   createalltable(db,Itemmodel.class,INVENTORY_SAVE_TABLE);
 
         createalltable(db, SKUStoneItem.class, STONE_ITEMDETAILS);
+
+        String inventoryTableQuery = "CREATE TABLE IF NOT EXISTS " + INVENTORY_SAVE_TABLE + "(" +
+                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_DATA + " TEXT)";
+        db.execSQL(inventoryTableQuery);
+
+        String SaveAllTableQuery = "CREATE TABLE IF NOT EXISTS " + All_SAVE_TABLE + "(" +
+                COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_DATA + " TEXT)";
+        db.execSQL(SaveAllTableQuery);
+
+
         String CREATE_CATEGORY_TABLE = "CREATE TABLE IF NOT EXISTS " + CATTABLE + " (" +
                 C_CATEGORY + " TEXT, " +
                 C_PRODUCT + " TEXT" +
@@ -131,6 +159,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
         db.execSQL(createRatesTableQuery);
 
+
         // Create Box Table
         String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + BOXTABLE + " (" +
                 C_BOX + " TEXT" +
@@ -146,6 +175,129 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
         db.execSQL(CREATE_COUNTER_TABLE);
     }
+
+    // Save object
+    public void saveItem(List<Itemmodel> itemList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        for (Itemmodel item : itemList) {
+            String json = gson.toJson(item);
+            ContentValues values = new ContentValues();
+            values.put(COL_DATA, json);
+            db.insert(INVENTORY_SAVE_TABLE, null, values);
+        }
+        Log.d("@@ data", "data added");
+        db.close();
+    }
+/*for stock*/
+    public void saveAllItem(List<Itemmodel> itemList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(All_SAVE_TABLE, null, null);
+        for (Itemmodel item : itemList) {
+            String json = gson.toJson(item);
+            ContentValues values = new ContentValues();
+            values.put(COL_DATA, json);
+            db.insert(All_SAVE_TABLE, null, values);
+        }
+        Log.d("@@ data", "data added");
+        db.close();
+    }
+
+    //delete the item by date
+    public void deleteItemsByDate(long targetTimestamp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        Cursor cursor = db.query(
+                INVENTORY_SAVE_TABLE,
+                new String[]{COL_ID, COL_DATA},
+                null, null, null, null, null);
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                String json = cursor.getString(cursor.getColumnIndex(COL_DATA));
+                int rowId = cursor.getInt(cursor.getColumnIndex(COL_ID));
+                try {
+                    Itemmodel item = gson.fromJson(json, Itemmodel.class);
+                    if (item != null && item.getEntryDate() == targetTimestamp) {
+                        db.delete(INVENTORY_SAVE_TABLE, COL_ID + "=?", new String[]{String.valueOf(rowId)});
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace(); // Handle or log invalid JSON entries if any
+                }
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+
+        db.close();
+    }
+
+    // Get all objects
+    public List<Itemmodel> getAllItems() {
+        List<Itemmodel> items = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + INVENTORY_SAVE_TABLE, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String json = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATA));
+                Itemmodel item = gson.fromJson(json, Itemmodel.class); // ✅ Correct way
+                items.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return items;
+    }
+
+    public List<Itemmodel> getAllSavedItems() {
+        List<Itemmodel> items = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + All_SAVE_TABLE, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                String json = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATA));
+                Itemmodel item = gson.fromJson(json, Itemmodel.class); // ✅ Correct way
+                items.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return items;
+    }
+
+    public List<Itemmodel> getAllItemsFromDatabase() {
+        List<Itemmodel> items = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + ALL_TABLE, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Itemmodel item = new Itemmodel();
+
+                item.setItemCode(cursor.getString(cursor.getColumnIndexOrThrow("ItemCode")));
+                item.setCategoryId(cursor.getInt(cursor.getColumnIndexOrThrow("categoryId")));
+                item.setCounterId(cursor.getString(cursor.getColumnIndexOrThrow("counterId")));
+                item.setDesignId(cursor.getInt(cursor.getColumnIndexOrThrow("designId")));
+                item.setProductId(cursor.getInt(cursor.getColumnIndexOrThrow("productId")));
+                item.setEntryDate(cursor.getLong(cursor.getColumnIndexOrThrow("EntryDate")));
+                item.setProduct(cursor.getString(cursor.getColumnIndexOrThrow("Product")));
+                item.setPurityId(cursor.getInt(cursor.getColumnIndexOrThrow("purityId")));
+              //  item.setCounterName(cursor.getString(cursor.getColumnIndexOrThrow("diamondClarity")));
+                item.setCategory(cursor.getString(cursor.getColumnIndexOrThrow("Category")));
+                item.setCounterName(cursor.getString(cursor.getColumnIndexOrThrow("counterName")));
+                // ... add other fields from your schema
+
+                items.add(item);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return items;
+    }
+
 
     public void checkdatabaset(Context mContext) {
         EntryDatabase entryDatabase = new EntryDatabase(mContext);
@@ -338,6 +490,8 @@ public class EntryDatabase extends SQLiteOpenHelper {
             }
 
             // Insert unique categories, products, and boxes as before...
+
+
 
             // Insert items in bulk
             for (Itemmodel item : items) {
@@ -963,6 +1117,8 @@ public class EntryDatabase extends SQLiteOpenHelper {
                         }*/
 
 
+
+
                         for (Itemmodel item : mItemList) {
 
                             ContentValues values = new ContentValues();
@@ -990,6 +1146,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
                                     e.printStackTrace();
                                 }
                             }
+                            long result1 = db.insert(All_SAVE_TABLE, null, values);
                             long result = db.insert(ALL_TABLE, null, values);
 //                            long result1 = db.insert(D_TABLE, null, values);
                             if (result == -1) {

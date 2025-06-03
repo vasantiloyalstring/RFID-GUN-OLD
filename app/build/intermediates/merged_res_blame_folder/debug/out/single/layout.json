@@ -12,6 +12,14 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\activity_customapis.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_item.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_report_fragment.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_fragment.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\item_skureport.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\item_skureport.xml"
     },
@@ -36,12 +44,12 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_stocktransferfragment.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_remap.xml",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_remap.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_homefragment.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_homefragment.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_remap.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_remap.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\dialog_dynamicexcel1.xml",
@@ -52,12 +60,16 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\item_field.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\activity_main.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\item_bill_view_layout.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\item_bill_view_layout.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\activity_main.xml",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\activity_main.xml"
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daliy_stock_report_product_activity.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daliy_stock_report_product_activity.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_allreportfragment.xml",
@@ -96,16 +108,28 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\stockverfylayout.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\listrecycler_layout.xml",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\listrecycler_layout.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\bottom_customersheet_layout.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\bottom_customersheet_layout.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\listrecycler_layout.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\listrecycler_layout.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_report_category.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_category.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_report_date.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_date.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\billlist_item.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\billlist_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_date_item.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_date_item.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\activity_uploadimages.xml",
@@ -128,6 +152,10 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\inventory_list_layout.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_report_counter_item.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_counter_item.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_settingsfragment.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_settingsfragment.xml"
     },
@@ -144,16 +172,20 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\activity_activationpage.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\daily_stock_report_counter_fragment.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_counter_fragment.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\item_bill_layout.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\item_bill_layout.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\inventorycategorytop_layout.xml",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\inventorycategorytop_layout.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\dialog_item_details.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\dialog_item_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\inventorycategorytop_layout.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\inventorycategorytop_layout.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\activity_skureport.xml",
@@ -180,12 +212,12 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\activity_billlistactivity.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_stockreportfragment.xml",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_stockreportfragment.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_productfragment.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_productfragment.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_stockreportfragment.xml",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_stockreportfragment.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\item_issue.xml",

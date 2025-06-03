@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
     tools:context=".mainscreens.Loginpage">
 
 
@@ -28,6 +28,7 @@
                     android:text="Login to use app"
                     android:textColor="@color/black"
                     android:textSize="20dp"
+                    android:visibility="gone"
                     android:layout_gravity="center_horizontal"
                     android:textStyle="bold"/>
 
@@ -36,6 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Username"
+                    android:visibility="gone"
                     android:layout_marginTop="20dp"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
@@ -47,6 +49,7 @@
                     android:id="@+id/username"
                     android:background="@drawable/edittext_background"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:hint="Please enter username"
                     android:paddingStart="10dp"
                     android:textColor="@color/black"
@@ -56,6 +59,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Password"
+                    android:visibility="gone"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
@@ -66,7 +70,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
+                    android:visibility="gone"
                     android:layout_marginTop="10dp">
                     <EditText
                         android:layout_width="match_parent"
@@ -96,10 +100,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Branch"
+                    android:layout_gravity="center"
                     android:textColor="@color/black"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
-                    android:textSize="18dp"/>
+                    android:textSize="20dp"/>
 
 
                 <RelativeLayout
@@ -125,10 +130,12 @@
                     android:weightSum="3">
 
                     <Button
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:layout_weight="1.25"
-                        android:text="Login"
+                        android:text="Proceed"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginEnd="40dp"
                         android:id="@+id/loginbtn"
                         android:textColor="@color/white"
                         android:textSize="18dp"
@@ -156,6 +163,7 @@
                         android:layout_height="50dp"
                         android:layout_weight="1.25"
                         android:text="Cancel"
+                        android:visibility="gone"
                         android:id="@+id/cancelbtn"
                         android:textColor="@color/white"
                         android:textSize="18dp"
@@ -169,6 +177,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:orientation="horizontal">
 
 
@@ -202,12 +211,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="20dp"
+                    android:visibility="gone"
                     android:text="Facing any issues contact us using below button"
                     android:textColor="@color/black" />
 
                 <Button
                     android:layout_width="150dp"
                     android:layout_height="50dp"
+                    android:visibility="gone"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/button_selector"

@@ -48,6 +48,8 @@ public class AlllabelResponse {
             this.counterName = counterName;
         }
 
+
+
         public int getId() {
             return Id;
         }
@@ -407,6 +409,18 @@ public class AlllabelResponse {
 
         @SerializedName("CounterName")
         public String counterName;
+
+    /*    @SerializedName("CategoryId")
+        public int CategoryId;
+        @SerializedName("ProductId")
+        public int ProductId;
+        @SerializedName("DesignId")
+        public int DesignId;
+
+        @SerializedName("PurityId")
+        public int PurityId;
+*/
+
 
 
 
@@ -946,9 +960,13 @@ public class AlllabelResponse {
             return counterId;
         }
 
+
+
         public void setCounterId(int counterId) {
             this.counterId = counterId;
         }
+
+
 
         public int getBranchId() {
             return branchId;

@@ -252,6 +252,9 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
   public final LinearLayout singlescan;
 
   @NonNull
+  public final AppCompatButton stockVerification;
+
+  @NonNull
   public final TextView tmgwt;
 
   @NonNull
@@ -329,9 +332,10 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
       @NonNull TextView matchqtytotal, @NonNull LinearLayout nemail, @NonNull LinearLayout nlist,
       @NonNull LinearLayout nreset, @NonNull LinearLayout savelay, @NonNull LinearLayout savelay1,
       @NonNull View scrollIndicator, @NonNull AppCompatButton searchbtn,
-      @NonNull LinearLayout singlescan, @NonNull TextView tmgwt, @NonNull TextView tmnetwt,
-      @NonNull TextView tmqty, @NonNull TextView tmswt, @NonNull LinearLayout totallay,
-      @NonNull TextView totalmpcs, @NonNull TextView totalpcs, @NonNull ImageView totalstatus,
+      @NonNull LinearLayout singlescan, @NonNull AppCompatButton stockVerification,
+      @NonNull TextView tmgwt, @NonNull TextView tmnetwt, @NonNull TextView tmqty,
+      @NonNull TextView tmswt, @NonNull LinearLayout totallay, @NonNull TextView totalmpcs,
+      @NonNull TextView totalpcs, @NonNull ImageView totalstatus,
       @NonNull AppCompatButton transferbtn, @NonNull TextView ttgwt, @NonNull TextView ttnetwt,
       @NonNull TextView ttqty, @NonNull TextView ttswt, @NonNull AppCompatButton unlabelled,
       @NonNull AppCompatButton unmatchedbtn, @NonNull View vname) {
@@ -411,6 +415,7 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
     this.scrollIndicator = scrollIndicator;
     this.searchbtn = searchbtn;
     this.singlescan = singlescan;
+    this.stockVerification = stockVerification;
     this.tmgwt = tmgwt;
     this.tmnetwt = tmnetwt;
     this.tmqty = tmqty;
@@ -906,6 +911,12 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.stock_verification;
+      AppCompatButton stockVerification = ViewBindings.findChildViewById(rootView, id);
+      if (stockVerification == null) {
+        break missingId;
+      }
+
       id = R.id.tmgwt;
       TextView tmgwt = ViewBindings.findChildViewById(rootView, id);
       if (tmgwt == null) {
@@ -1012,9 +1023,9 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
           icategorytext, icatgorylayout, iclearlayout, icleartext, icounterlayout, icountyertext,
           imgholder, iproductlayout, iproducttext, irecycler, itemscroll, itstatus, layliststate,
           listbuttons, listlay, matchedbtn, matchgwttotal, matchqtytotal, nemail, nlist, nreset,
-          savelay, savelay1, scrollIndicator, searchbtn, singlescan, tmgwt, tmnetwt, tmqty, tmswt,
-          totallay, totalmpcs, totalpcs, totalstatus, transferbtn, ttgwt, ttnetwt, ttqty, ttswt,
-          unlabelled, unmatchedbtn, vname);
+          savelay, savelay1, scrollIndicator, searchbtn, singlescan, stockVerification, tmgwt,
+          tmnetwt, tmqty, tmswt, totallay, totalmpcs, totalpcs, totalstatus, transferbtn, ttgwt,
+          ttnetwt, ttqty, ttswt, unlabelled, unmatchedbtn, vname);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

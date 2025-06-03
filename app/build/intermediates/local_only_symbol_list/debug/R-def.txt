@@ -346,6 +346,9 @@ id rfidseturl
 id rfidurl
 id rfidverifybtn
 id rheading
+id rv_category
+id rv_counter
+id rv_daily_stock
 id salebox
 id saveButton
 id saveimage
@@ -390,6 +393,7 @@ id sreadlay
 id sreadtext
 id srrecycler
 id startbtn
+id stock_verification
 id stopbtn
 id storemanagelay
 id streadlay
@@ -439,6 +443,8 @@ id todate
 id togglePasswordVisibility
 id toolbar
 id toolbarTextView2
+id toolbar_counter
+id toolbar_date
 id toolbarpower
 id top
 id topitemlay
@@ -467,9 +473,15 @@ id ttotalamont
 id ttotalamount
 id ttqty
 id ttswt
+id tv_category
+id tv_counter
+id tv_date
 id tv_gr_wt
+id tv_match_qty
 id tv_net_wt
 id tv_stone_wt
+id tv_tot_qty
+id tv_um_qty
 id twobtns
 id unlabelled
 id unmatchedbtn
@@ -503,6 +515,14 @@ layout billlist_item
 layout bottom_customersheet_layout
 layout bottom_sheet_layout
 layout bottom_sheet_layout1
+layout daily_stock_date_item
+layout daily_stock_item
+layout daily_stock_report_category
+layout daily_stock_report_counter_fragment
+layout daily_stock_report_counter_item
+layout daily_stock_report_date
+layout daily_stock_report_fragment
+layout daliy_stock_report_product_activity
 layout dialog_dynamicexcel1
 layout dialog_item_details
 layout dialog_layout

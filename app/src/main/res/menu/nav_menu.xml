@@ -30,6 +30,10 @@
             android:id="@+id/itemsvr"
             android:icon="@drawable/h_reporticon"
             android:title="Report" />
+      <!--  <item
+            android:id="@+id/itemDailyStock"
+            android:icon="@drawable/h_reporticon"
+            android:title="Daily Stock Report" />-->
 <!--        <item-->
 <!--            android:id="@+id/itemstocktransfer"-->
 <!--            android:icon="@drawable/ic_launcher_background"-->

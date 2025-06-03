@@ -137,11 +137,11 @@ public class Activationpage extends AppCompatActivity {
                     Log.d("Full JSON Response", ""+loginResponse);
 
                     if(loginResponse.getEmployee() == null){
-                        Toast.makeText(Activationpage.this, "data not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Activationpage.this, "Please check Username and Password", Toast.LENGTH_SHORT).show();
                     return;
                     }
                     if(loginResponse.getEmployee().getClients() == null){
-                        Toast.makeText(Activationpage.this, "data not found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Activationpage.this, "Please Check Username and Passwordzzz", Toast.LENGTH_SHORT).show();
                         return;
                     }
 //                    Log.e("check response ", "check " + response.body().getEmployee().toString());

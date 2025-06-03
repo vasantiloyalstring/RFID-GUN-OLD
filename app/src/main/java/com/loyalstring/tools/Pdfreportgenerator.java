@@ -77,9 +77,113 @@ public class Pdfreportgenerator {
 
         }
     }
-
-
     private class SavesalePdfTask extends AsyncTask<Map<String, List<Itemmodel>>, Void, Boolean> {
+        ProgressDialog dialog = new ProgressDialog(context);
+        File file;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog.setMessage("Generating PDF...");
+            dialog.setCancelable(false);
+            dialog.show();
+        }
+
+        @Override
+        protected Boolean doInBackground(Map<String, List<Itemmodel>>... treeMaps) {
+            Map<String, List<Itemmodel>> skureport1 = treeMaps[0];
+
+            try {
+                File pdfDir = new File(context.getExternalFilesDir(null), "PDFs");
+                if (!pdfDir.exists()) pdfDir.mkdirs();
+
+                file = new File(pdfDir, "skureport1.pdf");
+
+                PdfWriter writer = new PdfWriter(file);
+                PdfDocument pdfDoc = new PdfDocument(writer);
+                Document document = new Document(pdfDoc, PageSize.A4);
+
+                for (Map.Entry<String, List<Itemmodel>> entry : skureport1.entrySet()) {
+                    List<Itemmodel> items = entry.getValue();
+                    String itemcode = entry.getKey();
+                    double gwt = 0, swt = 0, nwt = 0;
+                    int qty = 0;
+
+                    Paragraph header = new Paragraph("Sale Report")
+                            .setTextAlignment(TextAlignment.CENTER)
+                            .setFontSize(16);
+                    document.add(header);
+
+                    for (Itemmodel m : items) {
+                        gwt += m.getGrossWt();
+                        swt += m.getStoneWt();
+                        nwt += m.getNetWt();
+                        qty++;
+                    }
+
+                    Table table = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
+
+                    Paragraph left = new Paragraph("ItemCode: " + itemcode + "\nOrder No: N/A\nTotal Items: " + qty)
+                            .setFontSize(12);
+
+                    Paragraph right = new Paragraph("G wt: " + gwt + "\nS wt: " + swt + "\nN wt: " + nwt)
+                            .setTextAlignment(TextAlignment.RIGHT)
+                            .setFontSize(12);
+
+                    table.addCell(left);
+                    table.addCell(right);
+                    document.add(table);
+
+                    // Add image if available
+                    String imageUrl = items.get(0).getItemCode() + ".jpg";
+                    File imageFile = new File(context.getExternalFilesDir("images"), imageUrl);
+
+                    if (imageFile.exists()) {
+                        ImageData imageData = ImageDataFactory.create(imageFile.getAbsolutePath());
+                        Image image = new Image(imageData);
+                        image.setWidth(400);
+                        image.setHeight(500);
+                        image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                        document.add(image);
+                    }
+
+                    document.add(new AreaBreak(AreaBreakType.NEXT_PAGE));
+                }
+
+                document.close();
+                return true;
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            dialog.dismiss();
+            if (result) {
+                openPdf(file);
+            } else {
+                Toast.makeText(context, "PDF generation failed", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        private void openPdf(File pdfFile) {
+            Uri uri = FileProvider.getUriForFile(
+                    context,
+                    context.getPackageName() + ".provider",
+                    pdfFile
+            );
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setDataAndType(uri, "application/pdf");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            context.startActivity(intent);
+        }
+    }
+
+    /*  private class SavesalePdfTask extends AsyncTask<Map<String, List<Itemmodel>>, Void, Boolean> {
         ProgressDialog dialog = new ProgressDialog(context);
 
         @Override
@@ -188,7 +292,7 @@ public class Pdfreportgenerator {
 
 
     }
-
+*/
     public void generatereportpdf1(Billlistactivity billlistactivity, HashMap<String, List<Itemmodel>> billmap, int i) {
 
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)

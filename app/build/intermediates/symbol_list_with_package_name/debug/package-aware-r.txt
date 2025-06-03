@@ -3821,6 +3821,9 @@ id right_icon
 id right_side
 id rounded
 id row_index_key
+id rv_category
+id rv_counter
+id rv_daily_stock
 id salebox
 id saveButton
 id save_non_transition_alpha
@@ -3920,6 +3923,7 @@ id startVertical
 id startbtn
 id staticLayout
 id staticPostLayout
+id stock_verification
 id stop
 id stopbtn
 id storemanagelay
@@ -4007,6 +4011,8 @@ id toggle
 id togglePasswordVisibility
 id toolbar
 id toolbarTextView2
+id toolbar_counter
+id toolbar_date
 id toolbarpower
 id top
 id topPanel
@@ -4045,9 +4051,15 @@ id ttotalamont
 id ttotalamount
 id ttqty
 id ttswt
+id tv_category
+id tv_counter
+id tv_date
 id tv_gr_wt
+id tv_match_qty
 id tv_net_wt
 id tv_stone_wt
+id tv_tot_qty
+id tv_um_qty
 id twobtns
 id unchecked
 id uniform
@@ -4221,6 +4233,14 @@ layout bottom_customersheet_layout
 layout bottom_sheet_layout
 layout bottom_sheet_layout1
 layout custom_dialog
+layout daily_stock_date_item
+layout daily_stock_item
+layout daily_stock_report_category
+layout daily_stock_report_counter_fragment
+layout daily_stock_report_counter_item
+layout daily_stock_report_date
+layout daily_stock_report_fragment
+layout daliy_stock_report_product_activity
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
 layout design_layout_snackbar

@@ -7,6 +7,8 @@ import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.ScannedDataToService;
+import com.loyalstring.modelclasses.StockVerificationFilterModel;
+import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,6 +86,26 @@ public class ApiManager {
             try {
                 Call<List<ScannedDataToService>> call = apiService.AddAllScannedData(safeCopy);
                 Response<List<ScannedDataToService>> response = call.execute();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    fetchAllRFIDData.onSuccess(response.body());
+                } else {
+                    String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                    fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+                }
+            } catch (IOException e) {
+                fetchAllRFIDData.onError(e);
+            }
+        }).start();
+    }
+
+    /*stock varification*/
+    public void stockVarificationDataData(StockVerificationFilterModel stockVerificationFilterModel, interfaces.FetchAllVerificxationData fetchAllRFIDData) {
+        // Create a defensive copy of the list to prevent concurrent modifications
+        new Thread(() -> {
+            try {
+                Call<StockVerificationFilterModelResponse> call = apiService.stockVarification(stockVerificationFilterModel);
+                Response<StockVerificationFilterModelResponse> response = call.execute();
 
                 if (response.isSuccessful() && response.body() != null) {
                     fetchAllRFIDData.onSuccess(response.body());

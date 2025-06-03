@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -134,12 +135,164 @@ public class PdfGenerator {
 //
 //                }
             }
-           /* else if(i == 21) {
+            else if(i == 37) {
                 List<Itemmodel> itemList = getDummyItems();
-                pushpa11(billmap);
-            }*/
+               Dnj(billmap);
+              //  savePdfToDownloadFolder2(item);
+            }
         }
     }
+
+    @SuppressLint("Range")
+    private void Dnj(HashMap<String, List<Itemmodel>> billmap) {
+        String invoiceNumber = "";
+        long tdate = 0;
+        String cname = "", branch = "", via = "", kt = "", screw = "", tags = "", wast = "";
+
+        for (Map.Entry<String, List<Itemmodel>> entry : billmap.entrySet()) {
+            if (!entry.getValue().isEmpty()) {
+                Itemmodel model = entry.getValue().get(0);
+                invoiceNumber = model.getInvoiceNumber();
+                tdate = model.getOperationTime();
+                cname = model.getCustomerName();
+                branch = model.getBranch();
+                via = model.getDiamondCertificate();
+                kt = model.getStockKeepingUnit();
+                screw = model.getDiamondColor();
+                tags = model.getDiamondMetal();
+                wast = String.valueOf(model.getFixedWastage());
+                break;
+            }
+        }
+
+        if (invoiceNumber.isEmpty()) invoiceNumber = "unknown_invoice";
+
+        try {
+            ContentResolver resolver = context.getContentResolver();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, invoiceNumber + ".pdf");
+            contentValues.put(MediaStore.Downloads.MIME_TYPE, "application/pdf");
+            contentValues.put(MediaStore.Downloads.IS_PENDING, 1);
+
+            Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            Uri fileUri = resolver.insert(collection, contentValues);
+
+            if (fileUri == null) {
+                Toast.makeText(context, "Failed to create file", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            OutputStream outputStream = resolver.openOutputStream(fileUri);
+            if (outputStream == null) {
+                Toast.makeText(context, "Failed to open output stream", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            PdfWriter writer = new PdfWriter(outputStream);
+            PdfDocument pdfDoc = new PdfDocument(writer);
+            Document document = new Document(pdfDoc, PageSize.A4.rotate());
+
+            String formattedDate = convertTimestampToDate(tdate);
+            document.add(new Paragraph("Proforma Invoice").setBold().setFontSize(16).setTextAlignment(TextAlignment.CENTER));
+            document.add(new Paragraph("\n"));
+
+            Table headerTable = new Table(UnitValue.createPercentArray(new float[]{1, 1})).setWidth(UnitValue.createPercentValue(100));
+            headerTable.addCell(new Cell().setBorder(Border.NO_BORDER)
+                    .add(new Paragraph("DATE: " + formattedDate).setBold())
+                    .add(new Paragraph("CLIENT NAME: " + cname).setBold())
+                    .add(new Paragraph("NAME & PHONE NO: ").setBold()));
+            headerTable.addCell(new Cell().setBorder(Border.NO_BORDER).setTextAlignment(TextAlignment.RIGHT)
+                    .add(new Paragraph("KT: " + kt).setBold())
+                    .add(new Paragraph("SCREW: " + screw).setBold())
+                    .add(new Paragraph("SEPARATE TAGS: " + tags).setBold())
+                    .add(new Paragraph("WASTAGE: " + wast).setBold())
+                    .add(new Paragraph("DELIVERY DATE").setBold()));
+            document.add(headerTable);
+
+            float[] columnWidths = {0.5f, 1.0f, 1.5f, 1f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
+            Table dataTable = new Table(UnitValue.createPercentArray(columnWidths)).setWidth(UnitValue.createPercentValue(100));
+
+            String[] headers = {"SNO", "TAG NO", "ITEM NAME", "DESIGN", "STAMP", "G WT", "S WT", "N WT", "FINE", "STN VALUE", "IMAGE"};
+            for (String h : headers) dataTable.addHeaderCell(new Cell().add(new Paragraph(h).setBold()));
+
+            int i = 0;
+            double totalGrWt = 0.0, totalStWt = 0.0, totalNetWt = 0.0, totalFine = 0.0, totalStnValue = 0.0;
+
+            for (String it : billmap.keySet()) {
+                List<Itemmodel> items = billmap.get(it);
+                for (Itemmodel item : items) {
+                    i++;
+                    double grwt = item.getGrossWt();
+                    double netwt = item.getNetWt();
+                    double stwt = grwt - netwt;
+                    double fine1 = (item.getMakingPer() + item.getFixedWastage()) * (netwt / 100);
+                    double stnValue = item.getStoneAmount();
+
+                    dataTable.addCell(String.valueOf(i));
+                    dataTable.addCell(item.getItemCode());
+                    dataTable.addCell(item.getProduct());
+                    dataTable.addCell(item.getDiamondClarity());
+                    dataTable.addCell(item.getStockKeepingUnit() != null ? item.getStockKeepingUnit() : "");
+                    dataTable.addCell(String.format("%.3f", grwt));
+                    dataTable.addCell(String.format("%.3f", stwt));
+                    dataTable.addCell(String.format("%.3f", netwt));
+                    dataTable.addCell(String.format("%.3f", fine1));
+                    dataTable.addCell(String.format("%.3f", stnValue));
+
+                    // ==== IMAGE CELL (ALWAYS ADDED) ====
+                    String imageUrl = item.getItemCode() + ".jpg";
+                    File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "Loyalstring files/images/" + imageUrl);
+
+                    if (imageFile.exists()) {
+                        ImageData imageData = ImageDataFactory.create(imageFile.getAbsolutePath());
+                        Image image = new Image(imageData);
+                        image.setWidth(60).setHeight(60); // Resize image to fit cell
+                        dataTable.addCell(new Cell().add(image));
+                    } else {
+                        dataTable.addCell(new Cell().add(new Paragraph("No Image").setFontSize(8).setItalic()));
+                    }
+
+                    // Update totals
+                    totalGrWt += grwt;
+                    totalStWt += stwt;
+                    totalNetWt += netwt;
+                    totalFine += fine1;
+                    totalStnValue += stnValue;
+                }
+            }
+
+            // Totals Row
+            dataTable.addCell(new Cell(1, 5).add(new Paragraph("TOTAL").setBold()).setTextAlignment(TextAlignment.RIGHT));
+            dataTable.addCell(String.format("%.3f", totalGrWt));
+            dataTable.addCell(String.format("%.3f", totalStWt));
+            dataTable.addCell(String.format("%.3f", totalNetWt));
+            dataTable.addCell(String.format("%.3f", totalFine));
+            dataTable.addCell(String.format("%.3f", totalStnValue));
+            dataTable.addCell(""); // Empty image column in totals row
+
+            document.add(dataTable);
+
+            // Footer
+            document.add(new Paragraph("\n\n\n"));
+            document.add(new Paragraph("DN Jewellers")
+                    .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold());
+            document.add(new Paragraph("\n"));
+            document.add(new Paragraph("Note - This is not a Tax Invoice").setBold().setFontSize(10).setFontColor(ColorConstants.RED));
+
+            document.close();
+
+            contentValues.clear();
+            contentValues.put(MediaStore.Downloads.IS_PENDING, 0);
+            resolver.update(fileUri, contentValues, null, null);
+
+            openPdfFromUri(fileUri);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(context, "Error creating PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
 
     private void savePdfToDownloadFolder7(List<Itemmodel> itemList) {
 

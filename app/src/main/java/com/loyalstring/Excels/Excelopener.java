@@ -582,7 +582,7 @@ public class Excelopener {
                                 0, 0, it.getGoldRate(), it.getTotalMaking(), it.getItemPrice(), it.getAppliedDiscount(),
                                 it.getItempriceAfterdiscount(), it.getGstRate(), it.getPayableAmount(), it.getPayableAmountincgst(), it.getItemGst(), it.getTotalBilleditems(),
                                 it.getTotalBilledgwt(), it.getTotalBilledamount(), it.getTotalBillAmountExcGst(), it.getTotalBillAmountincgst(), it.getTotalGst(),
-                                it.getTotalDiscount(), it.getPaidAmount(), it.getBalance(), it.getGunUpdate(), it.getWebUpdate(),it.getProductCode(),it.getCounterId(),it.getCounterName(),it.getTotPcs(),it.getTotMPcs());
+                                it.getTotalDiscount(), it.getPaidAmount(), it.getBalance(), it.getGunUpdate(), it.getWebUpdate(),it.getProductCode(),it.getCounterId(),it.getCounterName(),it.getTotPcs(),it.getTotMPcs(),it.getCategoryId(),it.getProductId(),it.getDesignId(),it.getPurityId());
 
                         item.setImageUrl(it.getHuidCode());
                         itemlist.add(item);
@@ -600,7 +600,7 @@ public class Excelopener {
                                 it.getTotalNwt(), 0, it.getGoldRate(), it.getTotalMaking(), it.getItemPrice(), it.getAppliedDiscount(),
                                 it.getItempriceAfterdiscount(), it.getGstRate(), it.getPayableAmount(), it.getPayableAmountincgst(), it.getItemGst(), it.getTotalBilleditems(),
                                 it.getTotalBilledgwt(), it.getTotalBilledamount(), it.getTotalBillAmountExcGst(), it.getTotalBillAmountincgst(), it.getTotalGst(),
-                                it.getTotalDiscount(), it.getPaidAmount(), it.getBalance(), "updateitem", "",it.getProductCode(),it.getCounterId(),it.getCounterName(),it.getTotPcs(),it.getTotMPcs());
+                                it.getTotalDiscount(), it.getPaidAmount(), it.getBalance(), "updateitem", "",it.getProductCode(),it.getCounterId(),it.getCounterName(),it.getTotPcs(),it.getTotMPcs(),it.getCategoryId(),it.getProductId(),it.getDesignId(),it.getPurityId());
                         item.setImageUrl(it.getHuidCode());
                         itemlist.add(item);
                     }
@@ -684,6 +684,45 @@ public class Excelopener {
                     item.setCounterId(value);
                 }
                 break;
+
+            case "CategoryId":
+                if (value == null || value.isEmpty()) {
+                    issue(item, i, "tidvalue");
+
+                } else {
+                    item.setCategoryId(Integer.parseInt(value));
+                }
+                break;
+
+
+            case "ProductId":
+                if (value == null || value.isEmpty()) {
+                    issue(item, i, "tidvalue");
+
+                } else {
+                    item.setProductId(Integer.parseInt(value));
+                }
+                break;
+
+            case "PurityId":
+                if (value == null || value.isEmpty()) {
+                    issue(item, i, "tidvalue");
+
+                } else {
+                    item.setPurityId(Integer.parseInt(value));
+                }
+                break;
+
+            case "DesignId":
+                if (value == null || value.isEmpty()) {
+                    issue(item, i, "tidvalue");
+
+                } else {
+                    item.setDesignId(Integer.parseInt(value));
+                }
+                break;
+
+
 
             case "CounterName":
                 if (value == null || value.isEmpty()) {

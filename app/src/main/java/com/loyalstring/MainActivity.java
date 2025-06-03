@@ -30,6 +30,7 @@ import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.database.StorageClass;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.fragments.Billfragment;
+import com.loyalstring.fragments.DailyStockreportfragment;
 import com.loyalstring.fragments.Homefragment;
 import com.loyalstring.fragments.Inventoryfragment;
 import com.loyalstring.fragments.Searchfragment;
@@ -279,6 +280,9 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
         } else if (id == R.id.itemsvr) {
             fragment = new Stockreportfragment();
         }
+      /* else if (id == R.id.itemDailyStock) {
+            fragment = new DailyStockreportfragment();
+        }*/
 //        else if (id == R.id.itemstocktransfer) {
 //            fragment = new Stocktransferfragment();
 //        }

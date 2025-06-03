@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-109:12
-INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-109:12
-INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-109:12
-INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-109:12
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-125:12
+INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-125:12
+INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-125:12
+INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:2:1-125:12
 MERGED from [DeviceAPI_ver20231208_release.aar] C:\Users\Admin\.gradle\caches\8.9\transforms\cd18e3bf5f8ca892e12fc0701f8caa70\transformed\DeviceAPI_ver20231208_release\AndroidManifest.xml:2:1-16:12
 MERGED from [androidx.databinding:viewbinding:8.1.2] C:\Users\Admin\.gradle\caches\8.9\transforms\7caf5521dd5969fc77662a2abc85d642\transformed\viewbinding-8.1.2\AndroidManifest.xml:2:1-7:12
 MERGED from [com.android.volley:volley:1.2.1] C:\Users\Admin\.gradle\caches\8.9\transforms\dfc4120ec009baa39e0fa29c90fff477\transformed\volley-1.2.1\AndroidManifest.xml:2:1-7:12
@@ -185,8 +185,8 @@ ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidMani
 	android:mimeType
 		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:24:19-41
 application
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:28:5-107:19
-INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:28:5-107:19
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:28:5-123:19
+INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:28:5-123:19
 MERGED from [com.google.firebase:firebase-analytics:21.5.1] C:\Users\Admin\.gradle\caches\8.9\transforms\d081d84455bfaea7641f6919597a0049\transformed\firebase-analytics-21.5.1\AndroidManifest.xml:7:5-20
 MERGED from [com.google.firebase:firebase-analytics:21.5.1] C:\Users\Admin\.gradle\caches\8.9\transforms\d081d84455bfaea7641f6919597a0049\transformed\firebase-analytics-21.5.1\AndroidManifest.xml:7:5-20
 MERGED from [com.google.firebase:firebase-crashlytics:18.6.3] C:\Users\Admin\.gradle\caches\8.9\transforms\7564fb2a75ecf85c430364b0ece4819e\transformed\firebase-crashlytics-18.6.3\AndroidManifest.xml:11:5-22:19
@@ -387,46 +387,70 @@ ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidMani
 		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:83:13-37
 	android:name
 		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:82:13-55
+activity#com.loyalstring.Activities.DailyStockReportDate
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:85:9-87:40
+	android:exported
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:87:13-37
+	android:name
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:86:13-60
+activity#com.loyalstring.Activities.DailyStockReportCounter
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:89:9-91:40
+	android:exported
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:91:13-37
+	android:name
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:90:13-63
+activity#com.loyalstring.Activities.DailyStockreportCategory
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:93:9-95:40
+	android:exported
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:95:13-37
+	android:name
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:94:13-64
+activity#com.loyalstring.Activities.DailyStockReportProduct
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:97:9-99:40
+	android:exported
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:99:13-37
+	android:name
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:98:13-63
 activity#com.loyalstring.MainActivity
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:84:9-87:59
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:100:9-103:59
 	android:windowSoftInputMode
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:87:13-56
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:103:13-56
 	android:exported
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:86:13-37
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:102:13-37
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:85:13-41
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:101:13-41
 activity#com.loyalstring.mainscreens.splashscreen
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:88:9-96:20
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:104:9-112:20
 	android:exported
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:90:13-36
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:106:13-36
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:89:13-53
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:105:13-53
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:91:13-95:29
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:107:13-111:29
 action#android.intent.action.MAIN
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:92:17-69
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:108:17-69
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:92:25-66
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:108:25-66
 category#android.intent.category.LAUNCHER
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:94:17-77
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:110:17-77
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:94:27-74
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:110:27-74
 provider#androidx.core.content.FileProvider
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:98:9-106:20
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:114:9-122:20
 	android:grantUriPermissions
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:102:13-47
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:118:13-47
 	android:authorities
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:100:13-59
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:116:13-59
 	android:exported
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:101:13-37
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:117:13-37
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:99:13-62
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:115:13-62
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:103:13-105:54
+ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:119:13-121:54
 	android:resource
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:105:17-51
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:121:17-51
 	android:name
-		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:104:17-67
+		ADDED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml:120:17-67
 uses-sdk
 INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from E:\LoyalStringProjects\vasanti\pushpa\pushpa\app\src\main\AndroidManifest.xml

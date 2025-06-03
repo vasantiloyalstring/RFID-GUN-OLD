@@ -1,39 +1,39 @@
 [
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_logo.png.flat",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\logo.png"
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\xml_backup_rules.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\xml\\backup_rules.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_fragment_stockhistoryfragment.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_stockhistoryfragment.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\xml_backup_rules.xml.flat",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\xml\\backup_rules.xml"
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_logo.png.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\logo.png"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_fragment_allreportfragment.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_allreportfragment.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable-v24_ic_launcher_foreground.xml.flat",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable-v24\\ic_launcher_foreground.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\raw_fourty.ogg.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\raw\\fourty.ogg"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable-v24\\ic_launcher_foreground.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_right_arrow.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\right_arrow.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\mipmap-xhdpi_ic_launcher.webp.flat",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\mipmap-xhdpi\\ic_launcher.webp"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_fragment_settingsfragment.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_settingsfragment.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\mipmap-xhdpi_ic_launcher.webp.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\mipmap-xhdpi\\ic_launcher.webp"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_activity_loginpage.xml.flat",
@@ -44,12 +44,12 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\dialog_dynamicexcel1.xml"
     },
     {
-        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\raw_seventy.ogg.flat",
-        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\raw\\seventy.ogg"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_emailblack.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\emailblack.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\raw_seventy.ogg.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\raw\\seventy.ogg"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_i_pausescan.xml.flat",
@@ -58,6 +58,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_ic_scanblack.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\ic_scanblack.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_report_category.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_category.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_h_logout.xml.flat",
@@ -74,6 +78,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_ic_settings.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\ic_settings.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_report_fragment.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_fragment.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_bottom_customersheet_layout.xml.flat",
@@ -108,6 +116,10 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_remap.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_report_counter_fragment.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_counter_fragment.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_fragment_stockreportfragment.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_stockreportfragment.xml"
     },
@@ -130,6 +142,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_boxlayout.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\boxlayout.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_report_date.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_date.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\raw_found1.ogg.flat",
@@ -170,6 +186,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_ic_cancelblack.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\ic_cancelblack.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daliy_stock_report_product_activity.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daliy_stock_report_product_activity.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\raw_credentials.json.flat",
@@ -252,10 +272,6 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\h_product.xml"
     },
     {
-        "merged": "com.loyalstring.app-merged_res-47:/layout_fragment_inventoryfragment.xml.flat",
-        "source": "com.loyalstring.app-main-49:/layout/fragment_inventoryfragment.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_edittextsquare.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\edittextsquare.xml"
     },
@@ -330,6 +346,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_dialog_item_details.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\dialog_item_details.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_item.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_item.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_i_successyellow.xml.flat",
@@ -420,6 +440,10 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\mipmap-anydpi-v26\\ic_launcher.xml"
     },
     {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_report_counter_item.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_report_counter_item.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_h_reporticon.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\h_reporticon.xml"
     },
@@ -430,6 +454,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_ic_upload.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\drawable\\ic_upload.xml"
+    },
+    {
+        "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_daily_stock_date_item.xml.flat",
+        "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\daily_stock_date_item.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\drawable_ic_boxlayout.xml.flat",
@@ -490,6 +518,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\layout_fragment_billfragment.xml.flat",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_billfragment.xml"
+    },
+    {
+        "merged": "com.loyalstring.app-merged_res-47:/menu_nav_menu.xml.flat",
+        "source": "com.loyalstring.app-main-49:/menu/nav_menu.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-merged_res-47:\\mipmap-mdpi_ic_launcher_round.webp.flat",
