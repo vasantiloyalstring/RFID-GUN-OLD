@@ -2,20 +2,16 @@ package com.loyalstring.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.loyalstring.Adapters.DailyStockListAdapter;
-import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.databinding.DailyStockReportDateBinding;
-import com.loyalstring.databinding.DailyStockReportFragmentBinding;
 import com.loyalstring.interfaces.CounterClickListener;
 import com.loyalstring.modelclasses.Itemmodel;
 
@@ -65,7 +61,7 @@ public class DailyStockReportDate  extends AppCompatActivity  implements Counter
             if (itemmodelList != null || itemmodelList.size() > 0) {
 
 
-                DailyStockListAdapter adapter = new DailyStockListAdapter(DailyStockReportDate.this, itemmodelList,this);
+                DailyStockListAdapter adapter = new DailyStockListAdapter(DailyStockReportDate.this, itemmodelList,this, "counter");
                 b.rvDailyStock.setLayoutManager(new LinearLayoutManager(this));
                 b.rvDailyStock.setAdapter(adapter);
             }
@@ -87,7 +83,7 @@ public class DailyStockReportDate  extends AppCompatActivity  implements Counter
     }
 
     @Override
-    public void onCounterClick(String counterName) {
+    public void onCounterClick(String counterName,String date) {
         Intent intent=new Intent(DailyStockReportDate.this, DailyStockReportCounter.class);
         startActivity(intent);
     }

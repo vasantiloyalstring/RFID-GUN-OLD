@@ -114,6 +114,7 @@ id bulkbtn
 id bulkheading
 id bulklay
 id bulkrecycler
+id buttonLayout
 id button_save
 id cancelbtn
 id cancellay
@@ -250,6 +251,7 @@ id itMPieces
 id itPieces
 id itage
 id itbox
+id itemDailyStock
 id item_details
 id item_image
 id itembill
@@ -347,7 +349,6 @@ id rfidurl
 id rfidverifybtn
 id rheading
 id rv_category
-id rv_counter
 id rv_daily_stock
 id salebox
 id saveButton
@@ -360,6 +361,7 @@ id scanbtn1
 id scanbtnimage
 id scanbtntext
 id scrollIndicator
+id scrollView
 id searchEditText
 id search_bar
 id searchbar
@@ -476,9 +478,12 @@ id ttswt
 id tv_category
 id tv_counter
 id tv_date
+id tv_email
 id tv_gr_wt
 id tv_match_qty
+id tv_name
 id tv_net_wt
+id tv_reset
 id tv_stone_wt
 id tv_tot_qty
 id tv_um_qty
@@ -497,6 +502,7 @@ id vname01
 id vname1
 id vname2
 id wastper
+id yourRelativeLayout
 layout activity_activationpage
 layout activity_api_config
 layout activity_bill_viewactivity

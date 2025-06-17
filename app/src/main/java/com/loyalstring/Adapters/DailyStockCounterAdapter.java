@@ -42,7 +42,7 @@ public class DailyStockCounterAdapter extends RecyclerView.Adapter<DailyStockCou
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onCounterClick(item);
+                listener.onCounterClick(item,"category");
             }
         });
     }

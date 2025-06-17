@@ -21,6 +21,8 @@ import com.loyalstring.modelclasses.RequestBodyBill;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.StockVerificationRequestData;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
 import com.loyalstring.modelclasses.jjjresponse;
 
 
@@ -95,5 +97,11 @@ public interface ApiService {
 
     @POST("api/ProductMaster/GetCombinedSV")
     Call<StockVerificationFilterModelResponse> stockVarification(@Body StockVerificationFilterModel stockVerificationFilterModel);
+
+
+    /*stock verification new api*/
+    @POST("api/ProductMaster/AddStockVerification")
+    Call<StockVerificationResponseNew> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
+
 
 }

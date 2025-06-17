@@ -13,6 +13,7 @@ import com.loyalstring.LatestApis.ProductRequestPayload;
 import com.loyalstring.LatestCallBacks.ActivationCallback;
 import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.apiresponse.AlllabelResponse;
+import com.loyalstring.apiresponse.ClientCodeRequest;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
@@ -64,9 +65,11 @@ public class SyncWorker extends Worker {
 
             Clients client = sharedPreferencesManager.readLoginData().getEmployee().getClients();
             if (client.getRfidType().equalsIgnoreCase("websingle")) {
+                Log.d("@@","@@"+client.getRfidType());
                 fetchsinglePaginatedData(client.getClientCode());
             } else if (client.getRfidType().equalsIgnoreCase("webreusable")) {
                 fetchPaginatedData(client.getClientCode());
+                Log.d("@@1","@@1"+client.getRfidType());
             }
 
             updatebills(client.getClientCode());
@@ -88,8 +91,10 @@ public class SyncWorker extends Worker {
 
     private void fetchsingleData(int currentId, String size, String clientCode) {
         ProductRequestPayload payload = new ProductRequestPayload(clientCode, "all", currentId, size);
-        Call<List<AlllabelResponse.LabelItem>> call = apiService.getBatchedLabelledStock(payload);
-
+        Log.d("@@2","@@2");
+        ClientCodeRequest getAlllableproducts=new ClientCodeRequest(clientCode);
+      //  Call<List<AlllabelResponse.LabelItem>> call = apiService.getBatchedLabelledStock(payload);
+        Call<List<AlllabelResponse.LabelItem>> call = apiService.getAlllableproducts(getAlllableproducts);
         call.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
             @Override
             public void onResponse(Call<List<AlllabelResponse.LabelItem>> call, Response<List<AlllabelResponse.LabelItem>> response) {
@@ -106,9 +111,12 @@ public class SyncWorker extends Worker {
 
 //                        item.setrFIDCode(item.getItemCode());
                         if (item.getStatus().equalsIgnoreCase("active")) {
+                            Log.d(TAG, "No more items to process.@@");
                             if (item.getItemCode() != null && !item.getItemCode().isEmpty()) {
+                                Log.d(TAG, "No more items to process."+"hexvalue");
                                 String hexvalue = convertToHex(item.getItemCode());
                                 if (hexvalue != null && !hexvalue.isEmpty()) {
+                                    Log.d(TAG, "No more items to process."+hexvalue);
                                     item.settIDNumber(hexvalue);
                                     item.setrFIDCode(item.getItemCode());
                                     item.setProductName(item.getDesignName());
@@ -116,12 +124,14 @@ public class SyncWorker extends Worker {
                                 }
                                 if (item.gettIDNumber() != null && !item.gettIDNumber().isEmpty()) {
                                     productResponse1.add(item);
+                                    Log.d("##","@@");
                                 }
 
                             }
                         }
                     }
                     processResponse(productResponse1);
+                    Log.d("##1","@@1");
                     // Check RecordsCount
                     int recordsCount = productResponse.get(0).getRecordsCount();
                     if (recordsCount <= Integer.parseInt(size)) {
@@ -160,7 +170,11 @@ public class SyncWorker extends Worker {
 
     private void fetchData(int currentId, String size, String clientCode) {
         ProductRequestPayload payload = new ProductRequestPayload(clientCode, "all", currentId, size);
-        Call<List<AlllabelResponse.LabelItem>> call = apiService.getBatchedLabelledStock(payload);
+        Log.d("@@1","@@1");
+      //  Call<List<AlllabelResponse.LabelItem>> call = apiService.getBatchedLabelledStock(payload);
+        ClientCodeRequest getAlllableproducts=new ClientCodeRequest(clientCode);
+        //  Call<List<AlllabelResponse.LabelItem>> call = apiService.getBatchedLabelledStock(payload);
+        Call<List<AlllabelResponse.LabelItem>> call = apiService.getAlllableproducts(getAlllableproducts);
 
         call.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
             @Override
@@ -191,7 +205,7 @@ public class SyncWorker extends Worker {
                     // Fetch the next batch
                     fetchData(currentId + 1, size, clientCode);
                 } else {
-                    Log.e(TAG, "Response not successful: " + response.message());
+                    Log.e(TAG, "Response not successful::: " + response.message());
                 }
             }
 
@@ -214,6 +228,7 @@ public class SyncWorker extends Worker {
         }
         HashMap<String, Itemmodel> nmap = new HashMap<>();
         List<Itemmodel> dmap = new ArrayList<>();
+
 
         for (AlllabelResponse.LabelItem p : response) {
 

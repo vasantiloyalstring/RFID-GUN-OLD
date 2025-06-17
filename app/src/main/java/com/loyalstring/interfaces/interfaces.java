@@ -9,6 +9,7 @@ import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,11 @@ public class interfaces {
 
     public interface FetchAllVerificxationData{
         void onSuccess(StockVerificationFilterModelResponse result);
+        void onError(Exception e);
+    }
+
+    public interface FetchAllVerificxationDataNew{
+        void onSuccess(StockVerificationResponseNew result);
         void onError(Exception e);
     }
 

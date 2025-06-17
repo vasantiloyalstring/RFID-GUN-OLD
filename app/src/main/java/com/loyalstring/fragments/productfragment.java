@@ -572,6 +572,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 
                 for(Itemmodel itemmodel:itemlist)
                 {
+
                     /*api call new add all data vasanti*/
 
                     Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();

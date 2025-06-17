@@ -3321,6 +3321,7 @@ id bulkbtn
 id bulkheading
 id bulklay
 id bulkrecycler
+id buttonLayout
 id buttonPanel
 id button_save
 id cache_measures
@@ -3586,6 +3587,7 @@ id itPieces
 id itage
 id italic
 id itbox
+id itemDailyStock
 id item_details
 id item_image
 id item_touch_helper_previous_elevation
@@ -3822,7 +3824,6 @@ id right_side
 id rounded
 id row_index_key
 id rv_category
-id rv_counter
 id rv_daily_stock
 id salebox
 id saveButton
@@ -4054,9 +4055,12 @@ id ttswt
 id tv_category
 id tv_counter
 id tv_date
+id tv_email
 id tv_gr_wt
 id tv_match_qty
+id tv_name
 id tv_net_wt
+id tv_reset
 id tv_stone_wt
 id tv_tot_qty
 id tv_um_qty
@@ -4099,6 +4103,7 @@ id wrap_content
 id wrap_content_constrained
 id x_left
 id x_right
+id yourRelativeLayout
 integer abc_config_activityDefaultDur
 integer abc_config_activityShortDur
 integer app_bar_elevation_anim_duration

@@ -9,6 +9,7 @@ import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -237,6 +238,9 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
   public final LinearLayout nreset;
 
   @NonNull
+  public final ProgressBar progressBar;
+
+  @NonNull
   public final LinearLayout savelay;
 
   @NonNull
@@ -302,6 +306,9 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
   @NonNull
   public final View vname;
 
+  @NonNull
+  public final RelativeLayout yourRelativeLayout;
+
   private FragmentInventoryfragmentBinding(@NonNull FrameLayout rootView,
       @NonNull TextView avlqtytotal, @NonNull LinearLayout cancellay, @NonNull LinearLayout catlay,
       @NonNull LinearLayout catprolay, @NonNull RecyclerView catprorecycler,
@@ -330,15 +337,16 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
       @NonNull LinearLayout listbuttons, @NonNull LinearLayout listlay,
       @NonNull AppCompatButton matchedbtn, @NonNull TextView matchgwttotal,
       @NonNull TextView matchqtytotal, @NonNull LinearLayout nemail, @NonNull LinearLayout nlist,
-      @NonNull LinearLayout nreset, @NonNull LinearLayout savelay, @NonNull LinearLayout savelay1,
-      @NonNull View scrollIndicator, @NonNull AppCompatButton searchbtn,
-      @NonNull LinearLayout singlescan, @NonNull AppCompatButton stockVerification,
-      @NonNull TextView tmgwt, @NonNull TextView tmnetwt, @NonNull TextView tmqty,
-      @NonNull TextView tmswt, @NonNull LinearLayout totallay, @NonNull TextView totalmpcs,
-      @NonNull TextView totalpcs, @NonNull ImageView totalstatus,
-      @NonNull AppCompatButton transferbtn, @NonNull TextView ttgwt, @NonNull TextView ttnetwt,
-      @NonNull TextView ttqty, @NonNull TextView ttswt, @NonNull AppCompatButton unlabelled,
-      @NonNull AppCompatButton unmatchedbtn, @NonNull View vname) {
+      @NonNull LinearLayout nreset, @NonNull ProgressBar progressBar, @NonNull LinearLayout savelay,
+      @NonNull LinearLayout savelay1, @NonNull View scrollIndicator,
+      @NonNull AppCompatButton searchbtn, @NonNull LinearLayout singlescan,
+      @NonNull AppCompatButton stockVerification, @NonNull TextView tmgwt,
+      @NonNull TextView tmnetwt, @NonNull TextView tmqty, @NonNull TextView tmswt,
+      @NonNull LinearLayout totallay, @NonNull TextView totalmpcs, @NonNull TextView totalpcs,
+      @NonNull ImageView totalstatus, @NonNull AppCompatButton transferbtn, @NonNull TextView ttgwt,
+      @NonNull TextView ttnetwt, @NonNull TextView ttqty, @NonNull TextView ttswt,
+      @NonNull AppCompatButton unlabelled, @NonNull AppCompatButton unmatchedbtn,
+      @NonNull View vname, @NonNull RelativeLayout yourRelativeLayout) {
     this.rootView = rootView;
     this.avlqtytotal = avlqtytotal;
     this.cancellay = cancellay;
@@ -410,6 +418,7 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
     this.nemail = nemail;
     this.nlist = nlist;
     this.nreset = nreset;
+    this.progressBar = progressBar;
     this.savelay = savelay;
     this.savelay1 = savelay1;
     this.scrollIndicator = scrollIndicator;
@@ -432,6 +441,7 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
     this.unlabelled = unlabelled;
     this.unmatchedbtn = unmatchedbtn;
     this.vname = vname;
+    this.yourRelativeLayout = yourRelativeLayout;
   }
 
   @Override
@@ -881,6 +891,12 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.progressBar;
+      ProgressBar progressBar = ViewBindings.findChildViewById(rootView, id);
+      if (progressBar == null) {
+        break missingId;
+      }
+
       id = R.id.savelay;
       LinearLayout savelay = ViewBindings.findChildViewById(rootView, id);
       if (savelay == null) {
@@ -1013,6 +1029,12 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.yourRelativeLayout;
+      RelativeLayout yourRelativeLayout = ViewBindings.findChildViewById(rootView, id);
+      if (yourRelativeLayout == null) {
+        break missingId;
+      }
+
       return new FragmentInventoryfragmentBinding((FrameLayout) rootView, avlqtytotal, cancellay,
           catlay, catprolay, catprorecycler, ccagetext, ccbarcodetext, ccboxtext, ccgwttext,
           ccitemcodetext, ccmatchqtytext, ccmgwttext, ccmnetwtext, ccnetwtext, ccpuritytext, cfage,
@@ -1023,9 +1045,9 @@ public final class FragmentInventoryfragmentBinding implements ViewBinding {
           icategorytext, icatgorylayout, iclearlayout, icleartext, icounterlayout, icountyertext,
           imgholder, iproductlayout, iproducttext, irecycler, itemscroll, itstatus, layliststate,
           listbuttons, listlay, matchedbtn, matchgwttotal, matchqtytotal, nemail, nlist, nreset,
-          savelay, savelay1, scrollIndicator, searchbtn, singlescan, stockVerification, tmgwt,
-          tmnetwt, tmqty, tmswt, totallay, totalmpcs, totalpcs, totalstatus, transferbtn, ttgwt,
-          ttnetwt, ttqty, ttswt, unlabelled, unmatchedbtn, vname);
+          progressBar, savelay, savelay1, scrollIndicator, searchbtn, singlescan, stockVerification,
+          tmgwt, tmnetwt, tmqty, tmswt, totallay, totalmpcs, totalpcs, totalstatus, transferbtn,
+          ttgwt, ttnetwt, ttqty, ttswt, unlabelled, unmatchedbtn, vname, yourRelativeLayout);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

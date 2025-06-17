@@ -32,6 +32,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -63,13 +65,15 @@ import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.SaveCallback;
 import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.mainscreens.splashscreen;
 import com.loyalstring.modelclasses.Issuemode;
+import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.MatchQuantityRequest;
-import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilter;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
-import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.StockVerificationRequestData;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
 import com.loyalstring.network.NetworkUtils;
 import com.loyalstring.readersupport.KeyDwonFragment;
 import com.loyalstring.tools.StringUtils;
@@ -84,6 +88,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -178,12 +183,14 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
         entryDatabase = new EntryDatabase(getActivity());
-        itemmodelList = entryDatabase.getAllSavedItems();
+
+
 
         Bundle args = getArguments();
         if (args != null) {
             pauselist = (List<Itemmodel>) args.getSerializable("searchlist");
         }
+
 
         mainActivity.currentFragment = Inventoryfragment.this;
         mainActivity.toolpower.setVisibility(View.VISIBLE);
@@ -202,6 +209,24 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         filtereditems.clear();
 
         myapp = (MyApplication) requireActivity().getApplicationContext();
+       // itemmodelList = entryDatabase.getAllSavedItems();
+        Map<String, Itemmodel> itemMap = entryDatabase.loadInventoryItems(getActivity(), myapp, 0);
+
+       // if (itemMap != null && !itemMap.isEmpty()) {
+        List<Itemmodel> itemList = new ArrayList<>(itemMap.values());
+
+
+            // Now you can use itemmodelList safely
+            for (Itemmodel item : itemmodelList) {
+                Log.d("Item", item.getProduct() + " - " + item.getAvlQty());
+            }
+       // }
+        Log.d("##","@@"+ entryDatabase.getAllFromAllTable());
+        Log.d("##","@@"+ entryDatabase.getAllSavedItems());
+        Log.d("##","@@"+ entryDatabase.getAllItemsFromDatabase());
+        Log.d("##","@@"+ entryDatabase.getAllItems());
+
+
         b.irecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         b.catprorecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         inventoryTopAdaptor = new InventoryTopAdaptor(topmap, getActivity(), "all", b.irecycler, Inventoryfragment.this);
@@ -256,6 +281,10 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         b.singlescan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    Itemmodel item = entry.getValue();
+                    item.setBarCode(item.getItemCode());
+                }
                 if (topmap.isEmpty() || bottommap.isEmpty()) {
                     Toast.makeText(mainActivity, "No data found", Toast.LENGTH_SHORT).show();
                     return;
@@ -597,11 +626,15 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 Log.d("@@ categoryId","categoryId"+designId);
                Log.d("@@ categoryId","categoryId"+counterId);
 
+                StockVerificationRequestData stockVerificationRequestData = new StockVerificationRequestData();
+                stockVerificationRequestData.setClientCode(clientCode);
 
+
+              
                 StockVerificationFilterModel stockVerificationFilterModel = new StockVerificationFilterModel();
                 StockVerificationFilter stockVerificationFilter = new StockVerificationFilter();
-                stockVerificationFilter.setId(1);
-                stockVerificationFilter.setCreatedOn("02/06/2025");
+                stockVerificationFilter.setId(0);
+                stockVerificationFilter.setCreatedOn("");
                 stockVerificationFilter.setLastUpdated("");
                 stockVerificationFilter.setStatusType(true);
                 stockVerificationFilter.setClientCode(clientCode);
@@ -619,33 +652,66 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 MatchQuantityRequest matchQuantityRequest = new MatchQuantityRequest();
 
                 List<String> itemCodes = new ArrayList<>();
+
+                List<Item> items = new ArrayList<>(); // ✅ Initialize once outside the loop
+
                 for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    Log.d("@@ itemcodeSize", "@@" + bottommap.size());
+
                     Itemmodel item = entry.getValue();
+                    Item itemData = new Item(); // ✅ Create a new item each loop
+
+                    itemData.setBranchId(0);
+                    itemData.setBranchName(item.getBranch());
+
+                    itemData.setCounterId(Integer.valueOf(item.getCounterId()));
+                    itemData.setCounterName(item.getCounterName());
+                    itemData.setCategoryId(item.getCategoryId());
+                    itemData.setCategoryName(item.getCategory());
+                    itemData.setProductId(item.getProductId());
+                    itemData.setProductName(item.getProduct());
+                    itemData.setPurityId(0);
+                    itemData.setPurityName(item.getPurity());
+                    itemData.setDesignId(item.getDesignId());
+                    itemData.setDesignName("");
+                    itemData.setCompanyId(0);
+                    itemData.setCompanyName("");
+                    itemData.setGrossWeight(0);
+                    itemData.setNetWeight(0);
+                    itemData.setQuantity(0);
+
+                    itemData.setItemCode(item.getItemCode());
+                    itemCodes.add(item.getItemCode());
+
                     if (item.getAvlQty() == item.getMatchQty()) {
-
-
-                        itemCodes.add(item.getItemCode());
-                        Log.d("@@ itemcode", "@@" + item.getItemCode());
+                        item.setInventoryStatus("match");
+                        itemData.setStatus("match");
+                        Log.d("@@ itemcodeData", "@@" + item.getInventoryStatus());
+                    } else {
+                        item.setInventoryStatus("unmatch");
+                        itemData.setStatus("unmatch");
+                        Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
                     }
+
+                    items.add(itemData); // ✅ Add to list
                 }
 
-// Set once after loop
-                matchQuantityRequest.setClientCode(clientCode);
-                matchQuantityRequest.setItemCodes(itemCodes);
 
-                stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
-                stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
+                stockVerificationRequestData.setItems(items);
+                // stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
+                //stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
 
 
                 networkUtils = new NetworkUtils(getActivity());
 
-              ApiProcess  apiprocess = new ApiProcess();
+
+                ApiProcess  apiprocess = new ApiProcess();
                 ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
                 apiManager = new ApiManager(apiService);
                 if (networkUtils.isNetworkAvailable()) {
-                    apiManager.stockVarificationDataData(stockVerificationFilterModel, new interfaces.FetchAllVerificxationData() {
+                    apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
                         @Override
-                        public void onSuccess(StockVerificationFilterModelResponse result) {
+                        public void onSuccess(StockVerificationResponseNew result) {
                            // if (!result=null) {
                             Activity activity = getActivity();
                             if (activity != null) {
@@ -832,61 +898,208 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         });
 
 
+
         b.savelay1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+               itemmodelList=entryDatabase.getAllItemsFromDatabase();
+             //  entryDatabase.saveItem(itemmodelList);
+                b.progressBar.setVisibility(View.VISIBLE);
                 List<Itemmodel> ibottomlist = new ArrayList<>();
                 List<Itemmodel> iToplist = new ArrayList<>();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                String todayStr = sdf.format(new Date());
-                long timestamp = 0;
+                // Create and configure ProgressBar
 
-                try {
-                    Date date = sdf.parse(todayStr);
-                    if (date != null) {
-                        timestamp = date.getTime();
+
+                // Perform your task in background
+                b.progressBar.setVisibility(View.VISIBLE);  // Show progress bar on UI thread
+
+               /* new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // 1️⃣ Prepare today's timestamp
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                            String todayStr = sdf.format(new Date());
+                            long timestamp = 0;
+                            try {
+                                Date date = sdf.parse(todayStr);
+                                if (date != null) {
+                                    timestamp = date.getTime();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            Log.d("@@1", "@@1 " + timestamp);
+
+                            // 2️⃣ No need to delete existing data now
+
+                            // 3️⃣ Prepare updated list
+                            List<Itemmodel> ibottomlist = new ArrayList<>();
+                            for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                                Log.d("@@ ","@@ vasanti"+bottommap.size());
+                                Itemmodel item = entry.getValue();
+                                item.setEntryDate(timestamp);
+                                item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
+                                ibottomlist.add(item);
+                            }
+
+                            // 4️⃣ Update or insert logic
+                            entryDatabase.updateInventoryStatus(ibottomlist); // new method
+
+                       *//* try {
+                            // 1️⃣ Prepare timestamp
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                            String todayStr = sdf.format(new Date());
+                            long timestamp = 0;
+
+                            try {
+                                Date date = sdf.parse(todayStr);
+                                if (date != null) {
+                                    timestamp = date.getTime();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+
+                            Log.d("@@1", "@@1 " + timestamp);
+
+                            // 2️⃣ Delete existing data for today's date
+                            entryDatabase.deleteItemsByDate(timestamp);
+
+                            // 3️⃣ Prepare list for insertion
+                            List<Itemmodel> ibottomlist = new ArrayList<>();
+
+                            for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                                Itemmodel item = entry.getValue();
+                                item.setEntryDate(timestamp);
+                                item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
+                                ibottomlist.add(item);
+                            }
+
+                            // 4️⃣ Save data into DB using batch insert (optimized)
+                           entryDatabase.saveItem(ibottomlist);*//*
+
+                            // 5️⃣ Check scanning status after DB insert
+                            if (mainActivity.mReader.isInventorying()) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(mainActivity, "Stop scanning before save", Toast.LENGTH_SHORT).show();
+                                    b.progressBar.setVisibility(View.GONE);
+                                });
+                                return;
+                            }
+
+                            // 6️⃣ Successfully saved
+                            getActivity().runOnUiThread(() -> {
+                                //Toast.makeText(mainActivity, "Inventory Saved Successfully", Toast.LENGTH_SHORT).show();
+                                b.progressBar.setVisibility(View.GONE);
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(mainActivity, "Error occurred during save", Toast.LENGTH_SHORT).show();
+                                b.progressBar.setVisibility(View.GONE);
+                            });
+                        }
                     }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-// Delete existing items for today's date only (not all dates)
-                Log.d("@@1", "@@1 " + timestamp);
-                entryDatabase.deleteItemsByDate(timestamp);
+                }).start();*/
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            // 1️⃣ Prepare today's timestamp
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                            String todayStr = sdf.format(new Date());
+                            long timestamp = 0;
+                            try {
+                                Date date = sdf.parse(todayStr);
+                                if (date != null) {
+                                    timestamp = date.getTime();
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
 
-// Set EntryDate to each item in the map and add to list
-                for (Map.Entry<String, Itemmodel> entry : topmap.entrySet()) {
-                    Itemmodel item = entry.getValue();
-                    item.setEntryDate(timestamp);
-                    iToplist.add(item);
-                }
+                            Log.d("@@1", "@@1 " + timestamp);
 
-// Delete existing items for today's date only (not all dates)
-                // entryDatabase.deleteItemsByDate(timestamp);
+                            // 2️⃣ Delete existing data for today's date (Override existing data)
+                            entryDatabase.deleteItemsByDate(timestamp);
 
-// Save updated list
-                entryDatabase.saveItem(iToplist);
+                            // 3️⃣ Delete items older than 10 days
+                            long currentDate = System.currentTimeMillis();
+                            long tenDaysAgo = currentDate - (10L * 24 * 60 * 60 * 1000);  // 10 days ago in milliseconds
+                            entryDatabase.deleteItemsOlderThan(tenDaysAgo);  // Assuming you have this method to delete records older than 10 days.
+
+                            // 4️⃣ Prepare updated list for today's data
+                            List<Itemmodel> ibottomlist = new ArrayList<>();
+                            for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                                Log.d("@@ ", "@@ vasanti" + bottommap.size());
+                                Itemmodel item = entry.getValue();
+                                item.setEntryDate(timestamp);
+
+                                // Set inventory status: "match" if available quantity equals match quantity, else "unmatch"
+                                item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
+                                ibottomlist.add(item);
+                            }
+
+                            // 5️⃣ Insert or Update the data for today
+                            entryDatabase.updateInventoryStatus(ibottomlist);  // Assuming saveItem method performs the insert or update logic
+
+                            // 6️⃣ After saving, check if scanning is ongoing
+                            if (mainActivity.mReader.isInventorying()) {
+                                getActivity().runOnUiThread(() -> {
+                                    Toast.makeText(mainActivity, "Stop scanning before saving", Toast.LENGTH_SHORT).show();
+                                    b.progressBar.setVisibility(View.GONE);  // Hide progress bar
+                                });
+                                return;
+                            }
+
+                            // 7️⃣ Successfully saved data, hide progress bar
+                            getActivity().runOnUiThread(() -> {
+                                b.progressBar.setVisibility(View.GONE);
+                            });
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(mainActivity, "Error occurred during save", Toast.LENGTH_SHORT).show();
+                                b.progressBar.setVisibility(View.GONE);
+                            });
+                        }
+                    }
+                }).start();
 
 
-                if (mainActivity.mReader.isInventorying()) {
-                    Toast.makeText(mainActivity, "stop scanning before save", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+                b.progressBar.setVisibility(View.VISIBLE);
+
                 entryDatabase.makeentry(getActivity(), ibottomlist, "inventory", "inventory", myapp, issueitem, new SaveCallback() {
                     @Override
                     public void onSaveSuccess() {
-                        Toast.makeText(mainActivity, "Inventory saved", Toast.LENGTH_SHORT).show();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(mainActivity, "Inventory Saved Successfully", Toast.LENGTH_SHORT).show();
+                                b.progressBar.setVisibility(View.GONE);
+                            }
+                        });
                     }
 
                     @Override
                     public void onSaveFailure(List<Itemmodel> failedItems) {
-
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                b.progressBar.setVisibility(View.GONE);
+                                Toast.makeText(mainActivity, "Save failed", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
-
                 });
 
             }
         });
+
 
 
         b.nreset.setOnClickListener(new View.OnClickListener() {
@@ -1496,21 +1709,22 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 isCounterSelected = true;
             }
         }
-        if (title.equalsIgnoreCase("category")) {
+       /* if (title.equalsIgnoreCase("category")) {
             Log.d("@@ title", " @@ title" + title);
-          /*  bottomlist = db.getcatpro();
+          *//*  bottomlist = db.getcatpro();
             if (!bottomlist.isEmpty()) {
                 isCategorySelecetd = true;
-            }*/
+            }*//*
 
             for (Itemmodel m : topmap.values()) {
-              /*  bottomlist.add(m.getCategory());
+              *//*  bottomlist.add(m.getCategory());
                 if (!bottomlist.isEmpty()) {
                     isCategorySelecetd = true;
-                }*/
+                }*//*
 
                 if (isCounterSelected) {
                     bottomlist.add(m.getCategory());
+                    Log.d("@@","@@"+bottomlist.size());
                 } else {
                     bottomlist = db.getcatpro();
                 }
@@ -1520,6 +1734,26 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
             }
 
+        }*/
+
+        if (title.equalsIgnoreCase("category")) {
+            Log.d("@@ title", " @@ title" + title);
+            Set<String> uniqueCategories = new LinkedHashSet<>();
+
+            for (Itemmodel m : topmap.values()) {
+                if (isCounterSelected) {
+                    uniqueCategories.add(m.getCategory());
+                } else {
+                    bottomlist = db.getcatpro();
+                }
+            }
+
+            if (uniqueCategories.isEmpty()) {
+                bottomlist = db.getcatpro();
+            } else {
+                bottomlist = new ArrayList<>(uniqueCategories);
+                isCategorySelecetd = true;
+            }
         }
         if (title.equalsIgnoreCase("product")) {
             //  if (isCategorySelecetd) {
@@ -1582,8 +1816,10 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
          ttitle.setText(title);
 
          // Store the original list
-         List<String> originalList = new ArrayList<>();
 
+
+         List<String> originalList = new ArrayList<>();
+         originalList.clear();
          for (Object obj : bottomlist) {
              if (obj != null) {
                  originalList.add(obj.toString()); // safe to convert now
@@ -1835,6 +2071,8 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
 
                 for (Map.Entry<String, Itemmodel> entry : totalitems.entrySet()) {
+
+
                     Itemmodel item = entry.getValue();
                     if (selectedItems.stream().anyMatch(selected -> selected.equalsIgnoreCase(item.getCounterName()))) {
                         filtereditems.put(item.getTidValue(), new Itemmodel(item));

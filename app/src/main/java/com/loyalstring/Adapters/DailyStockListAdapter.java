@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.loyalstring.R;
@@ -25,15 +26,17 @@ private final Context context;
 private final List<Itemmodel> itemList;
 
 private  CounterClickListener counterClickListener;
+String displayMode;
 
-public DailyStockListAdapter(Context context, List<Itemmodel> itemList, CounterClickListener  counterClickListener) {
+public DailyStockListAdapter(Context context, List<Itemmodel> itemList, CounterClickListener  counterClickListener, String displayModedata) {
     this.context = context;
     this.itemList = itemList;
     this.counterClickListener=counterClickListener;
+    this.displayMode=displayModedata;
 }
 
 public static class ItemViewHolder extends RecyclerView.ViewHolder {
-    TextView tvDate, tvTotQuantity, tvMatchTotQty, tvUnmatchTotQty;
+    TextView tvDate, tvTotQuantity, tvMatchTotQty, tvUnmatchTotQty,tvName;
 
     public ItemViewHolder(@NonNull View itemView) {
         super(itemView);
@@ -41,6 +44,7 @@ public static class ItemViewHolder extends RecyclerView.ViewHolder {
         tvTotQuantity = itemView.findViewById(R.id.tv_tot_qty);
         tvMatchTotQty = itemView.findViewById(R.id.tv_match_qty);
         tvUnmatchTotQty = itemView.findViewById(R.id.tv_um_qty);
+        tvName=itemView.findViewById(R.id.tv_name);
     }
 }
 
@@ -67,13 +71,33 @@ public void onBindViewHolder(@NonNull DailyStockListAdapter.ItemViewHolder holde
     holder.tvMatchTotQty.setText(String.valueOf(item.getMatchQty()));
     int unmatchedQty = (int) (item.getAvlQty() - item.getMatchQty());
     holder.tvUnmatchTotQty.setText(String.valueOf(unmatchedQty));
+    Log.d("item.getCounterName()", "item.getCounterName(): " + item.getCounterName());
+    String displayName = ""; // Store name based on display mode
+    switch (displayMode.toLowerCase()) {
+        case "category":
+            displayName = item.getCategory();
+            holder.tvName.setText(displayName);
+            break;
+        case "product":
+            displayName = item.getProduct();
+            holder.tvName.setText(displayName);
+            break;
+        case "counter":
+            displayName = item.getCounterName();
+            holder.tvName.setText(displayName);
+            break;
+    }
 
-    holder.itemView.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            counterClickListener.onCounterClick(formattedDate);
-        }
+    String finalDisplayName = displayName;
+    holder.itemView.setOnClickListener(view -> {
+        counterClickListener.onCounterClick(formattedDate, finalDisplayName); // 👈 Pass both
     });
+
+    if (position % 2 == 0) {
+        holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+    } else {
+        holder.itemView.setBackgroundColor(ContextCompat.getColor(context,R.color.underlinecolor));
+    }
 }
 
 @Override

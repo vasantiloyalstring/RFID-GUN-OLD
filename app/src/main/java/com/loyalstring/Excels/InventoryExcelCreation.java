@@ -121,6 +121,10 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                     if (outfile.contains("allitemdetails")) {
                         process = "allitemdetails";
                     }
+                   /* if(outfile.contains("allitemsreport"))
+                    {
+                        process="allitemsreport";
+                    }*/
                     Log.d("excelcreate", "inventory excel " + process);
 
                     OutputStream bottomOutputStream = new FileOutputStream(outfile);
@@ -389,6 +393,246 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                 }
             }
             return "Excel file created successfully";
+
+        }
+
+        if (frag.equalsIgnoreCase("dailystock")) {
+
+            for (Map.Entry<String, ArrayList<Itemmodel>> entry : excelmap.entrySet()) {
+                try {
+                    outfile = entry.getKey();
+
+                    ArrayList<Itemmodel> processlist = new ArrayList<>();
+                    processlist = entry.getValue();
+                    String process = "";
+                   /* if (outfile.contains("matcheditems")) {
+                        process = "matcheditems";
+                    }
+                    if (outfile.contains("unmatcheditems")) {
+                        process = "unmatcheditems";
+                    }
+                    if (outfile.contains("matcheditemdetails")) {
+                        process = "matcheditemdetails";
+                    }
+                    if (outfile.contains("unmatcheditemdetails")) {
+                        process = "unmatcheditemdetails";
+                    }
+                    if (outfile.contains("allitems")) {
+                        process = "allitems";
+                    }
+                    if (outfile.contains("allitemdetails")) {
+                        process = "allitemdetails";
+                    }*/
+                    if(outfile.contains("allitemsreport"))
+                    {
+                        process="allitemsreport";
+                    }
+                    if (outfile.contains("unmatcheditemdetails")) {
+                        process = "unmatcheditemdetails";
+                    }
+                    Log.d("excelcreate", "inventory excel " + process);
+
+                    OutputStream bottomOutputStream = new FileOutputStream(outfile);
+                    // Create a new FastExcel Workbook instance for top sheet
+                    Workbook bottomWorkbook = new Workbook(bottomOutputStream, process, "1.0");
+                    // Create a worksheet named "Sheet 1" for bottom sheet
+                    Worksheet bottomsheet = bottomWorkbook.newWorksheet("Sheet 1");
+                    String[] headers;
+                    if (process.contains("details")) {
+                        if(process.equals("matcheditemdetails")){
+                            headers = new String[]{"TID Value", "EPC Value","Counter Name" ,"Category", "Product","Product Code",
+                                    "Purity", "Barcode Number", "Item Code", "Box","Pieces", "Designcode", "Image", "Gross Weight", "Stone Weight", "Net Weight",
+                                    "Making gm", "Making %", "Fixed amount", "Fixed Wastage", "Stone amount", "Mrp", "Huid code",
+                                    "Party code", "Updated Date", "Updated By", "Status"};
+
+                            for (int i = 0; i < headers.length; i++) {
+                                bottomsheet.value(0, i, headers[i]);
+                            }
+
+                            int bottomMatchRowIndex = 1;
+                            int rowsProcessed = 0;
+                            int progressUpdateInterval = 100;
+                            for (Itemmodel item1 : processlist) {
+                                Itemmodel item = null;
+                                item = item1;
+                                if (item != null) {
+                                    boolean op = item.getAvlQty() == item.getMatchQty();
+                                    String op1 = "";
+                                    if(op){
+                                        op1 = "found";
+                                        String[] values = {item.getTidValue(), item.getEpcValue(), item.getCounterName(),
+                                                item.getCategory(), item.getProduct(),item.getProductCode() ,item.getPurity(), item.getBarCode(),
+                                                item.getItemCode(), item.getBox(),item.getPcs(), item.getDiamondClarity(), item.getImageUrl(), String.valueOf(item.getGrossWt()),
+                                                String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
+                                                String.valueOf(item.getMakingGm()), String.valueOf(item.getMakingPer()), String.valueOf(item.getFixedAmount()), String.valueOf(item.getFixedWastage()),
+                                                String.valueOf(item.getStoneAmount()), String.valueOf(item.getMrp()), item.getHuidCode(), item.getPartyCode(),
+                                                "", "", op1};
+                                        createRow(bottomsheet, bottomMatchRowIndex, values);
+                                        bottomMatchRowIndex++;
+                                        rowsProcessed++;
+
+                                        // Update progress every 100 rows
+                                        if (rowsProcessed % progressUpdateInterval == 0) {
+                                            publishProgress(bottomMatchRowIndex);
+                                        }
+                                    }else{
+                                        op1 = "not found";
+                                    }
+
+                                }
+
+                            }
+                        }
+                        else{
+                            headers = new String[]{"TID Value", "EPC Value", "Counter Name","Category", "Product","Product Code",
+                                    "Purity", "Barcode Number", "Item Code", "Box","Pieces","Designcode", "Image", "Gross Weight", "Stone Weight", "Net Weight",
+                                    "Making gm", "Making %", "Fixed amount", "Fixed Wastage", "Stone amount", "Mrp", "Huid code",
+                                    "Party code", "Updated Date", "Updated By", "Status"};
+
+                            for (int i = 0; i < headers.length; i++) {
+                                bottomsheet.value(0, i, headers[i]);
+                            }
+
+
+                            int bottomMatchRowIndex = 1;
+                            int rowsProcessed = 0;
+                            int progressUpdateInterval = 100;
+                            for (Itemmodel item1 : processlist) {
+                                Itemmodel item = null;
+                                item = item1;
+                                if (item != null) {
+                                    boolean op = item.getAvlQty() == item.getMatchQty();
+                                    String op1 = "";
+                                    if(op){
+                                        op1 = "found";
+                                    }else{
+                                        op1 = "not found";
+                                        String[] values = {item.getTidValue(), item.getEpcValue(),item.getCounterName(),
+                                                item.getCategory(), item.getProduct(),item.getProductCode() ,item.getPurity(), item.getBarCode(),
+                                                item.getItemCode(), item.getBox(), item.getPcs(),item.getDiamondClarity(), item.getImageUrl(), String.valueOf(item.getGrossWt()),
+                                                String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
+                                                String.valueOf(item.getMakingGm()), String.valueOf(item.getMakingPer()), String.valueOf(item.getFixedAmount()), String.valueOf(item.getFixedWastage()),
+                                                String.valueOf(item.getStoneAmount()), String.valueOf(item.getMrp()), item.getHuidCode(), item.getPartyCode(),
+                                                "", "", op1};
+                                        createRow(bottomsheet, bottomMatchRowIndex, values);
+                                        bottomMatchRowIndex++;
+                                        rowsProcessed++;
+
+                                        // Update progress every 100 rows
+                                        if (rowsProcessed % progressUpdateInterval == 0) {
+                                            publishProgress(bottomMatchRowIndex);
+                                        }
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+
+                    } else {
+                        headers = new String[]{"Counter Name","Category", "Product","Total Quantity", "Match Quantity", "Tot Unmatch Qty","Total Grosswt", "Match Grosswt","Un Match Gr Wt"
+                                };
+                        for (int i = 0; i < headers.length; i++) {
+                            bottomsheet.value(0, i, headers[i]);
+                        }
+
+                        int matchRowIndex = 1;
+
+                        int rowsProcessed = 0;
+                        int progressUpdateInterval = 100;
+                        for (Itemmodel item : processlist) {
+//                                if(item.getAvlQty() != item.getMatchQty()){
+                            String[] values = {item.getCounterName(),item.getCategory(), item.getProduct(),  String.valueOf(item.getAvlQty()),
+                                    String.valueOf(item.getMatchQty()), "",String.valueOf(item.getTotalGwt()), String.valueOf(item.getMatchGwt()),""};
+
+
+                            for (int i = 0; i < values.length; i++) {
+                                createCell(bottomsheet, matchRowIndex, i, values[i]);
+                            }
+                            matchRowIndex++;
+                            rowsProcessed++;
+
+                            // Update progress every 100 rows
+                            if (rowsProcessed % progressUpdateInterval == 0) {
+                                publishProgress(matchRowIndex);
+                            }
+//                                }
+                        }
+
+                        int totalRowIndex = matchRowIndex;
+                        int totalQuantity = 0;
+                        int matchQuantity = 0;
+                        double totalGrosswt = 0.0;
+                        double matchGrosswt = 0.0;
+                        double totalStonewt = 0.0;
+                        double matchStonewt = 0.0;
+                        double totalNetwt = 0.0;
+                        double matchNetwt = 0.0;
+                        int totalPieces=0;
+                        int totalMPices=0;
+
+                        for (Itemmodel item : processlist) {
+                            totalQuantity += item.getAvlQty();
+                            matchQuantity += item.getMatchQty();
+                            totalGrosswt += item.getTotalGwt();
+                            matchGrosswt += item.getMatchGwt();
+                            totalStonewt += item.getTotalStonewt();
+                            matchStonewt += item.getMatchStonewt();
+                            totalNetwt += item.getTotalNwt();
+                            matchNetwt += item.getMatchNwt();
+                            totalMPices +=(item.getTotMPcs());
+
+                            totalPieces += (item.getTotPcs());
+                        }
+
+
+                        String[] totalValues = {"Total","", "", "","", String.valueOf(totalPieces), String.valueOf(totalMPices), String.valueOf(totalQuantity), String.valueOf(matchQuantity),
+                                String.valueOf(totalGrosswt), String.valueOf(matchGrosswt),
+                                String.valueOf(totalStonewt), String.valueOf(matchStonewt),
+                                String.valueOf(totalNetwt), String.valueOf(matchNetwt)};
+
+                        for (int i = 0; i < totalValues.length; i++) {
+                            bottomsheet.value(totalRowIndex, i, totalValues[i]);
+                        }
+//                        }
+
+                    }
+
+                    bottomWorkbook.finish();
+                    bottomOutputStream.close();
+                    File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "Loyalstring files");
+                    File productDir = new File(dir, "inventory");
+                    if (!productDir.exists()) {
+                        if (!productDir.mkdirs()) {
+                            Log.e("TAG", "Failed to create directory: " + productDir.getAbsolutePath());
+
+                        }
+                    }
+
+                    File targetFile = new File(productDir, process + ".xlsx");
+                    try (FileInputStream in = new FileInputStream(outfile);
+                         FileOutputStream out = new FileOutputStream(targetFile)) {
+                        byte[] buffer = new byte[1024];
+                        int read;
+                        while ((read = in.read(buffer)) != -1) {
+                            out.write(buffer, 0, read);
+                        }
+                    } catch (IOException e) {
+                        Log.e("TAG", "Error copying file: " + e.getMessage());
+                    }
+
+                    fileMap.put(process + ".xlsx", outfile);
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return "Error creating Excel file: " + e.getMessage();
+                }
+            }
+            return "Excel file created successfully";
+
 
         }
 

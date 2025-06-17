@@ -14,19 +14,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.loyalstring.Activities.DailyStockReportCounter;
-import com.loyalstring.Activities.DailyStockReportDate;
-import com.loyalstring.Adapters.DailyStockCounterAdapter;
+import com.loyalstring.Activities.DailyStockreportCategory;
 import com.loyalstring.Adapters.DailyStockListAdapter;
 import com.loyalstring.MainActivity;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.databinding.DailyStockReportFragmentBinding;
-import com.loyalstring.databinding.FragmentStockreportfragmentBinding;
 import com.loyalstring.interfaces.CounterClickListener;
 import com.loyalstring.modelclasses.Itemmodel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DailyStockreportfragment extends Fragment implements CounterClickListener {
@@ -59,47 +61,61 @@ public class DailyStockreportfragment extends Fragment implements CounterClickLi
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         entryDatabase = new EntryDatabase(getActivity());
-        itemmodelList=new ArrayList<>();
-        try {
+        itemmodelList = new ArrayList<>();
 
+        try {
+            // Retrieve all items from the database
             itemmodelList = entryDatabase.getAllItems();
 
-            List<Itemmodel> groupedList = new ArrayList<>();
-            Map<Long, int[]> dateQtyMap = new HashMap<>();
+            // Date formatter for dd/MM/yyyy
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+            // Map to store date string (dd/MM/yyyy) as key, and Itemmodel as accumulated value
+            Map<String, Itemmodel> dateSummaryMap = new HashMap<>();
 
             for (Itemmodel item : itemmodelList) {
-                long dateKey = item.getEntryDate();
-                double totalQty = item.getAvlQty();
-                double matchQty = item.getMatchQty();
 
-                if (!dateQtyMap.containsKey(dateKey)) {
-                    dateQtyMap.put(dateKey, new int[]{0, 0});
+                Log.d("@@","@@"+item.getInventoryStatus());
+                // Convert EntryDate (timestamp) to date string dd/MM/yyyy
+                String dateKey = sdf.format(new Date(item.getEntryDate()));
+
+                if (dateSummaryMap.containsKey(dateKey)) {
+                    Itemmodel existing = dateSummaryMap.get(dateKey);
+                    existing.setAvlQty(existing.getAvlQty() + item.getAvlQty());
+                    existing.setMatchQty(existing.getMatchQty() + item.getMatchQty());
+                } else {
+                    Itemmodel summaryItem = new Itemmodel();
+                    summaryItem.setEntryDate(item.getEntryDate()); // We keep original timestamp
+                    summaryItem.setAvlQty(item.getAvlQty());
+                    summaryItem.setMatchQty(item.getMatchQty());
+                    dateSummaryMap.put(dateKey, summaryItem);
                 }
-
-                int[] qtySums = dateQtyMap.get(dateKey);
-                qtySums[0] += totalQty;
-                qtySums[1] += matchQty;
             }
 
-// Now convert to Itemmodel list
-            for (Map.Entry<Long, int[]> entry : dateQtyMap.entrySet()) {
-                Itemmodel summaryItem = new Itemmodel();
-                summaryItem.setEntryDate(entry.getKey());
-                summaryItem.setAvlQty(entry.getValue()[0]);
-                summaryItem.setMatchQty(entry.getValue()[1]);
-                groupedList.add(summaryItem);
+            // Convert map values to list
+            List<Itemmodel> groupedList = new ArrayList<>(dateSummaryMap.values());
+
+            // Optional: sort by EntryDate descending
+            Collections.sort(groupedList, (o1, o2) -> Long.compare(o2.getEntryDate(), o1.getEntryDate()));
+
+            // Optional: calculate UnmatchQty if you need
+            for (Itemmodel item : groupedList) {
+                double unmatchQty = item.getAvlQty() - item.getMatchQty();
+                //item.setUnmatchQty(unmatchQty);
             }
-            if (groupedList != null || groupedList.size() > 0) {
 
-
-                DailyStockListAdapter adapter = new DailyStockListAdapter(getContext(), groupedList,this::onCounterClick);
+            // Show in RecyclerView if data exists
+            if (!groupedList.isEmpty()) {
+                DailyStockListAdapter adapter = new DailyStockListAdapter(getContext(), groupedList, this::onCounterClick, "counter");
                 b.rvDailyStock.setLayoutManager(new LinearLayoutManager(getActivity()));
                 b.rvDailyStock.setAdapter(adapter);
             }
-        }catch (Exception e)
-        {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
 
 
@@ -114,9 +130,21 @@ public class DailyStockreportfragment extends Fragment implements CounterClickLi
     }
 
     @Override
-    public void onCounterClick(String counterName) {
-        Intent intent=new Intent(getActivity(), DailyStockReportDate.class);
-        startActivity(intent);
+    public void onCounterClick(String dateData,String string) {
+        for(int i=0; i<itemmodelList.size(); i++) {
+            if(itemmodelList.get(i).getCounterName()=="") {
+                Intent intent = new Intent(getActivity(), DailyStockreportCategory.class);
+                startActivity(intent);
+                break;
+            }else {
+
+                Intent intent = new Intent(getActivity(), DailyStockReportCounter.class);
+                intent.putExtra("dateData",dateData);
+                startActivity(intent);
+                break;
+
+            }
+        }
 
     }
 }

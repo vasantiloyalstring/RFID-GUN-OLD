@@ -79,10 +79,24 @@ public class ApiProcess {
 //    }
 
     public String convertToHex(String input) {
-        StringBuilder hexBuilder = new StringBuilder();
+        /*StringBuilder hexBuilder = new StringBuilder();
         for (char ch : input.toCharArray()) {
             hexBuilder.append(String.format("%02X", (int) ch)); // Using uppercase hex format
         }
+        return hexBuilder.toString();*/
+        StringBuilder hexBuilder = new StringBuilder();
+
+        // Step 1: Convert each character to 2-digit hex
+        for (char ch : input.toCharArray()) {
+            String hex = String.format("%02X", (int) ch); // e.g., 'A' -> "41"
+            hexBuilder.append(hex);
+        }
+
+        // Step 2: Add "00" at the beginning until total length is a multiple of 4
+        while (hexBuilder.length() % 4 != 0) {
+            hexBuilder.insert(0, "00"); // ✅ Adds at the start
+        }
+
         return hexBuilder.toString();
     }
 
@@ -260,7 +274,66 @@ public class ApiProcess {
                 }
             });
         }
+        else if(rfidType.equalsIgnoreCase("websingle")){
+            call2.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
+                @Override
+                public void onResponse(Call<List<AlllabelResponse.LabelItem>> call, Response<List<AlllabelResponse.LabelItem>> response) {
+                    dialog.dismiss();
+                    Log.e("checking response ", "product response " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<AlllabelResponse.LabelItem> i = response.body();
+
+                        for (int j = 0; j < i.size(); j++) {
+                            AlllabelResponse.LabelItem it = i.get(j);
+                            String item = it.getItemCode();
+                            if (it.getStatus().equalsIgnoreCase("active") || it.getStatus().equalsIgnoreCase("ApiActive")) {
+                                if (item != null && !item.isEmpty()) {
+                                    String hexvalue = convertToHex(item);
+                                    if (hexvalue != null && !hexvalue.isEmpty()) {
+                                        it.settIDNumber(hexvalue);
+                                        it.setrFIDCode(item);
+                                        it.setProductName(it.getDesignName());
+                                        Log.d("@@","## vasannti"+it.gettIDNumber());
+
+//                                productList.add(j);
+                                    }
+                                    if (it.gettIDNumber() != null && !it.gettIDNumber().isEmpty()) {
+                                        productList.add(it);
+                                        Log.d("@@","## added"+it.gettIDNumber());
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+
+//                    for(int j =0; j<i.size(); j++){
+//                        AlllabelResponse.LabelItem it = i.get(j);
+//                        if(it.getStatus().equalsIgnoreCase("active")){
+//                            productList.add(it);
+//                        }
+//                    }
+
+//                    productList.addAll(i);
+                    } else {
+                        Toast.makeText(activity, "Product response was not successful", Toast.LENGTH_SHORT).show();
+                    }
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(Call<List<AlllabelResponse.LabelItem>> call, Throwable t) {
+                    dialog.dismiss();
+                    Log.e("check data", "labelstock  " + t.getMessage());
+                    Toast.makeText(activity, "Failed to load product data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    latch.countDown();
+                }
+            });
+        }
         else if (rfidType.toLowerCase().contains("custom")) {
+
             if (rfidType.toLowerCase().contains("reusable")) {
                 Retrofit retrofitn = new Retrofit.Builder()
                         .baseUrl(baseUrl)
@@ -320,6 +393,7 @@ public class ApiProcess {
                 });
             }
             else {
+
                 Retrofit retrofitn = new Retrofit.Builder()
                         .baseUrl(baseUrl)
                         .client(okHttpClient)
@@ -541,6 +615,7 @@ public class ApiProcess {
                 for (AlllabelResponse.LabelItem p : productList) {
 
 
+
                     if (p.gettIDNumber() == null || p.gettIDNumber().isEmpty()) {
 
                         if (p.getrFIDCode() != null && !p.getrFIDCode().isEmpty()) {
@@ -610,6 +685,7 @@ public class ApiProcess {
 
                                 } else {
                                     //count here
+
                                     totalissueitem.set(totalissueitem.get() + 1);
 
                                     Issuemode is = new Issuemode();
@@ -664,6 +740,7 @@ public class ApiProcess {
                                     nmap.put(item.getTidValue(), item);
                                 }
 
+
                             } else {
 
                                 Itemmodel item = new Itemmodel(System.currentTimeMillis(), System.currentTimeMillis(), 0, 0,
@@ -682,9 +759,9 @@ public class ApiProcess {
                                         0, 0, 0, 0, 0,
                                         0, 0, 0, 0, 0,
                                         0, "done", "done",p.getProductCode(),String.valueOf(p.getCounterId()),p.getCounterName(),0,0,p.getCategoryId(),p.getProductId(),p.getDesignId(),p.getPurityId());
-//                                if (item.getTidValue().length() == 24 && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
-//                                    nmap.put(item.getTidValue(), item);
-//                                }
+                              /*  if (item.getTidValue().length() == 24 && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
+                                    nmap.put(item.getTidValue(), item);
+                                }*/
                                 item.setPcs(p.getPieces());
                                 item.setPartyCode(p.getImages());
                                 item.setPcs(p.getPieces());
@@ -697,6 +774,7 @@ public class ApiProcess {
 
                                 if (item.getTidValue() != null && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
                                     nmap.put(item.getTidValue(), item);
+
                                     Log.e("checking all tidvalues", "" + item.toString());
                                 }
                             }
@@ -709,19 +787,26 @@ public class ApiProcess {
 
                 }
 
-                Log.e("check2", "" + ml.size() + "  " + nmap.size() + "  " + dmap.size());
-                for (String key : ml.keySet()) {
-                    // Check if the key exists in umap
-                    if (!nmap.containsKey(key)) {
-                        // If the key does not exist in umap, add it to dmap
-                        dmap.add(ml.get(key));
+                //Log.e("check2", "" + ml.size() + "  " + nmap.size() + "  " + dmap.size());
+                try {
+                    for (String key : ml.keySet()) {
+                        // Check if the key exists in umap
+                        if (!nmap.containsKey(key)) {
+                            // If the key does not exist in umap, add it to dmap
+                            dmap.add(ml.get(key));
+                        }
                     }
+                }catch (Exception e)
+                {
+                    e.printStackTrace();Log.e("##", "tid  " + "");
                 }
-                List<Itemmodel> itemlist = new ArrayList<>(nmap.values());
+                    List<Itemmodel> itemlist = new ArrayList<>(nmap.values());
+
 
 
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    entryDatabase.saveAllItem(itemlist);
+
+                 //   entryDatabase.saveAllItem(itemlist);
                     entryDatabase.makeentry(activity, itemlist, "excel", "product", app, issueitem, new SaveCallback() {
 
                         @Override
@@ -736,6 +821,7 @@ public class ApiProcess {
 
                            // }
                             dialog.dismiss();
+
 
                         }
 
@@ -755,6 +841,7 @@ public class ApiProcess {
                 // updateDatabase(nmap);
 
             } catch (InterruptedException e) {
+
                 e.printStackTrace();
             }
         }).start();
@@ -1720,7 +1807,12 @@ public void getproductscustom(HashMap<String, Itemmodel> ml, Context activity, S
             @Override
             public void onSaveSuccess() {
                 Toast.makeText(activity, "Item updated succesfully", Toast.LENGTH_SHORT).show();
+
+                Log.d("Vasanti @@","Vasanti @@");
 //                                resetsstate();
+                List<Itemmodel> itemmodelList=new ArrayList<>();;
+                itemmodelList=entryDatabase.getAllItemsFromDatabase();
+                entryDatabase.saveItem(itemmodelList);
 
 
             }

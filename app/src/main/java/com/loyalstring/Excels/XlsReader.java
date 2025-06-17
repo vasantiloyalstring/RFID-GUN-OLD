@@ -362,7 +362,6 @@ public class XlsReader {
             @Override
             public void onSaveSuccess() {
                 Toast.makeText(activity, "Item updated succesfully", Toast.LENGTH_SHORT).show();
-//                                resetsstate();
 
 
             }
@@ -448,6 +447,7 @@ public class XlsReader {
         for (Map.Entry<String, Itemmodel> entry : itemMap.entrySet()) {
 
             String ba = entry.getValue().getBarCode();
+            Log.d("@@","@@ ba "+ba);
 
             if (ba != null && !ba.isEmpty()) {
                 String tid;

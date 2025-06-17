@@ -9,6 +9,7 @@ import static com.loyalstring.database.support.Valuesdb.C_CATEGORY;
 import static com.loyalstring.database.support.Valuesdb.C_PRODUCT;
 import static com.loyalstring.database.support.Valuesdb.PROTABLE;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,7 +25,6 @@ import android.util.Log;
 
 import androidx.fragment.app.FragmentActivity;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.loyalstring.Adapters.ProductAdapter;
 import com.loyalstring.LatestApis.BillSupport.UpdateStatusTask;
@@ -56,9 +56,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-
-import java.lang.reflect.Type;
 
 
 public class EntryDatabase extends SQLiteOpenHelper {
@@ -134,6 +131,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
         String inventoryTableQuery = "CREATE TABLE IF NOT EXISTS " + INVENTORY_SAVE_TABLE + "(" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+
                 COL_DATA + " TEXT)";
         db.execSQL(inventoryTableQuery);
 
@@ -176,31 +174,297 @@ public class EntryDatabase extends SQLiteOpenHelper {
         db.execSQL(CREATE_COUNTER_TABLE);
     }
 
+    public List<Itemmodel> getAllFromAllTable() {
+        List<Itemmodel> itemList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM " + ALL_TABLE, null);
+
+            if (cursor.moveToFirst()) {
+                do {
+                    Itemmodel item = new Itemmodel();
+                    item.setProduct(cursor.getString(cursor.getColumnIndex("product")));
+                    item.setCategory(cursor.getString(cursor.getColumnIndex("category")));
+                    item.setEntryDate(cursor.getLong(cursor.getColumnIndex("entryDate")));
+                    item.setAvlQty(cursor.getDouble(cursor.getColumnIndex("avlQty")));
+                    item.setMatchQty(cursor.getDouble(cursor.getColumnIndex("matchQty")));
+                    item.setInventoryStatus(cursor.getString(cursor.getColumnIndex("inventoryStatus")));
+
+                    itemList.add(item);
+                } while (cursor.moveToNext());
+            }
+
+        } catch (Exception e) {
+            Log.e("DB_ERROR", "Error: " + e.getMessage());
+        } finally {
+            if (cursor != null && !cursor.isClosed()) cursor.close();
+            if (db != null && db.isOpen()) db.close();
+        }
+
+        return itemList;
+    }
+
+
+
+
     // Save object
-    public void saveItem(List<Itemmodel> itemList) {
+  /*  public void saveItem(List<Itemmodel> itemList) {
         SQLiteDatabase db = this.getWritableDatabase();
-        for (Itemmodel item : itemList) {
+        try {
+            db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN product TEXT");
+        } catch (Exception e) {
+            Log.d("@@schema", "Column 'product' already exists or error: " + e.getMessage());
+        }
+
+        try {
+            db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN entryDate INTEGER");
+        } catch (Exception e) {
+            Log.d("@@schema", "Column 'entryDate' already exists or error: " + e.getMessage());
+        }
+        try {
+            db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN inventoryStatus String");
+        } catch (Exception e) {
+            Log.d("@@schema", "Column 'entryDate' already exists or error: " + e.getMessage());
+        }
+       *//* for (Itemmodel item : itemList) {
             String json = gson.toJson(item);
             ContentValues values = new ContentValues();
             values.put(COL_DATA, json);
+            db.insert(INVENTORY_SAVE_TABLE, null, values);
+        }*//*
+        for (Itemmodel item : itemList) {
+            String json = gson.toJson(item);
+
+            ContentValues values = new ContentValues();
+            values.put("product", item.getProduct());            // <-- Add this
+            values.put("entryDate", item.getEntryDate());        // <-- Add this
+            values.put("inventoryStatus", item.getInventoryStatus());
+            values.put(COL_DATA, json);
+            db.insert(INVENTORY_SAVE_TABLE, null, values);
+        }// Keep full JSON if needed
+
+        Log.d("@@ data", "data added");
+        db.close();
+    }*/
+
+    public void saveItem(List<Itemmodel> itemList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Begin transaction for atomic operations
+        db.beginTransaction();
+
+        try {
+            // Add new columns to the table if they don't already exist
+            addColumnIfNotExists(db, "BarCode", "TEXT");
+            addColumnIfNotExists(db, "entryDate", "LONG");
+            addColumnIfNotExists(db, "inventoryStatus", "TEXT");
+            addColumnIfNotExists(db, "ItemCode", "TEXT");
+
+            for (Itemmodel item : itemList) {
+                // Check if the item already exists by a unique key (e.g., ItemCode)
+                String ItemCode = item.getItemCode();
+                Cursor cursor = db.query(INVENTORY_SAVE_TABLE, null, "ItemCode = ?", new String[]{ItemCode}, null, null, null);
+
+                ContentValues values = new ContentValues();
+                values.put("BarCode", item.getBarCode());
+                values.put("entryDate", item.getEntryDate());
+                values.put("inventoryStatus", "unmatch");
+                values.put("ItemCode", item.getItemCode());
+                values.put(COL_DATA, gson.toJson(item)); // Update the full JSON data
+
+                if (cursor != null && cursor.getCount() > 0) {
+                    // If item exists, update the existing entry
+                    cursor.moveToFirst();
+                    String existingItemId = cursor.getString(cursor.getColumnIndex("ItemCode"));
+                    db.update(INVENTORY_SAVE_TABLE, values, "ItemCode = ?", new String[]{existingItemId});
+                    Log.d("@@UpdateStatus", "Updated item with ItemCode: " + existingItemId);
+                } else {
+                    // If the item doesn't exist, insert a new record
+                    db.insert(INVENTORY_SAVE_TABLE, null, values);
+                    Log.d("@@InsertStatus", "Inserted new item with ItemCode: " + ItemCode);
+                }
+
+                // Close cursor after use
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+
+            // Commit transaction
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("@@Error", "Error saving/updating item: " + e.getMessage());
+        } finally {
+            // End transaction
+            db.endTransaction();
+            db.close();
+        }
+
+        Log.d("@@Done", "Data added or updated successfully");
+    }
+
+    // Utility method to add columns if they don't already exist
+    private void addColumnIfNotExists(SQLiteDatabase db, String columnName, String columnType) {
+        try {
+            db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN " + columnName + " " + columnType);
+        } catch (Exception e) {
+            Log.d("@@schema", "Column '" + columnName + "' already exists or error: " + e.getMessage());
+        }
+    }
+
+
+   /* public void updateInventoryStatus(List<Itemmodel> itemList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+
+        try {
+            for (Itemmodel item : itemList) {
+
+                String productCode = item.getItemCode();  // 🔥 Use correct primary key field here
+                long entryDate = item.getEntryDate();
+                String inventoryStatus = "match";
+
+                Log.d("Query Debug", "Executing query with ItemCode: " + productCode + " and entryDate: " + entryDate);
+
+                Cursor cursor = db.query(INVENTORY_SAVE_TABLE, null,
+                        "ItemCode = ?", new String[]{productCode},
+                        null, null, null);
+
+                if (cursor != null) {
+                    if (cursor.getCount() > 0) {
+                        if (cursor.moveToFirst()) {
+                            String existingInventoryStatus = cursor.getString(cursor.getColumnIndexOrThrow("inventoryStatus"));
+                            Log.d("ExistingStatus", "InventoryStatus in DB: " + existingInventoryStatus);
+
+                            ContentValues values = new ContentValues();
+                            values.put("inventoryStatus", inventoryStatus);
+
+                            int rowsUpdated = db.update(
+                                    INVENTORY_SAVE_TABLE,
+                                    values,
+                                    "ItemCode = ?",
+                                    new String[]{productCode}
+                            );
+
+                            if (rowsUpdated > 0) {
+                                Log.d("@@UpdateStatus", "Updated inventoryStatus for: " + productCode);
+                            } else {
+                                Log.d("@@NoUpdate", "Failed to update inventoryStatus for: " + productCode);
+                            }
+                        }
+                    } else {
+                        Log.d("@@NotFound", "Item not found for update: " + productCode);
+                    }
+                    cursor.close();
+                } else {
+                    Log.d("@@CursorNull", "Cursor is null for ItemCode: " + productCode);
+                }
+            }
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            Log.e("@@Exception", "Error during inventoryStatus update: " + e.getMessage());
+        } finally {
+            db.endTransaction();
+        }
+
+        db.close();
+        Log.d("@@Done", "InventoryStatus update completed");
+    }*/
+   public void updateInventoryStatus(List<Itemmodel> itemList) {
+       SQLiteDatabase db = this.getWritableDatabase();
+
+       // Start a transaction to ensure atomicity
+       db.beginTransaction();
+
+       try {
+           for (Itemmodel item : itemList) {
+               String productCode = item.getItemCode();  // Use ItemCode as the unique identifier
+               long entryDate = item.getEntryDate();  // Make sure the entryDate is in the correct format
+               String inventoryStatus = (item.getAvlQty() == item.getMatchQty()) ? "match" : "unmatch";  // Set inventory status based on conditions
+
+               Log.d("Query Debug", "Executing query with ItemCode: " + productCode + " and entryDate: " + entryDate);
+
+               // Query the database to check if the item already exists
+               Cursor cursor = db.query(INVENTORY_SAVE_TABLE, null, "ItemCode = ?", new String[]{productCode}, null, null, null);
+
+               if (cursor != null) {
+                   if (cursor.moveToFirst()) {
+                       // Item found, prepare to update the inventoryStatus
+                       String existingInventoryStatus = cursor.getString(cursor.getColumnIndexOrThrow("inventoryStatus"));
+                       Log.d("ExistingStatus", "InventoryStatus in DB: " + existingInventoryStatus);
+
+                       // Prepare content values with the updated inventoryStatus
+                       ContentValues values = new ContentValues();
+                       values.put("inventoryStatus", inventoryStatus);  // Update the status
+
+                       // Perform the update operation
+                       int rowsUpdated = db.update(INVENTORY_SAVE_TABLE, values, "ItemCode = ?", new String[]{productCode});
+
+                       if (rowsUpdated > 0) {
+                           Log.d("@@UpdateStatus", "Updated inventoryStatus for ItemCode: " + productCode);
+                       } else {
+                           Log.d("@@NoUpdate", "Failed to update inventoryStatus for ItemCode: " + productCode);
+                       }
+                   } else {
+                       // Item not found in the database
+                       Log.d("@@NotFound", "Item not found for ItemCode: " + productCode);
+                   }
+                   cursor.close();
+               } else {
+                   // If cursor is null, log the error
+                   Log.d("@@CursorNull", "Cursor is null for ItemCode: " + productCode);
+               }
+           }
+
+           // Mark the transaction as successful
+           db.setTransactionSuccessful();
+       } catch (Exception e) {
+           Log.e("@@Exception", "Error during inventoryStatus update: " + e.getMessage());
+       } finally {
+           // End the transaction
+           db.endTransaction();
+       }
+
+       // Close the database connection
+       db.close();
+       Log.d("@@Done", "InventoryStatus update completed");
+   }
+
+
+
+    /*for stock*/
+    public void saveAllItem(List<Itemmodel> itemList) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+
+        for (Itemmodel item : itemList) {
+            String json = gson.toJson(item);
+
+            ContentValues values = new ContentValues();
+            values.put("product", item.getProduct());            // <-- Add this
+            values.put("entryDate", item.getEntryDate());        // <-- Add this
+            values.put(COL_DATA, json);                          // Keep full JSON if needed
+
             db.insert(INVENTORY_SAVE_TABLE, null, values);
         }
         Log.d("@@ data", "data added");
         db.close();
     }
-/*for stock*/
-    public void saveAllItem(List<Itemmodel> itemList) {
+
+    public void deleteItemsOlderThan(long timestamp) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(All_SAVE_TABLE, null, null);
-        for (Itemmodel item : itemList) {
-            String json = gson.toJson(item);
-            ContentValues values = new ContentValues();
-            values.put(COL_DATA, json);
-            db.insert(All_SAVE_TABLE, null, values);
-        }
-        Log.d("@@ data", "data added");
+        String selection = "EntryDate < ?";
+        String[] selectionArgs = {String.valueOf(timestamp)};
+
+        db.delete(INVENTORY_SAVE_TABLE, selection, selectionArgs);
         db.close();
     }
+
+
 
     //delete the item by date
     public void deleteItemsByDate(long targetTimestamp) {
@@ -234,12 +498,21 @@ public class EntryDatabase extends SQLiteOpenHelper {
     public List<Itemmodel> getAllItems() {
         List<Itemmodel> items = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
+
+        // Fetch both the JSON data and inventoryStatus column
         Cursor cursor = db.rawQuery("SELECT * FROM " + INVENTORY_SAVE_TABLE, null);
 
         if (cursor.moveToFirst()) {
             do {
+                // Fetch the JSON data for Itemmodel
                 String json = cursor.getString(cursor.getColumnIndexOrThrow(COL_DATA));
-                Itemmodel item = gson.fromJson(json, Itemmodel.class); // ✅ Correct way
+                Itemmodel item = gson.fromJson(json, Itemmodel.class); // Convert JSON to Itemmodel
+
+                // Retrieve the inventoryStatus directly from the database
+                String inventoryStatus = cursor.getString(cursor.getColumnIndexOrThrow("inventoryStatus"));
+                item.setInventoryStatus(inventoryStatus);  // Set the inventoryStatus for the item
+
+                // Add the item to the list
                 items.add(item);
             } while (cursor.moveToNext());
         }
@@ -248,6 +521,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
         db.close();
         return items;
     }
+
 
     public List<Itemmodel> getAllSavedItems() {
         List<Itemmodel> items = new ArrayList<>();
@@ -287,6 +561,8 @@ public class EntryDatabase extends SQLiteOpenHelper {
               //  item.setCounterName(cursor.getString(cursor.getColumnIndexOrThrow("diamondClarity")));
                 item.setCategory(cursor.getString(cursor.getColumnIndexOrThrow("Category")));
                 item.setCounterName(cursor.getString(cursor.getColumnIndexOrThrow("counterName")));
+                item.setAvlQty(cursor.getInt(cursor.getColumnIndexOrThrow("AvlQty")));
+                item.setMatchQty(cursor.getInt(cursor.getColumnIndexOrThrow("MatchQty")));
                 // ... add other fields from your schema
 
                 items.add(item);
@@ -307,8 +583,15 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
 
     public void makeentry(Context activity, List<Itemmodel> itemlist, String etype, String frag, MyApplication app, List<Issuemode> issueitem, SaveCallback saveCallback) {
+        // saveAllItem(itemlist);
+
         SaveItemAsyncTask asyncTask = new SaveItemAsyncTask(activity, itemlist, etype, frag, app, saveCallback, issueitem);
         asyncTask.execute();
+
+      /*  List<Itemmodel> itemmodelList=new ArrayList<>();;
+        itemmodelList=getAllItemsFromDatabase();
+        saveItem(itemmodelList);*/
+
     }
 
     public void deleteBills(String invoiceNumber) {
@@ -332,17 +615,17 @@ public class EntryDatabase extends SQLiteOpenHelper {
         executorService.execute(new Runnable() {
             @Override
             public void run() {
-                List<String> itemCodes = getItemCodesForEstimation();
-                Log.d("Billed ItemCode", "" + itemCodes.size());
-                if (!itemCodes.isEmpty()) {
-                    new UpdateStatusTask(itemCodes, clientCode, activationCallback).execute();
+                List<String> ItemCodes = getItemCodesForEstimation();
+                Log.d("Billed ItemCode", "" + ItemCodes.size());
+                if (!ItemCodes.isEmpty()) {
+                    new UpdateStatusTask(ItemCodes, clientCode, activationCallback).execute();
                 }
 
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         // Handle results on the main thread
-                        for (String code : itemCodes) {
+                        for (String code : ItemCodes) {
                             Log.d("ItemCode", code);
                         }
                     }
@@ -352,7 +635,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
     }
 
     public List<String> getItemCodesForEstimation() {
-        List<String> itemCodes = new ArrayList<>();
+        List<String> ItemCodes = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
 
 //        String query = "SELECT ItemCode FROM " + T_TABLE + " WHERE Operation = 'Estimation'";
@@ -366,7 +649,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
             do {
                 String item = cursor.getString(0);
                 if (item != null && !item.isEmpty()) {
-                    itemCodes.add(item);
+                    ItemCodes.add(item);
                     Log.e("BILL_API", "items  " + item);
                 }
             } while (cursor.moveToNext());
@@ -376,7 +659,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
 
         cursor.close();
-        return itemCodes;
+        return ItemCodes;
     }
 
 
@@ -459,6 +742,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
             // Insert counter
             for (String counter : uniqueCounter) {
+
                 String[] parts = counter.split("\\|");
                 String counter1 = parts[0];
                 String category = parts[1];
@@ -935,6 +1219,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
             EntryDatabase entryDatabase = new EntryDatabase(mContext);
             SQLiteDatabase db = entryDatabase.getWritableDatabase();
 //            SQLiteDatabase sqLiteDatabase = db.getWritableDatabase();
+            //  saveAllItem(mItemList);
 
             try {
                 db.beginTransaction(); // Start transaction
@@ -1116,7 +1401,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
                             }
                         }*/
 
-
+                        saveAllItem(mItemList);
 
 
                         for (Itemmodel item : mItemList) {

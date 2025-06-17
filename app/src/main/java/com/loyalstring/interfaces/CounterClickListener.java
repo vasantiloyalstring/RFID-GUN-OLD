@@ -1,5 +1,5 @@
 package com.loyalstring.interfaces;
 
 public interface CounterClickListener {
-    void onCounterClick(String counterName);
+    void onCounterClick(String counterName,String text);
 }
