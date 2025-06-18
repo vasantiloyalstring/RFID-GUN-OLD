@@ -122,7 +122,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
     boolean isCategorySelecetd = false;
     boolean isProductSelecetd = false;
     StorageClass storageClass;
-//    Handler handler = new Handler() {
+  // Handler handler = new Handler() {
 //        @Override
 //        public void handleMessage(Message msg) {
 //            UHFTAGInfo info = (UHFTAGInfo) msg.obj;
@@ -138,6 +138,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             UHFTAGInfo info = (UHFTAGInfo) msg.obj;
             Log.d("checktidva", "t" + info.getTid() + " e" + info.getEPC() + " r" + info.getReserved() + " " + info.getUser() + "  " + info.toString());
             processTag(info);
+           // addDataToList(info.getEPC(), info.getTid(), info.getRssi());
             return true;
         }
     });
@@ -178,7 +179,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
         entryDatabase = new EntryDatabase(getActivity());
-        itemmodelList = entryDatabase.getAllSavedItems();
+    //    itemmodelList = entryDatabase.getAllSavedItems();
 
         Bundle args = getArguments();
         if (args != null) {
@@ -837,37 +838,8 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             public void onClick(View view) {
 
                 List<Itemmodel> ibottomlist = new ArrayList<>();
-                List<Itemmodel> iToplist = new ArrayList<>();
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                String todayStr = sdf.format(new Date());
-                long timestamp = 0;
-
-                try {
-                    Date date = sdf.parse(todayStr);
-                    if (date != null) {
-                        timestamp = date.getTime();
-                    }
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-// Delete existing items for today's date only (not all dates)
-                Log.d("@@1", "@@1 " + timestamp);
-                entryDatabase.deleteItemsByDate(timestamp);
-
-// Set EntryDate to each item in the map and add to list
-                for (Map.Entry<String, Itemmodel> entry : topmap.entrySet()) {
-                    Itemmodel item = entry.getValue();
-                    item.setEntryDate(timestamp);
-                    iToplist.add(item);
-                }
-
-// Delete existing items for today's date only (not all dates)
-                // entryDatabase.deleteItemsByDate(timestamp);
-
-// Save updated list
-                entryDatabase.saveItem(iToplist);
-
-
+                ibottomlist.clear();
+                ibottomlist.addAll(bottommap.values());
                 if (mainActivity.mReader.isInventorying()) {
                     Toast.makeText(mainActivity, "stop scanning before save", Toast.LENGTH_SHORT).show();
                     return;

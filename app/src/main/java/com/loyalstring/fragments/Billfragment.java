@@ -485,6 +485,7 @@ public class Billfragment extends KeyDwonFragment implements BillAdapter.Removei
                     @Override
                     public void onDecodeComplete(BarcodeEntity barcodeEntity) {
                         Log.e("TAG", "BarcodeDecoder==========================:" + barcodeEntity.getResultCode());
+                        Log.e("TAG", "BarcodeDecoder==========================:" + barcodeEntity.getBarcodeData());
                         if (barcodeEntity.getResultCode() == BarcodeDecoder.DECODE_SUCCESS) {
 //                            editText.setText(barcodeEntity.getBarcodeData());
 

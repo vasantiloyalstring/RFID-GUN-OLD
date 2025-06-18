@@ -79,10 +79,24 @@ public class ApiProcess {
 //    }
 
     public String convertToHex(String input) {
-        StringBuilder hexBuilder = new StringBuilder();
+       /* StringBuilder hexBuilder = new StringBuilder();
         for (char ch : input.toCharArray()) {
             hexBuilder.append(String.format("%02X", (int) ch)); // Using uppercase hex format
         }
+        return hexBuilder.toString();*/
+        StringBuilder hexBuilder = new StringBuilder();
+
+        // Step 1: Convert each character to 2-digit hex
+        for (char ch : input.toCharArray()) {
+            String hex = String.format("%02X", (int) ch); // e.g., 'A' -> "41"
+            hexBuilder.append(hex);
+        }
+
+        // Step 2: Add "00" at the beginning until total length is a multiple of 4
+        while (hexBuilder.length() % 4 != 0) {
+            hexBuilder.insert(0, "00"); // ✅ Adds at the start
+        }
+
         return hexBuilder.toString();
     }
 
@@ -371,6 +385,63 @@ public class ApiProcess {
                 });
             }
 
+        }   else if(rfidType.equalsIgnoreCase("websingle")){
+            call2.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
+                @Override
+                public void onResponse(Call<List<AlllabelResponse.LabelItem>> call, Response<List<AlllabelResponse.LabelItem>> response) {
+                    dialog.dismiss();
+                    Log.e("checking response ", "product response " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<AlllabelResponse.LabelItem> i = response.body();
+
+                        for (int j = 0; j < i.size(); j++) {
+                            AlllabelResponse.LabelItem it = i.get(j);
+                            String item = it.getItemCode();
+                            if (it.getStatus().equalsIgnoreCase("active") || it.getStatus().equalsIgnoreCase("ApiActive")) {
+                                if (item != null && !item.isEmpty()) {
+                                    String hexvalue = convertToHex(item);
+                                    if (hexvalue != null && !hexvalue.isEmpty()) {
+                                        it.settIDNumber(hexvalue);
+                                        it.setrFIDCode(item);
+                                        it.setProductName(it.getDesignName());
+                                        Log.d("@@","## vasannti"+it.gettIDNumber());
+
+//                                productList.add(j);
+                                    }
+                                    if (it.gettIDNumber() != null && !it.gettIDNumber().isEmpty()) {
+                                        productList.add(it);
+                                        Log.d("@@","## added"+it.gettIDNumber());
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+
+//                    for(int j =0; j<i.size(); j++){
+//                        AlllabelResponse.LabelItem it = i.get(j);
+//                        if(it.getStatus().equalsIgnoreCase("active")){
+//                            productList.add(it);
+//                        }
+//                    }
+
+//                    productList.addAll(i);
+                    } else {
+                        Toast.makeText(activity, "Product response was not successful", Toast.LENGTH_SHORT).show();
+                    }
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(Call<List<AlllabelResponse.LabelItem>> call, Throwable t) {
+                    dialog.dismiss();
+                    Log.e("check data", "labelstock  " + t.getMessage());
+                    Toast.makeText(activity, "Failed to load product data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    latch.countDown();
+                }
+            });
         }
         else {
             call2.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {

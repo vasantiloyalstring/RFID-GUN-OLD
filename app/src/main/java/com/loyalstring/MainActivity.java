@@ -20,11 +20,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
 import com.loyalstring.Apis.ApiManager;
 import com.loyalstring.LatestApis.LoginApiSupport.Clients;
+import com.loyalstring.LatestBackground.SyncWorker;
 import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.database.StorageClass;
@@ -163,7 +166,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
 //        setContentView(layout);
 
 
-        /*Clients client = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+        client = sharedPreferencesManager.readLoginData().getEmployee().getClients();
         Log.e("check type ", "cc"+client.toString());
         if(client.getRfidType().contains("Web") && client.getClientCode()!= null && !client.getClientCode().isEmpty()){
             if (!myapp.isCountMatch()) {
@@ -172,8 +175,8 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
                     public void run() {
                         // Dismiss the progress dialog
 //                    totalitems = myapp.getInventoryMap();
-                        OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
-                        WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
+                        // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+                        //WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
 
                     }
                 };
@@ -193,10 +196,10 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
                 }).start();
             } else {
 //                totalitems = myapp.getInventoryMap();
-                OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
-                WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
+                // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+                // WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
             }
-        }*/
+        }
 
 
 //        List<Itemmodel> ditem = DummyDataGenerator.generateDummyData(200000);
@@ -280,7 +283,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
         } else if (id == R.id.itemsvr) {
             fragment = new Stockreportfragment();
         }
-      /* else if (id == R.id.itemDailyStock) {
+      /*  else if (id == R.id.itemDailyStock) {
             fragment = new DailyStockreportfragment();
         }*/
 //        else if (id == R.id.itemstocktransfer) {
