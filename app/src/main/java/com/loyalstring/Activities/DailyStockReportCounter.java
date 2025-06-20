@@ -150,7 +150,7 @@ public class DailyStockReportCounter extends AppCompatActivity implements Counte
                     } else {
                         Itemmodel existing = counterMap.get(counter);
                         existing.setAvlQty(existing.getAvlQty() + item.getAvlQty());
-                        existing.setMatchQty(existing.getMatchQty() + item.getMatchQty());
+                        existing.setMatchQty(existing.getMatchQty()+item.getMatchQty());
                     }
                 }
             }

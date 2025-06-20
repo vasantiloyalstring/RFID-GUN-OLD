@@ -1040,6 +1040,11 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
                                 // Set inventory status: "match" if available quantity equals match quantity, else "unmatch"
                                 item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
+                                if(item.getInventoryStatus().equalsIgnoreCase("match")){
+                                    item.setMatchQty(1);
+                                }else {
+                                    item.setMatchQty(0);
+                                }
                                 ibottomlist.add(item);
                             }
 

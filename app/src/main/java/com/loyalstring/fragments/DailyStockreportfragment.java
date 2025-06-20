@@ -76,13 +76,14 @@ public class DailyStockreportfragment extends Fragment implements CounterClickLi
             for (Itemmodel item : itemmodelList) {
 
                 Log.d("@@","@@"+item.getInventoryStatus());
+                Log.d("@@","@@ match "+item.getMatchQty());
                 // Convert EntryDate (timestamp) to date string dd/MM/yyyy
                 String dateKey = sdf.format(new Date(item.getEntryDate()));
 
                 if (dateSummaryMap.containsKey(dateKey)) {
                     Itemmodel existing = dateSummaryMap.get(dateKey);
                     existing.setAvlQty(existing.getAvlQty() + item.getAvlQty());
-                    existing.setMatchQty(existing.getMatchQty() + item.getMatchQty());
+                    existing.setMatchQty(existing.getMatchQty()+item.getMatchQty());
                 } else {
                     Itemmodel summaryItem = new Itemmodel();
                     summaryItem.setEntryDate(item.getEntryDate()); // We keep original timestamp

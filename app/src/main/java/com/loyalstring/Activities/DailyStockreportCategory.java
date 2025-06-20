@@ -131,7 +131,7 @@ public class DailyStockreportCategory extends AppCompatActivity implements Count
             } else {
                 Itemmodel existing = categoryMap.get(category);
                 existing.setAvlQty(existing.getAvlQty() + item.getAvlQty());
-                existing.setMatchQty(existing.getMatchQty() + item.getMatchQty());
+                existing.setMatchQty(existing.getMatchQty());
             }
         }
 

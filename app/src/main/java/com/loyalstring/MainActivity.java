@@ -166,7 +166,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
 //        setContentView(layout);
 
 
-         client = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+        client = sharedPreferencesManager.readLoginData().getEmployee().getClients();
         Log.e("check type ", "cc"+client.toString());
         if(client.getRfidType().contains("Web") && client.getClientCode()!= null && !client.getClientCode().isEmpty()){
             if (!myapp.isCountMatch()) {
@@ -175,7 +175,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
                     public void run() {
                         // Dismiss the progress dialog
 //                    totalitems = myapp.getInventoryMap();
-                      // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+                        // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
                         //WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
 
                     }
@@ -196,8 +196,8 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
                 }).start();
             } else {
 //                totalitems = myapp.getInventoryMap();
-             // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
-               // WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
+                // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
+                // WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
             }
         }
 
@@ -283,7 +283,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
         } else if (id == R.id.itemsvr) {
             fragment = new Stockreportfragment();
         }
-       else if (id == R.id.itemDailyStock) {
+        else if (id == R.id.itemDailyStock) {
             fragment = new DailyStockreportfragment();
         }
 //        else if (id == R.id.itemstocktransfer) {

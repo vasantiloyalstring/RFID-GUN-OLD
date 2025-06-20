@@ -86,7 +86,7 @@ public class Stockreportfragment extends KeyDwonFragment implements Stockverfyre
         if (actionBar != null) {
             // Update ActionBar properties
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle("Stock Report");
+            actionBar.setTitle("Current Scan Stock Report");
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
 

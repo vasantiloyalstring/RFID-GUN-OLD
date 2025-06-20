@@ -9,7 +9,6 @@ import static com.loyalstring.database.support.Valuesdb.C_CATEGORY;
 import static com.loyalstring.database.support.Valuesdb.C_PRODUCT;
 import static com.loyalstring.database.support.Valuesdb.PROTABLE;
 
-import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -261,6 +260,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
             addColumnIfNotExists(db, "entryDate", "LONG");
             addColumnIfNotExists(db, "inventoryStatus", "TEXT");
             addColumnIfNotExists(db, "ItemCode", "TEXT");
+            addColumnIfNotExists(db, "MatchQty", "TEXT");
 
             for (Itemmodel item : itemList) {
                 // Check if the item already exists by a unique key (e.g., ItemCode)
@@ -272,6 +272,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
                 values.put("entryDate", item.getEntryDate());
                 values.put("inventoryStatus", "unmatch");
                 values.put("ItemCode", item.getItemCode());
+                values.put("MatchQty", item.getMatchQty());
                 values.put(COL_DATA, gson.toJson(item)); // Update the full JSON data
 
                 if (cursor != null && cursor.getCount() > 0) {
@@ -384,7 +385,10 @@ public class EntryDatabase extends SQLiteOpenHelper {
            for (Itemmodel item : itemList) {
                String productCode = item.getItemCode();  // Use ItemCode as the unique identifier
                long entryDate = item.getEntryDate();  // Make sure the entryDate is in the correct format
-               String inventoryStatus = (item.getAvlQty() == item.getMatchQty()) ? "match" : "unmatch";  // Set inventory status based on conditions
+               double matchQty = item.getMatchQty();
+               Log.d("@@ matchQty", "@@ matchQty" + matchQty);
+
+               String inventoryStatus =item.getInventoryStatus(); // Set inventory status based on conditions
 
                Log.d("Query Debug", "Executing query with ItemCode: " + productCode + " and entryDate: " + entryDate);
 
@@ -396,10 +400,11 @@ public class EntryDatabase extends SQLiteOpenHelper {
                        // Item found, prepare to update the inventoryStatus
                        String existingInventoryStatus = cursor.getString(cursor.getColumnIndexOrThrow("inventoryStatus"));
                        Log.d("ExistingStatus", "InventoryStatus in DB: " + existingInventoryStatus);
-
+                       Log.d("@@", "vasanti matchQty" + matchQty);
                        // Prepare content values with the updated inventoryStatus
                        ContentValues values = new ContentValues();
-                       values.put("inventoryStatus", inventoryStatus);  // Update the status
+                       values.put("inventoryStatus", inventoryStatus);
+                       values.put("matchQty", matchQty);// Update the status
 
                        // Perform the update operation
                        int rowsUpdated = db.update(INVENTORY_SAVE_TABLE, values, "ItemCode = ?", new String[]{productCode});
@@ -409,6 +414,11 @@ public class EntryDatabase extends SQLiteOpenHelper {
                        } else {
                            Log.d("@@NoUpdate", "Failed to update inventoryStatus for ItemCode: " + productCode);
                        }
+
+
+
+                       // Optionally log or use the updated data
+
                    } else {
                        // Item not found in the database
                        Log.d("@@NotFound", "Item not found for ItemCode: " + productCode);
@@ -512,7 +522,12 @@ public class EntryDatabase extends SQLiteOpenHelper {
                 String inventoryStatus = cursor.getString(cursor.getColumnIndexOrThrow("inventoryStatus"));
                 item.setInventoryStatus(inventoryStatus);  // Set the inventoryStatus for the item
 
+                double matchQty = cursor.getDouble(cursor.getColumnIndexOrThrow("MatchQty"));
+                item.setMatchQty(matchQty);
+
                 // Add the item to the list
+
+                Log.d("@@", "@@ match qty" + item.getMatchQty());
                 items.add(item);
             } while (cursor.moveToNext());
         }
