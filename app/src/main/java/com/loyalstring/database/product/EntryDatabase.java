@@ -26,6 +26,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.loyalstring.Adapters.ProductAdapter;
 import com.loyalstring.LatestApis.BillSupport.UpdateStatusTask;
 import com.loyalstring.LatestApis.LoginApiSupport.Clients;
@@ -189,10 +190,13 @@ public class EntryDatabase extends SQLiteOpenHelper {
         db.close();
     }
 /*for stock*/
-    public void saveAllItem(List<Itemmodel> itemList) {
+   /* public void saveAllItem(List<Itemmodel> itemList) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(All_SAVE_TABLE, null, null);
         for (Itemmodel item : itemList) {
+            Gson gson = new GsonBuilder()
+                    .serializeSpecialFloatingPointValues() // ✅  allowsNaN, Infinity
+                    .create();
             String json = gson.toJson(item);
             ContentValues values = new ContentValues();
             values.put(COL_DATA, json);
@@ -200,7 +204,49 @@ public class EntryDatabase extends SQLiteOpenHelper {
         }
         Log.d("@@ data", "data added");
         db.close();
+    }*/
+public void saveAllItem(List<Itemmodel> itemList) {
+    SQLiteDatabase db = this.getWritableDatabase();
+
+    // Start a transaction for batch insert
+    db.beginTransaction();
+
+    try {
+        int batchSize = 100;  // Adjust batch size based on your requirements
+        // Loop through the list of items and add each one
+        for (int i = 0; i < itemList.size(); i++) {
+            Itemmodel item = itemList.get(i);
+
+            // Convert the item to JSON
+            Gson gson = new GsonBuilder()
+                    .serializeSpecialFloatingPointValues() // ✅ Allows NaN, Infinity
+                    .create();
+            String json = gson.toJson(item);
+            ContentValues values = new ContentValues();
+            values.put(COL_DATA, json);
+
+            // Insert the item into the database
+            db.insert(All_SAVE_TABLE, null, values);
+
+            // If batch size is reached or this is the last item, commit the batch
+            if (i % batchSize == 0 || i == itemList.size() - 1) {
+                db.setTransactionSuccessful();
+                db.endTransaction();
+                db.beginTransaction();  // Start a new transaction for the next batch
+            }
+        }
+
+        // Mark the transaction as successful
+        Log.d("@@ data", "Data added successfully in batch");
+    } catch (Exception e) {
+        Log.e("@@Error", "Error inserting data: " + e.getMessage());
+    } finally {
+        // End the transaction
+        db.endTransaction();
+        db.close();
     }
+}
+
 
     //delete the item by date
     public void deleteItemsByDate(long targetTimestamp) {

@@ -170,11 +170,18 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
         Log.e("check type ", "cc"+client.toString());
         if(client.getRfidType().contains("Web") && client.getClientCode()!= null && !client.getClientCode().isEmpty()){
             if (!myapp.isCountMatch()) {
+                Clients finalClient = client;
                 Runnable onCountMatched = new Runnable() {
                     @Override
                     public void run() {
                         // Dismiss the progress dialog
-//                    totalitems = myapp.getInventoryMap();
+                        //if(finalClient.getRfidType().contains("websingle")) {
+                        try {
+                            totalitems = myapp.getInventoryMap();
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                       // }
                         // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
                         //WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
 
@@ -195,7 +202,17 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
                     }
                 }).start();
             } else {
-//                totalitems = myapp.getInventoryMap();
+                Clients finalClient = client;
+               // if(finalClient.getRfidType().contains("websingle")) {
+
+
+try {
+    totalitems = myapp.getInventoryMap();
+}catch ( Exception e)
+{
+
+}
+                //}
                 // OneTimeWorkRequest syncWorkRequest = new OneTimeWorkRequest.Builder(SyncWorker.class).build();
                 // WorkManager.getInstance(MainActivity.this).enqueue(syncWorkRequest);
             }

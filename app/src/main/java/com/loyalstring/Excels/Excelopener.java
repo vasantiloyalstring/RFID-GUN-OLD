@@ -1,5 +1,6 @@
 package com.loyalstring.Excels;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -396,7 +397,7 @@ public class Excelopener {
             ProgressDialog finalProgressDialog1 = progressDialog;
 
 //            finalProgressDialog.show();
-            AsyncTask<Void, Integer, List<Itemmodel>> task = new AsyncTask<Void, Integer, List<Itemmodel>>() {
+            @SuppressLint("StaticFieldLeak") AsyncTask<Void, Integer, List<Itemmodel>> task = new AsyncTask<Void, Integer, List<Itemmodel>>() {
                 @Override
                 protected List<Itemmodel> doInBackground(Void... voids) {
                     List<Itemmodel> itemlist = new ArrayList<>();

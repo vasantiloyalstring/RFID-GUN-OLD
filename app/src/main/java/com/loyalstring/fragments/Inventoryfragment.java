@@ -1074,12 +1074,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
     private String trimTid(String epc) {
         String trimmedTidValue = epc;
-        if (epc.startsWith("0000")) {
+       /* if (epc.startsWith("0000")) {
             trimmedTidValue = epc.substring(2); // Remove "00"
         }
         if (trimmedTidValue.endsWith("0000")) {
             trimmedTidValue = trimmedTidValue.substring(0, trimmedTidValue.length() - 2);
-        }
+        }*/
         return trimmedTidValue;
     }
     private void updateMaps(String tidValue) {

@@ -1028,7 +1028,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                     rfidList.addAll(entryDatabase.getrfid(getActivity(), app));
                 }
 
-                Log.e("checking ", "check1 "+clients.getRfidType()+"   "+rfidList);
+                Log.e("checking  new", "check1 "+clients.getRfidType()+"   "+rfidList);
 
 
 
@@ -1736,7 +1736,12 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 //                    Itemmodel item = inventorydata.get(tidv);
                             StringBuilder stringBuilder = new StringBuilder();
                             String tidValue1 = nitem.getTidValue();
-                            String barcode = nitem.getBarCode();
+                            String barcode;
+                            if(nitem.getBarCode()==null){
+                                barcode = nitem.getItemCode();
+                            }else {
+                                barcode = nitem.getBarCode();
+                            }
                             String cat = nitem.getCategory();
                             String pro = nitem.getProduct();
                             stringBuilder.append("Item: ").append(cat).append("/").append(pro).append(" Barcode: ").append(barcode).append("\n");
@@ -1778,7 +1783,12 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                             Log.d("check item exist", "  " + nitem.toString());
                             StringBuilder stringBuilder = new StringBuilder();
                             String tidValue1 = nitem.getTidValue();
-                            String barcode = nitem.getBarCode();
+                            String barcode;
+                            if(nitem.getBarCode()==null){
+                                 barcode = nitem.getItemCode();
+                            }else {
+                                 barcode = nitem.getBarCode();
+                            }
                             String cat = nitem.getCategory();
                             String pro = nitem.getProduct();
                             stringBuilder.append("Item: ").append(cat).append("/").append(pro).append(" Barcode: ").append(barcode).append("\n");
@@ -1834,7 +1844,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 
 
 
-        Log.e("checking ", "check1 "+clients.getRfidType()+"   "+rfidList);
+        Log.e("checking ", "check1 old "+clients.getRfidType()+"   "+rfidList);
 
         entryDatabase.checkdatabase(getActivity());
         entryDatabase.makeentry(getActivity(), itemlist, "adding", "product", app, issueitem, new SaveCallback() {
