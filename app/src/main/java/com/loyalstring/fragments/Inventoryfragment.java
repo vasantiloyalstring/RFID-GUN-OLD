@@ -905,8 +905,8 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                itemmodelList=entryDatabase.getAllItemsFromDatabase();
              //  entryDatabase.saveItem(itemmodelList);
                 b.progressBar.setVisibility(View.VISIBLE);
-                List<Itemmodel> ibottomlist = new ArrayList<>();
-                List<Itemmodel> iToplist = new ArrayList<>();
+                final List<Itemmodel>[] ibottomlist = new List[]{new ArrayList<>()};
+                List<Itemmodel> finalListToSave = new ArrayList<>();
                 // Create and configure ProgressBar
 
 
@@ -1004,81 +1004,51 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                         }
                     }
                 }).start();*/
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            // 1️⃣ Prepare today's timestamp
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
-                            String todayStr = sdf.format(new Date());
-                            long timestamp = 0;
-                            try {
-                                Date date = sdf.parse(todayStr);
-                                if (date != null) {
-                                    timestamp = date.getTime();
-                                }
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                new Thread(() -> {
+                    try {
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                        String todayStr = sdf.format(new Date());
+                        long timestamp = sdf.parse(todayStr).getTime();
 
-                            Log.d("@@1", "@@1 " + timestamp);
+                        // 1. Delete records older than 10 days
+                        long tenDaysAgo = System.currentTimeMillis() - (10L * 24 * 60 * 60 * 1000);
+                        entryDatabase.deleteItemsOlderThan(tenDaysAgo);
 
-                            // 2️⃣ Delete existing data for today's date (Override existing data)
-                            entryDatabase.deleteItemsByDate(timestamp);
+                        // 2. Delete today's data (if updating)
+                        entryDatabase.deleteItemsByDate(timestamp);
 
-                            // 3️⃣ Delete items older than 10 days
-                            long currentDate = System.currentTimeMillis();
-                            long tenDaysAgo = currentDate - (10L * 24 * 60 * 60 * 1000);  // 10 days ago in milliseconds
-                            entryDatabase.deleteItemsOlderThan(tenDaysAgo);  // Assuming you have this method to delete records older than 10 days.
-
-                            // 4️⃣ Prepare updated list for today's data
-                            List<Itemmodel> ibottomlist = new ArrayList<>();
-                            for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
-                                Log.d("@@ ", "@@ vasanti" + bottommap.size());
-                                Itemmodel item = entry.getValue();
-                                item.setEntryDate(timestamp);
-
-                                // Set inventory status: "match" if available quantity equals match quantity, else "unmatch"
-                                item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
-                                if(item.getInventoryStatus().equalsIgnoreCase("match")){
-                                    item.setMatchQty(1);
-                                }else {
-                                    item.setMatchQty(0);
-                                }
-                                ibottomlist.add(item);
-                            }
-
-                            // 5️⃣ Insert or Update the data for today
-                            entryDatabase.updateInventoryStatus(ibottomlist);  // Assuming saveItem method performs the insert or update logic
-
-                            // 6️⃣ After saving, check if scanning is ongoing
-                            if (mainActivity.mReader.isInventorying()) {
-                                getActivity().runOnUiThread(() -> {
-                                    Toast.makeText(mainActivity, "Stop scanning before saving", Toast.LENGTH_SHORT).show();
-                                    b.progressBar.setVisibility(View.GONE);  // Hide progress bar
-                                });
-                                return;
-                            }
-
-                            // 7️⃣ Successfully saved data, hide progress bar
-                            getActivity().runOnUiThread(() -> {
-                                b.progressBar.setVisibility(View.GONE);
-                            });
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            getActivity().runOnUiThread(() -> {
-                                Toast.makeText(mainActivity, "Error occurred during save", Toast.LENGTH_SHORT).show();
-                                b.progressBar.setVisibility(View.GONE);
-                            });
+                        // 3. Prepare list to insert
+                        ibottomlist[0] = new ArrayList<>();
+                        for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                            Itemmodel item = entry.getValue();
+                            item.setEntryDate(timestamp);
+                            item.setInventoryStatus(item.getAvlQty() == item.getMatchQty() ? "match" : "unmatch");
+                            ibottomlist[0].add(item);
                         }
+
+                        // 4. Save into DB
+                        entryDatabase.saveItem(ibottomlist[0]);
+
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(mainActivity, "Inventory Saved Successfully", Toast.LENGTH_SHORT).show();
+                            b.progressBar.setVisibility(View.GONE);
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        requireActivity().runOnUiThread(() -> {
+                            Toast.makeText(mainActivity, "Error occurred during save", Toast.LENGTH_SHORT).show();
+                            b.progressBar.setVisibility(View.GONE);
+                        });
                     }
                 }).start();
+              //  entryDatabase.updateInventoryStatus(bot);
+
+
 
 
                 b.progressBar.setVisibility(View.VISIBLE);
 
-                entryDatabase.makeentry(getActivity(), ibottomlist, "inventory", "inventory", myapp, issueitem, new SaveCallback() {
+                entryDatabase.makeentry(getActivity(), ibottomlist[0], "inventory", "inventory", myapp, issueitem, new SaveCallback() {
                     @Override
                     public void onSaveSuccess() {
                         getActivity().runOnUiThread(new Runnable() {

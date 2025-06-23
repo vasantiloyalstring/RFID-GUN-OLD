@@ -469,11 +469,9 @@ public class EntryDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String selection = "EntryDate < ?";
         String[] selectionArgs = {String.valueOf(timestamp)};
-
         db.delete(INVENTORY_SAVE_TABLE, selection, selectionArgs);
         db.close();
     }
-
 
 
     //delete the item by date

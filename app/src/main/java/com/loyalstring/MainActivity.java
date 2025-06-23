@@ -20,20 +20,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.crashlytics.FirebaseCrashlytics;
+import com.loyalstring.Activities.DailyStockReportActivity;
 import com.loyalstring.Apis.ApiManager;
 import com.loyalstring.LatestApis.LoginApiSupport.Clients;
-import com.loyalstring.LatestBackground.SyncWorker;
 import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.database.StorageClass;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.fragments.Billfragment;
-import com.loyalstring.fragments.DailyStockreportfragment;
 import com.loyalstring.fragments.Homefragment;
 import com.loyalstring.fragments.Inventoryfragment;
 import com.loyalstring.fragments.Searchfragment;
@@ -284,7 +281,8 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
             fragment = new Stockreportfragment();
         }
         else if (id == R.id.itemDailyStock) {
-            fragment = new DailyStockreportfragment();
+           Intent intent = new Intent(this, DailyStockReportActivity.class);
+           startActivity(intent);
         }
 //        else if (id == R.id.itemstocktransfer) {
 //            fragment = new Stocktransferfragment();

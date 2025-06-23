@@ -81,22 +81,11 @@
         <activity
             android:name=".mainscreens.Activationpage"
             android:exported="false" />
-
         <activity
-            android:name=".Activities.DailyStockReportDate"
+            android:name=".Activities.DailyStockReportActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".Activities.DailyStockReportCounter"
-            android:exported="false" />
 
-        <activity
-            android:name=".Activities.DailyStockreportCategory"
-            android:exported="false" />
-
-        <activity
-            android:name=".Activities.DailyStockReportProduct"
-            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false"
