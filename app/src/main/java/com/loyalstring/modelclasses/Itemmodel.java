@@ -19,7 +19,7 @@ public class Itemmodel implements Parcelable {
             AvlQty, MatchQty, TotalGwt, MatchGwt, TotalStonewt, MatchStonewt, TotalNwt, MatchNwt,
             GoldRate, TotalMaking, ItemPrice, AppliedDiscount, ItempriceAfterdiscount, GstRate, PayableAmount, PayableAmountincgst, ItemGst,
             TotalBilleditems, TotalBilledgwt, TotalBilledamount, TotalBillAmountExcGst, TotalBillAmountincgst,
-            TotalGst, TotalDiscount, PaidAmount, Balance;
+            TotalGst, TotalDiscount, PaidAmount, Balance,totUnMatchQty,totUnmatchGrswt;
 
     String GunUpdate, WebUpdate, ImageUrl, VideoUrl, Pcs,ProductCode;
     private long id1;
@@ -31,6 +31,7 @@ public class Itemmodel implements Parcelable {
 
     private  String inventoryStatus;
 
+
     public String getInventoryStatus() {
         return inventoryStatus;
     }
@@ -40,6 +41,22 @@ public class Itemmodel implements Parcelable {
     }
 
     public Itemmodel() {
+    }
+
+    public double getTotUnMatchQty() {
+        return totUnMatchQty;
+    }
+
+    public void setTotUnMatchQty(double totUnMatchQty) {
+        this.totUnMatchQty = totUnMatchQty;
+    }
+
+    public double getTotUnmatchGrswt() {
+        return totUnmatchGrswt;
+    }
+
+    public void setTotUnmatchGrswt(double totUnmatchGrswt) {
+        this.totUnmatchGrswt = totUnmatchGrswt;
     }
 
     public int getCategoryId() {

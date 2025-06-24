@@ -1048,7 +1048,9 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
                 b.progressBar.setVisibility(View.VISIBLE);
 
-                entryDatabase.makeentry(getActivity(), ibottomlist[0], "inventory", "inventory", myapp, issueitem, new SaveCallback() {
+                finalListToSave.addAll(bottommap.values());
+
+                entryDatabase.makeentry(getActivity(), finalListToSave, "inventory", "inventory", myapp, issueitem, new SaveCallback() {
                     @Override
                     public void onSaveSuccess() {
                         getActivity().runOnUiThread(new Runnable() {

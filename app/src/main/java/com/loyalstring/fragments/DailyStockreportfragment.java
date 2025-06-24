@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.loyalstring.Activities.DailyStockReportCounter;
-import com.loyalstring.Activities.DailyStockreportCategory;
 import com.loyalstring.Adapters.DailyStockListAdapter;
 import com.loyalstring.MainActivity;
 import com.loyalstring.database.product.EntryDatabase;
@@ -106,11 +105,11 @@ public class DailyStockreportfragment extends Fragment implements CounterClickLi
             }
 
             // Show in RecyclerView if data exists
-            if (!groupedList.isEmpty()) {
+            /*if (!groupedList.isEmpty()) {
                 DailyStockListAdapter adapter = new DailyStockListAdapter(getContext(), groupedList, this::onCounterClick, "counter");
                 b.rvDailyStock.setLayoutManager(new LinearLayoutManager(getActivity()));
                 b.rvDailyStock.setAdapter(adapter);
-            }
+            }*/
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -134,8 +133,8 @@ public class DailyStockreportfragment extends Fragment implements CounterClickLi
     public void onCounterClick(String dateData,String string) {
         for(int i=0; i<itemmodelList.size(); i++) {
             if(itemmodelList.get(i).getCounterName()=="") {
-                Intent intent = new Intent(getActivity(), DailyStockreportCategory.class);
-                startActivity(intent);
+             //   Intent intent = new Intent(getActivity(), DailyStockreportCategory.class);
+             //   startActivity(intent);
                 break;
             }else {
 

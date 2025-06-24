@@ -97,6 +97,12 @@ public class CommonStockAdapter extends RecyclerView.Adapter<CommonStockAdapter.
         double matchQty = 0;
         double unmatchQty = 0;
 
+        if (position % 2 == 0) {
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.underlinecolor));  // Gray color for even rows
+        } else {
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.white));  // White color for odd rows
+        }
+
         switch (currentLevel) {
             case DATE:
                 name = (String) item;

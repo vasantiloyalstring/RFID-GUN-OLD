@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="12dp">
+    android:orientation="vertical">
+
+    <!-- Toolbar with Back Button -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextColor="@color/white"
+        android:background="?android:attr/colorPrimaryDark"
+        android:titleTextColor="@android:color/white" />
 
     <!-- Selected Date Display (Visible after selecting a date) -->
     <TextView
@@ -14,8 +23,8 @@
         android:text="Date: 01/01/2024"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:padding="12dp"
         android:textColor="@android:color/black"
-        android:padding="8dp"
         android:gravity="center"
         android:visibility="gone" />
 
@@ -23,6 +32,38 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewStock"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="8dp" />
+        android:layout_height="0dp"
+    android:layout_weight="1"
+    android:padding="12dp"
+    android:layout_marginTop="8dp" />
+
+    <!-- Bottom buttons for Email and Stock Verification -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_gravity="bottom"
+        android:weightSum="2">
+
+        <!-- Email Button -->
+        <Button
+            android:id="@+id/tv_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:layout_margin="5dp"
+            android:text="Email" />
+
+        <Button
+            android:id="@+id/tv_stock_verification"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.2"
+            android:layout_margin="5dp"
+            android:text="Stock Verification" />
+        <!-- Stock Verification Button -->
+
+    </LinearLayout>
+
 </LinearLayout>
