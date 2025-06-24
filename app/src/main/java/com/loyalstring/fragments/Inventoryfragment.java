@@ -32,8 +32,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -65,15 +63,13 @@ import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.SaveCallback;
 import com.loyalstring.interfaces.interfaces;
-import com.loyalstring.mainscreens.splashscreen;
 import com.loyalstring.modelclasses.Issuemode;
-import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.MatchQuantityRequest;
+import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilter;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
-import com.loyalstring.modelclasses.StockVerificationRequestData;
-import com.loyalstring.modelclasses.StockVerificationResponseNew;
+import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 import com.loyalstring.network.NetworkUtils;
 import com.loyalstring.readersupport.KeyDwonFragment;
 import com.loyalstring.tools.StringUtils;
@@ -88,7 +84,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -127,7 +122,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
     boolean isCategorySelecetd = false;
     boolean isProductSelecetd = false;
     StorageClass storageClass;
-//    Handler handler = new Handler() {
+    // Handler handler = new Handler() {
 //        @Override
 //        public void handleMessage(Message msg) {
 //            UHFTAGInfo info = (UHFTAGInfo) msg.obj;
@@ -143,6 +138,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             UHFTAGInfo info = (UHFTAGInfo) msg.obj;
             Log.d("checktidva", "t" + info.getTid() + " e" + info.getEPC() + " r" + info.getReserved() + " " + info.getUser() + "  " + info.toString());
             processTag(info);
+            // addDataToList(info.getEPC(), info.getTid(), info.getRssi());
             return true;
         }
     });
@@ -183,14 +179,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
         entryDatabase = new EntryDatabase(getActivity());
-
-
+        //    itemmodelList = entryDatabase.getAllSavedItems();
 
         Bundle args = getArguments();
         if (args != null) {
             pauselist = (List<Itemmodel>) args.getSerializable("searchlist");
         }
-
 
         mainActivity.currentFragment = Inventoryfragment.this;
         mainActivity.toolpower.setVisibility(View.VISIBLE);
@@ -209,24 +203,6 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         filtereditems.clear();
 
         myapp = (MyApplication) requireActivity().getApplicationContext();
-       // itemmodelList = entryDatabase.getAllSavedItems();
-        Map<String, Itemmodel> itemMap = entryDatabase.loadInventoryItems(getActivity(), myapp, 0);
-
-       // if (itemMap != null && !itemMap.isEmpty()) {
-        List<Itemmodel> itemList = new ArrayList<>(itemMap.values());
-
-
-            // Now you can use itemmodelList safely
-            for (Itemmodel item : itemmodelList) {
-                Log.d("Item", item.getProduct() + " - " + item.getAvlQty());
-            }
-       // }
-        Log.d("##","@@"+ entryDatabase.getAllFromAllTable());
-        Log.d("##","@@"+ entryDatabase.getAllSavedItems());
-        Log.d("##","@@"+ entryDatabase.getAllItemsFromDatabase());
-        Log.d("##","@@"+ entryDatabase.getAllItems());
-
-
         b.irecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         b.catprorecycler.setLayoutManager(new LinearLayoutManager(getActivity()));
         inventoryTopAdaptor = new InventoryTopAdaptor(topmap, getActivity(), "all", b.irecycler, Inventoryfragment.this);
@@ -281,10 +257,6 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         b.singlescan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
-                    Itemmodel item = entry.getValue();
-                    item.setBarCode(item.getItemCode());
-                }
                 if (topmap.isEmpty() || bottommap.isEmpty()) {
                     Toast.makeText(mainActivity, "No data found", Toast.LENGTH_SHORT).show();
                     return;
@@ -599,12 +571,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                     }
                 }
 
-                    for (int i1=0; i1<itemmodelList.size(); i1++) {
-                        if (itemmodelList.get(i1).getProduct().equalsIgnoreCase(product)) {
-                            productId = itemmodelList.get(i1).getProductId();
-                            break;
-                        }
+                for (int i1=0; i1<itemmodelList.size(); i1++) {
+                    if (itemmodelList.get(i1).getProduct().equalsIgnoreCase(product)) {
+                        productId = itemmodelList.get(i1).getProductId();
+                        break;
                     }
+                }
 
                 for (int i2=0; i2<itemmodelList.size(); i2++) {
 
@@ -624,17 +596,13 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 Log.d("@@ productId","productId"+productId);
                 Log.d("@@ categoryId","categoryId"+purityId);
                 Log.d("@@ categoryId","categoryId"+designId);
-               Log.d("@@ categoryId","categoryId"+counterId);
-
-                StockVerificationRequestData stockVerificationRequestData = new StockVerificationRequestData();
-                stockVerificationRequestData.setClientCode(clientCode);
+                Log.d("@@ categoryId","categoryId"+counterId);
 
 
-              
                 StockVerificationFilterModel stockVerificationFilterModel = new StockVerificationFilterModel();
                 StockVerificationFilter stockVerificationFilter = new StockVerificationFilter();
-                stockVerificationFilter.setId(0);
-                stockVerificationFilter.setCreatedOn("");
+                stockVerificationFilter.setId(1);
+                stockVerificationFilter.setCreatedOn("02/06/2025");
                 stockVerificationFilter.setLastUpdated("");
                 stockVerificationFilter.setStatusType(true);
                 stockVerificationFilter.setClientCode(clientCode);
@@ -652,67 +620,34 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 MatchQuantityRequest matchQuantityRequest = new MatchQuantityRequest();
 
                 List<String> itemCodes = new ArrayList<>();
-
-                List<Item> items = new ArrayList<>(); // ✅ Initialize once outside the loop
-
                 for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
-                    Log.d("@@ itemcodeSize", "@@" + bottommap.size());
-
                     Itemmodel item = entry.getValue();
-                    Item itemData = new Item(); // ✅ Create a new item each loop
-
-                    itemData.setBranchId(0);
-                    itemData.setBranchName(item.getBranch());
-
-                    itemData.setCounterId(Integer.valueOf(item.getCounterId()));
-                    itemData.setCounterName(item.getCounterName());
-                    itemData.setCategoryId(item.getCategoryId());
-                    itemData.setCategoryName(item.getCategory());
-                    itemData.setProductId(item.getProductId());
-                    itemData.setProductName(item.getProduct());
-                    itemData.setPurityId(0);
-                    itemData.setPurityName(item.getPurity());
-                    itemData.setDesignId(item.getDesignId());
-                    itemData.setDesignName("");
-                    itemData.setCompanyId(0);
-                    itemData.setCompanyName("");
-                    itemData.setGrossWeight(0);
-                    itemData.setNetWeight(0);
-                    itemData.setQuantity(0);
-
-                    itemData.setItemCode(item.getItemCode());
-                    itemCodes.add(item.getItemCode());
-
                     if (item.getAvlQty() == item.getMatchQty()) {
-                        item.setInventoryStatus("match");
-                        itemData.setStatus("match");
-                        Log.d("@@ itemcodeData", "@@" + item.getInventoryStatus());
-                    } else {
-                        item.setInventoryStatus("unmatch");
-                        itemData.setStatus("unmatch");
-                        Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
-                    }
 
-                    items.add(itemData); // ✅ Add to list
+
+                        itemCodes.add(item.getItemCode());
+                        Log.d("@@ itemcode", "@@" + item.getItemCode());
+                    }
                 }
 
+// Set once after loop
+                matchQuantityRequest.setClientCode(clientCode);
+                matchQuantityRequest.setItemCodes(itemCodes);
 
-                stockVerificationRequestData.setItems(items);
-                // stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
-                //stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
+                stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
+                stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
 
 
                 networkUtils = new NetworkUtils(getActivity());
-
 
                 ApiProcess  apiprocess = new ApiProcess();
                 ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
                 apiManager = new ApiManager(apiService);
                 if (networkUtils.isNetworkAvailable()) {
-                    apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
+                    apiManager.stockVarificationDataData(stockVerificationFilterModel, new interfaces.FetchAllVerificxationData() {
                         @Override
-                        public void onSuccess(StockVerificationResponseNew result) {
-                           // if (!result=null) {
+                        public void onSuccess(StockVerificationFilterModelResponse result) {
+                            // if (!result=null) {
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(() -> {
@@ -723,9 +658,9 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                                             .show();
                                 });
                             }
-                                //  entryDatabase.makerfidentry(getActivity(), app, result);
-                                // rfidList.addAll(result);
-                                Log.e("RfidListCheck", "Rfid Scanned data: " + result);
+                            //  entryDatabase.makerfidentry(getActivity(), app, result);
+                            // rfidList.addAll(result);
+                            Log.e("RfidListCheck", "Rfid Scanned data: " + result);
                             //}
                         }
 
@@ -898,12 +833,39 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         });
 
 
+      /*  b.savelay1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                List<Itemmodel> ibottomlist = new ArrayList<>();
+                ibottomlist.clear();
+                ibottomlist.addAll(bottommap.values());
+                if (mainActivity.mReader.isInventorying()) {
+                    Toast.makeText(mainActivity, "stop scanning before save", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                entryDatabase.makeentry(getActivity(), ibottomlist, "inventory", "inventory", myapp, issueitem, new SaveCallback() {
+                    @Override
+                    public void onSaveSuccess() {
+                        Toast.makeText(mainActivity, "Inventory saved", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onSaveFailure(List<Itemmodel> failedItems) {
+
+                    }
+
+                });
+
+            }
+        });*/
+
 
         b.savelay1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               itemmodelList=entryDatabase.getAllItemsFromDatabase();
-             //  entryDatabase.saveItem(itemmodelList);
+                itemmodelList=entryDatabase.getAllItemsFromDatabase();
+                //  entryDatabase.saveItem(itemmodelList);
                 b.progressBar.setVisibility(View.VISIBLE);
                 final List<Itemmodel>[] ibottomlist = new List[]{new ArrayList<>()};
                 List<Itemmodel> finalListToSave = new ArrayList<>();
@@ -1041,7 +1003,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                         });
                     }
                 }).start();
-              //  entryDatabase.updateInventoryStatus(bot);
+                //  entryDatabase.updateInventoryStatus(bot);
 
 
 
@@ -1076,6 +1038,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
             }
         });
+
 
 
 
@@ -1292,12 +1255,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
     private String trimTid(String epc) {
         String trimmedTidValue = epc;
-        if (epc.startsWith("0000")) {
+       /* if (epc.startsWith("0000")) {
             trimmedTidValue = epc.substring(2); // Remove "00"
         }
         if (trimmedTidValue.endsWith("0000")) {
             trimmedTidValue = trimmedTidValue.substring(0, trimmedTidValue.length() - 2);
-        }
+        }*/
         return trimmedTidValue;
     }
     private void updateMaps(String tidValue) {
@@ -1686,22 +1649,21 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 isCounterSelected = true;
             }
         }
-       /* if (title.equalsIgnoreCase("category")) {
+        if (title.equalsIgnoreCase("category")) {
             Log.d("@@ title", " @@ title" + title);
-          *//*  bottomlist = db.getcatpro();
+          /*  bottomlist = db.getcatpro();
             if (!bottomlist.isEmpty()) {
                 isCategorySelecetd = true;
-            }*//*
+            }*/
 
             for (Itemmodel m : topmap.values()) {
-              *//*  bottomlist.add(m.getCategory());
+              /*  bottomlist.add(m.getCategory());
                 if (!bottomlist.isEmpty()) {
                     isCategorySelecetd = true;
-                }*//*
+                }*/
 
                 if (isCounterSelected) {
                     bottomlist.add(m.getCategory());
-                    Log.d("@@","@@"+bottomlist.size());
                 } else {
                     bottomlist = db.getcatpro();
                 }
@@ -1711,26 +1673,6 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
             }
 
-        }*/
-
-        if (title.equalsIgnoreCase("category")) {
-            Log.d("@@ title", " @@ title" + title);
-            Set<String> uniqueCategories = new LinkedHashSet<>();
-
-            for (Itemmodel m : topmap.values()) {
-                if (isCounterSelected) {
-                    uniqueCategories.add(m.getCategory());
-                } else {
-                    bottomlist = db.getcatpro();
-                }
-            }
-
-            if (uniqueCategories.isEmpty()) {
-                bottomlist = db.getcatpro();
-            } else {
-                bottomlist = new ArrayList<>(uniqueCategories);
-                isCategorySelecetd = true;
-            }
         }
         if (title.equalsIgnoreCase("product")) {
             //  if (isCategorySelecetd) {
@@ -1778,153 +1720,151 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
 
     public void showbottom(FragmentActivity activity, String title, TextView t, List<String> bottomlist) {
-     try {
-         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
-         bottomSheetDialog.setCancelable(false);
-         View contentView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_layout1, null);
-         bottomSheetDialog.setContentView(contentView);
+        try {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(activity);
+            bottomSheetDialog.setCancelable(false);
+            View contentView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_layout1, null);
+            bottomSheetDialog.setContentView(contentView);
 
-         ImageButton close = contentView.findViewById(R.id.closeButton);
-         TextView ttitle = contentView.findViewById(R.id.maintitle);
-         Button applyButton = contentView.findViewById(R.id.apply_button);
-         ListView spinnerlist = contentView.findViewById(R.id.spinnerlist);
-         EditText searchBar = contentView.findViewById(R.id.search_bar); // Search bar
+            ImageButton close = contentView.findViewById(R.id.closeButton);
+            TextView ttitle = contentView.findViewById(R.id.maintitle);
+            Button applyButton = contentView.findViewById(R.id.apply_button);
+            ListView spinnerlist = contentView.findViewById(R.id.spinnerlist);
+            EditText searchBar = contentView.findViewById(R.id.search_bar); // Search bar
 
-         ttitle.setText(title);
+            ttitle.setText(title);
 
-         // Store the original list
+            // Store the original list
+            List<String> originalList = new ArrayList<>();
 
+            for (Object obj : bottomlist) {
+                if (obj != null) {
+                    originalList.add(obj.toString()); // safe to convert now
+                }
+            }
+            //   final List<String> originalList = new ArrayList<>(bottomlist);
+            Log.d("BottomSheet", "Original List: " + originalList);
 
-         List<String> originalList = new ArrayList<>();
-         originalList.clear();
-         for (Object obj : bottomlist) {
-             if (obj != null) {
-                 originalList.add(obj.toString()); // safe to convert now
-             }
-         }
-      //   final List<String> originalList = new ArrayList<>(bottomlist);
-         Log.d("BottomSheet", "Original List: " + originalList);
+            final ArrayAdapter<String>[] adapter = new ArrayAdapter[]{new ArrayAdapter<>(activity, android.R.layout.simple_list_item_multiple_choice, originalList)};
+            spinnerlist.setAdapter(adapter[0]);
+            spinnerlist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
 
-         final ArrayAdapter<String>[] adapter = new ArrayAdapter[]{new ArrayAdapter<>(activity, android.R.layout.simple_list_item_multiple_choice, originalList)};
-         spinnerlist.setAdapter(adapter[0]);
-         spinnerlist.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-
-         SparseBooleanArray checkedItems = new SparseBooleanArray(originalList.size());
+            SparseBooleanArray checkedItems = new SparseBooleanArray(originalList.size());
 
 // Listen for item checks and update checkedItems accordingly
-         spinnerlist.setOnItemClickListener((parent, view, position, id) -> {
-             String selectedItem = adapter[0].getItem(position);
-             int originalPosition = originalList.indexOf(selectedItem);
+            spinnerlist.setOnItemClickListener((parent, view, position, id) -> {
+                String selectedItem = adapter[0].getItem(position);
+                int originalPosition = originalList.indexOf(selectedItem);
 
-             if (originalPosition != -1) {
-                 boolean currentState = checkedItems.get(originalPosition, false);
-                 checkedItems.put(originalPosition, !currentState);
-                 spinnerlist.setItemChecked(position, !currentState);
-                 Log.d("BottomSheet", "Checked state updated for " + selectedItem + ": " + !currentState);
-             }
-         });
+                if (originalPosition != -1) {
+                    boolean currentState = checkedItems.get(originalPosition, false);
+                    checkedItems.put(originalPosition, !currentState);
+                    spinnerlist.setItemChecked(position, !currentState);
+                    Log.d("BottomSheet", "Checked state updated for " + selectedItem + ": " + !currentState);
+                }
+            });
 
-         searchBar.addTextChangedListener(new TextWatcher() {
-             @Override
-             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-             }
+            searchBar.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                }
 
-             @Override
-             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                 Log.d("BottomSheet", "Search input: " + charSequence);
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    Log.d("BottomSheet", "Search input: " + charSequence);
 
-                 if (charSequence.length() == 0) {
-                     // Reset adapter with the original list
-                     ArrayAdapter<String> newAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, originalList);
-                     spinnerlist.setAdapter(newAdapter);
-                     adapter[0] = newAdapter;
-                     adapter[0].notifyDataSetChanged();
-                     Log.d("BottomSheet", "Adapter reset to original list. Item count: " + adapter[0].getCount());
+                    if (charSequence.length() == 0) {
+                        // Reset adapter with the original list
+                        ArrayAdapter<String> newAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_multiple_choice, originalList);
+                        spinnerlist.setAdapter(newAdapter);
+                        adapter[0] = newAdapter;
+                        adapter[0].notifyDataSetChanged();
+                        Log.d("BottomSheet", "Adapter reset to original list. Item count: " + adapter[0].getCount());
 
-                     // Restore checked states
-                     for (int j = 0; j < originalList.size(); j++) {
-                         spinnerlist.setItemChecked(j, checkedItems.get(j));
-                         Log.d("BottomSheet", "Item " + j + " (" + originalList.get(j) + ") checked state: " + checkedItems.get(j));
-                     }
-                 } else {
-                     // Filter adapter and apply checked states for filtered items
-                     adapter[0].getFilter().filter(charSequence);
-                     adapter[0].notifyDataSetChanged();
-                     Log.d("BottomSheet", "Filtered adapter count after search: " + adapter[0].getCount());
+                        // Restore checked states
+                        for (int j = 0; j < originalList.size(); j++) {
+                            spinnerlist.setItemChecked(j, checkedItems.get(j));
+                            Log.d("BottomSheet", "Item " + j + " (" + originalList.get(j) + ") checked state: " + checkedItems.get(j));
+                        }
+                    } else {
+                        // Filter adapter and apply checked states for filtered items
+                        adapter[0].getFilter().filter(charSequence);
+                        adapter[0].notifyDataSetChanged();
+                        Log.d("BottomSheet", "Filtered adapter count after search: " + adapter[0].getCount());
 
-                     // Apply checked states based on visible items in the filtered list
-                     for (int j = 0; j < adapter[0].getCount(); j++) {
-                         String item = adapter[0].getItem(j);
-                         int originalPosition = originalList.indexOf(item);
-                         if (originalPosition != -1) {
-                             spinnerlist.setItemChecked(j, checkedItems.get(originalPosition));
-                         }
-                     }
-                 }
-             }
+                        // Apply checked states based on visible items in the filtered list
+                        for (int j = 0; j < adapter[0].getCount(); j++) {
+                            String item = adapter[0].getItem(j);
+                            int originalPosition = originalList.indexOf(item);
+                            if (originalPosition != -1) {
+                                spinnerlist.setItemChecked(j, checkedItems.get(originalPosition));
+                            }
+                        }
+                    }
+                }
 
-             @Override
-             public void afterTextChanged(Editable editable) {
-             }
-         });
+                @Override
+                public void afterTextChanged(Editable editable) {
+                }
+            });
 
-         close.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 // Check if any item is selected
-                 List<String> selectedItems = new ArrayList<>();
-                 for (int i = 0; i < originalList.size(); i++) {
-                     if (checkedItems.get(i)) {
-                         selectedItems.add(originalList.get(i));
-                     }
-                 }
+            close.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Check if any item is selected
+                    List<String> selectedItems = new ArrayList<>();
+                    for (int i = 0; i < originalList.size(); i++) {
+                        if (checkedItems.get(i)) {
+                            selectedItems.add(originalList.get(i));
+                        }
+                    }
 
-                 if (!selectedItems.isEmpty()) {
-                     // Show selected items in Toast or log
-                     String selectedText = TextUtils.join(", ", selectedItems);
-                     // Toast.makeText(activity, "Selected items: " + selectedText, Toast.LENGTH_LONG).show();
-                 } else {
-                     //Toast.makeText(activity, "No items selected", Toast.LENGTH_SHORT).show();
-                 }
+                    if (!selectedItems.isEmpty()) {
+                        // Show selected items in Toast or log
+                        String selectedText = TextUtils.join(", ", selectedItems);
+                        // Toast.makeText(activity, "Selected items: " + selectedText, Toast.LENGTH_LONG).show();
+                    } else {
+                        //Toast.makeText(activity, "No items selected", Toast.LENGTH_SHORT).show();
+                    }
 
-                 bottomSheetDialog.dismiss();
-             }
-         });
+                    bottomSheetDialog.dismiss();
+                }
+            });
 
 
-         applyButton.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View view) {
-                 // Collect selected items
-                 List<String> selectedItems = new ArrayList<>();
-                 for (int i = 0; i < originalList.size(); i++) {
-                     if (checkedItems.get(i)) {
-                         selectedItems.add(originalList.get(i));
-                     }
-                 }
+            applyButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Collect selected items
+                    List<String> selectedItems = new ArrayList<>();
+                    for (int i = 0; i < originalList.size(); i++) {
+                        if (checkedItems.get(i)) {
+                            selectedItems.add(originalList.get(i));
+                        }
+                    }
 
-                 Log.d("BottomSheet", "Selected items: " + selectedItems);
+                    Log.d("BottomSheet", "Selected items: " + selectedItems);
 
-                 if (selectedItems.isEmpty()) {
-                     Toast.makeText(activity, "No items selected", Toast.LENGTH_SHORT).show();
-                     return;
-                 }
+                    if (selectedItems.isEmpty()) {
+                        Toast.makeText(activity, "No items selected", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
 
-                 // Update the TextView with selected items
-                 t.setText(TextUtils.join(", ", selectedItems));
+                    // Update the TextView with selected items
+                    t.setText(TextUtils.join(", ", selectedItems));
 
-                 // Apply filtering based on the selected items
-                 applyFilter(activity, title, selectedItems);
+                    // Apply filtering based on the selected items
+                    applyFilter(activity, title, selectedItems);
 
-                 bottomSheetDialog.dismiss();
-             }
-         });
+                    bottomSheetDialog.dismiss();
+                }
+            });
 
-         bottomSheetDialog.show();
-     }catch (Exception e)
-     {
-         e.printStackTrace();
-     }
+            bottomSheetDialog.show();
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
 
@@ -2048,8 +1988,6 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
 
                 for (Map.Entry<String, Itemmodel> entry : totalitems.entrySet()) {
-
-
                     Itemmodel item = entry.getValue();
                     if (selectedItems.stream().anyMatch(selected -> selected.equalsIgnoreCase(item.getCounterName()))) {
                         filtereditems.put(item.getTidValue(), new Itemmodel(item));
@@ -2534,7 +2472,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 newItem.setTotalStonewt(item.getStoneWt());
                 newItem.setTotalNwt(item.getNetWt());
                 newItem.setItemCode(item.getItemCode());
-               // int pcs = 0;
+                // int pcs = 0;
                 String pcsStr = item.getPcs();
 
                 if (pcsStr != null) {
