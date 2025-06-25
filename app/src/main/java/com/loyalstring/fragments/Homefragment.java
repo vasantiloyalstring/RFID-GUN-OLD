@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.loyalstring.Activities.DailyStockReportActivity;
 import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.database.StorageClass;
@@ -180,8 +181,10 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
         csalereport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment h = new Allreportfragment();
-                displayfragemnt(h);
+                Intent intent=new Intent(getActivity(), DailyStockReportActivity.class);
+                startActivity(intent);
+               /* Fragment h = new Allreportfragment();
+                displayfragemnt(h);*/
             }
         });
 

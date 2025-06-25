@@ -596,14 +596,10 @@ public class EntryDatabase extends SQLiteOpenHelper {
 
 
     public void makeentry(Context activity, List<Itemmodel> itemlist, String etype, String frag, MyApplication app, List<Issuemode> issueitem, SaveCallback saveCallback) {
-        // saveAllItem(itemlist);
-
         SaveItemAsyncTask asyncTask = new SaveItemAsyncTask(activity, itemlist, etype, frag, app, saveCallback, issueitem);
         asyncTask.execute();
 
-      /*  List<Itemmodel> itemmodelList=new ArrayList<>();;
-        itemmodelList=getAllItemsFromDatabase();
-        saveItem(itemmodelList);*/
+
 
     }
 
@@ -1184,6 +1180,25 @@ public class EntryDatabase extends SQLiteOpenHelper {
                     myapp.removeite(item); // Update cache or memory structure if needed
                 }
                 Log.e("deleted", "allitems   " + item.getItemCode());
+            }
+
+            db.setTransactionSuccessful(); // Mark the transaction as successful
+        } catch (Exception e) {
+            e.printStackTrace(); // Log any exceptions
+        } finally {
+            db.endTransaction(); // Always end the transaction
+        }
+    }
+
+    public void deleteItems(MyApplication myapp) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();  // Start a database transaction
+        try {
+            // Execute delete operation to remove all items from the table
+            int rowsAffected = db.delete(ALL_TABLE, null, null); // No conditions, delete all rows
+            if (rowsAffected > 0) {
+                Log.e("deleted", "All data deleted from ALL_TABLE");
+              //  myapp.clearItems(); // Update cache or memory structure if needed (this method should be defined in MyApplication)
             }
 
             db.setTransactionSuccessful(); // Mark the transaction as successful

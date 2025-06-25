@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ApiManager {
@@ -141,6 +142,30 @@ public class ApiManager {
         }).start();
     }
 
+  /* public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
+       // Asynchronous network call using enqueue instead of new Thread()
+       apiService.stockVarificationNew(stockVerificationRequestData).enqueue(new Callback<StockVerificationResponseNew>() {
+
+           @Override
+           public void onResponse(Call<StockVerificationResponseNew> call, Response<StockVerificationResponseNew> response) {
+               if (response.isSuccessful() && response.body() != null) {
+                   // Pass the successful response to the callback
+                   fetchAllRFIDData.onSuccess(response.body());
+               } else {
+                   // Handle the case where the response is unsuccessful
+                   String errorMsg = response.errorBody() != null ? String.valueOf(response.errorBody()) : "Unknown error";
+                   fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+               }
+           }
+
+           @Override
+           public void onFailure(Call<StockVerificationResponseNew> call, Throwable t) {
+               // Handle failure case
+               fetchAllRFIDData.onError(new Exception("Network call failed: " + t.getMessage()));
+           }
+       });
+   }
+*/
 
 
 

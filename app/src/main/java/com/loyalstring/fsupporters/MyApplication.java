@@ -23,6 +23,7 @@ public class MyApplication extends Application {
 
     private int totalcount = 0;
 
+
     public void setInventoryMap(HashMap<String, Itemmodel> inventoryMap) {
         this.inventoryMap = inventoryMap;
     }
@@ -151,4 +152,10 @@ public class MyApplication extends Application {
     public void setTotalcount(int totalcount) {
         this.totalcount = totalcount;
     }
+
+    // Method to clear all items from the list
+    public void clearItems() {
+        inventoryMap.clear();  // Clears the list of all items
+    }
+
 }

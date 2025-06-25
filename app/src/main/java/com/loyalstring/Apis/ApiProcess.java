@@ -102,7 +102,7 @@ public class ApiProcess {
 
 
     public void getproductsn(HashMap<String, Itemmodel> ml, Context activity, String baseUrl, List<Rfidresponse.ItemModel> rfidurl, EntryDatabase entryDatabase, MyApplication app, String rfidType) {
-
+        entryDatabase.deleteItems(app);
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage("loading data from api");
         dialog.setCanceledOnTouchOutside(false);
@@ -171,6 +171,7 @@ public class ApiProcess {
                             // Assuming 'Success' status check is not required here since it's a list
                             Log.e("check1allitemstid", "" +apiResponse);
                             rfidList.addAll(apiResponse);
+                            entryDatabase.makerfidentry((FragmentActivity) activity,app,rfidList);
                         } else {
                             Toast.makeText(activity, "Failed to load RFID data: Response not successful", Toast.LENGTH_SHORT).show();
                             Log.e("RFID Response Error", "Response Code: " + response.code() + ", Message: " + response.message());
@@ -217,7 +218,7 @@ public class ApiProcess {
         }
 
         if (rfidType.toLowerCase().contains("webreusable") || rfidType.toLowerCase().contains("reusable")) {
-
+          //  entryDatabase.deleteItems(app);
 
             call2.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
                 @Override
@@ -607,6 +608,7 @@ public class ApiProcess {
         new Thread(() -> {
             try {
                 latch.await(); // Wait for both API calls to finish
+
 
                 // Process data here
                 HashMap<String, Itemmodel> nmap = new HashMap<>();

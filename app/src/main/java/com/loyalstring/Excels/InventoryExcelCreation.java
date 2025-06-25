@@ -451,10 +451,8 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                                 }
                             }
                         } else {
-                            headers = new String[]{"TID Value", "EPC Value", "Counter Name", "Category", "Product", "Product Code",
-                                    "Purity", "Barcode Number", "Item Code", "Box", "Pieces", "Designcode", "Image", "Gross Weight", "Stone Weight", "Net Weight",
-                                    "Making gm", "Making %", "Fixed amount", "Fixed Wastage", "Stone amount", "Mrp", "Huid code",
-                                    "Party code", "Updated Date", "Updated By", "Status"};
+                            headers = new String[]{"Counter Name", "Category", "Product",
+                                    "Purity", "Barcode Number", "Item Code", "Pieces", "Gross Weight", "Stone Weight", "Net Weight", "Mrp", "Status"};
 
                             for (int i = 0; i < headers.length; i++) {
                                 bottomsheet.value(0, i, headers[i]);
@@ -466,21 +464,21 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
 
                             for (Itemmodel item : processlist) {
                                 if (item != null && item.getAvlQty() != item.getMatchQty()) {
-                                    String op1 = "not found";
-                                    String[] values = {item.getTidValue(), item.getEpcValue(), item.getCounterName(),
-                                            item.getCategory(), item.getProduct(), item.getProductCode(), item.getPurity(), item.getBarCode(),
-                                            item.getItemCode(), item.getBox(), item.getPcs(), item.getDiamondClarity(), item.getImageUrl(),
-                                            String.valueOf(item.getGrossWt()), String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
-                                            String.valueOf(item.getMakingGm()), String.valueOf(item.getMakingPer()), String.valueOf(item.getFixedAmount()),
-                                            String.valueOf(item.getFixedWastage()), String.valueOf(item.getStoneAmount()), String.valueOf(item.getMrp()),
-                                            item.getHuidCode(), item.getPartyCode(), "", "", op1};
-                                    createRow(bottomsheet, bottomMatchRowIndex++, values);
 
-                                    if (++rowsProcessed % progressUpdateInterval == 0) {
-                                        publishProgress(bottomMatchRowIndex);
+                                        String op1 = "not found";
+                                        String[] values = {item.getCounterName(),
+                                                item.getCategory(), item.getProduct(),item.getPurity(), item.getBarCode(),
+                                                item.getItemCode(),  item.getPcs(),
+                                                String.valueOf(item.getGrossWt()), String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
+                                                String.valueOf(item.getMrp()), op1};
+                                        createRow(bottomsheet, bottomMatchRowIndex++, values);
+
+                                        if (++rowsProcessed % progressUpdateInterval == 0) {
+                                            publishProgress(bottomMatchRowIndex);
+                                        }
                                     }
                                 }
-                            }
+
                         }
                     } else {
                         headers = new String[]{"Counter Name", "Category", "Product", "Total Quantity", "Match Quantity", "Tot Unmatch Qty",
@@ -495,46 +493,49 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                         int progressUpdateInterval = 100;
 
                         for (Itemmodel item : processlist) {
-                            String[] values = {item.getCounterName(), item.getCategory(), item.getProduct(), String.valueOf(item.getAvlQty()),
-                                    String.valueOf(item.getMatchQty()), String.valueOf(item.getTotUnMatchQty()), String.valueOf(item.getTotalGwt()),
-                                    String.valueOf(item.getMatchGwt()), String.valueOf(item.getTotUnmatchGrswt())};
+                            if (item.getAvlQty() != 0.0) {
 
-                            for (int i = 0; i < values.length; i++) {
-                                createCell(bottomsheet, matchRowIndex, i, values[i]);
+                                String[] values = {item.getCounterName(), item.getCategory(), item.getProduct(), String.valueOf(item.getAvlQty()),
+                                        String.valueOf(item.getMatchQty()), String.valueOf(item.getTotUnMatchQty()), String.valueOf(item.getTotalGwt()),
+                                        String.valueOf(item.getMatchGwt()), String.valueOf(item.getTotUnmatchGrswt())};
+
+                                for (int i = 0; i < values.length; i++) {
+                                    createCell(bottomsheet, matchRowIndex, i, values[i]);
+                                }
+
+                                matchRowIndex++;
+                                if (++rowsProcessed % progressUpdateInterval == 0) {
+                                    publishProgress(matchRowIndex);
+                                }
                             }
 
-                            matchRowIndex++;
-                            if (++rowsProcessed % progressUpdateInterval == 0) {
-                                publishProgress(matchRowIndex);
+                            int totalRowIndex = matchRowIndex;
+                            int totalQuantity = 0, matchQuantity = 0, totalPieces = 0, totalMPieces = 0;
+                            double totalGrosswt = 0, matchGrosswt = 0, unmatchwt, unmatchGrWt = 0;
+
+                            for (Itemmodel item1 : processlist) {
+                                totalQuantity += item1.getAvlQty();
+                                matchQuantity += item1.getMatchQty();
+                                totalGrosswt += item1.getTotalGwt();
+                                matchGrosswt += item1.getMatchGwt();
+                                unmatchGrWt += item1.getTotUnmatchGrswt();
+                                totalPieces += item1.getTotPcs();
+                                totalMPieces += item1.getTotMPcs();
+                            }
+
+                            unmatchwt = totalQuantity - matchQuantity;
+
+                            String[] totalValues = {"Total", "", "", String.valueOf(totalQuantity), String.valueOf(matchQuantity),
+                                    String.valueOf(unmatchwt), String.valueOf(totalGrosswt), String.valueOf(matchGrosswt), String.valueOf(unmatchGrWt)};
+
+                            for (int i = 0; i < totalValues.length; i++) {
+                                bottomsheet.value(totalRowIndex, i, totalValues[i]);
                             }
                         }
 
-                        int totalRowIndex = matchRowIndex;
-                        int totalQuantity = 0, matchQuantity = 0, totalPieces = 0, totalMPieces = 0;
-                        double totalGrosswt = 0, matchGrosswt = 0, unmatchwt, unmatchGrWt = 0;
-
-                        for (Itemmodel item : processlist) {
-                            totalQuantity += item.getAvlQty();
-                            matchQuantity += item.getMatchQty();
-                            totalGrosswt += item.getTotalGwt();
-                            matchGrosswt += item.getMatchGwt();
-                            unmatchGrWt += item.getTotUnmatchGrswt();
-                            totalPieces += item.getTotPcs();
-                            totalMPieces += item.getTotMPcs();
-                        }
-
-                        unmatchwt = totalQuantity - matchQuantity;
-
-                        String[] totalValues = {"Total", "", "", String.valueOf(totalQuantity), String.valueOf(matchQuantity),
-                                String.valueOf(unmatchwt), String.valueOf(totalGrosswt), String.valueOf(matchGrosswt), String.valueOf(unmatchGrWt)};
-
-                        for (int i = 0; i < totalValues.length; i++) {
-                            bottomsheet.value(totalRowIndex, i, totalValues[i]);
-                        }
+                        bottomWorkbook.finish();
+                        bottomOutputStream.close();
                     }
-
-                    bottomWorkbook.finish();
-                    bottomOutputStream.close();
 
                     File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "Loyalstring files");
                     File productDir = new File(dir, "inventory");

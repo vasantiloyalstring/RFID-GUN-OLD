@@ -2,6 +2,7 @@ package com.loyalstring.Activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -22,11 +22,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.loyalstring.Adapters.CommonStockAdapter;
 import com.loyalstring.Adapters.InventoryBottomAdaptor;
+import com.loyalstring.Apis.ApiManager;
+import com.loyalstring.Apis.ApiProcess;
+import com.loyalstring.Apis.RetrofitClient;
 import com.loyalstring.Excels.InventoryExcelCreation;
+import com.loyalstring.LatestApis.LoginApiSupport.Clients;
+import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.R;
 import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.fsupporters.Globalcomponents;
+import com.loyalstring.interfaces.ApiService;
+import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.Itemmodel;
+import com.loyalstring.modelclasses.MatchQuantityRequest;
+import com.loyalstring.modelclasses.StockVerificationFilter;
+import com.loyalstring.modelclasses.StockVerificationFilterModel;
+import com.loyalstring.modelclasses.StockVerificationRequestData;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
+import com.loyalstring.network.NetworkUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +59,10 @@ public class DailyStockReportActivity extends AppCompatActivity {
     private List<Itemmodel> allItems;
     private Toolbar toolbar;
     Globalcomponents globalcomponents;
+    ApiManager apiManager;
     Button emailButton, stockVerificationButton;
+    NetworkUtils networkUtils;
+    private SharedPreferencesManager sharedPreferencesManager;
 
     private final Stack<LevelState> levelStack = new Stack<>();
     private Map<String, List<Itemmodel>> groupedMap;
@@ -71,6 +88,7 @@ public class DailyStockReportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_daily_stock_report);
         entryDatabase = new EntryDatabase(this);
+        sharedPreferencesManager = new SharedPreferencesManager(this);
         recyclerView = findViewById(R.id.recyclerViewStock);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         tvSelectedDate = findViewById(R.id.tv_selected_date);
@@ -364,8 +382,226 @@ public class DailyStockReportActivity extends AppCompatActivity {
         stockVerificationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // topmatch.clear();
+                // bottommatch.clear();
+
+                String categoty = "";
+                String product = "";
+                String counterName = "";
+                Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+                String clientCode = clients.getClientCode();
+               /* for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    String key = entry.getKey();
+                    Itemmodel item = entry.getValue();
+                    categoty=item.getCategory();
+                    product=item.getProduct();
+                    counterName=item.getCounterName();
+                    if (item.getAvlQty() == item.getMatchQty()) {
+                        topmatch.put(key, item);
+                    }
+                }
+                for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    String key = entry.getKey();
+                    Itemmodel item = entry.getValue();
+                    categoty=item.getCategory();
+                    product=item.getProduct();
+                    if (item.getAvlQty() == item.getMatchQty()) {
+                        bottommatch.put(key, item);
+                    }
+                }*/
+                List<MatchQuantityRequest> matchQuantityRequestList = new ArrayList<>();
+
+
+                int categoryId = 0;
+                int productId = 0;
+                int designId = 0;
+                int purityId = 0;
+                int counterId = 0;
+
+
+                for (int i = 0; i < itemsForDate.size(); i++) {
+                    Log.d("@@ category", "category" + itemsForDate.get(i).getCategory());
+                    Log.d("@@ category", "category categoty" + itemsForDate);
+                    if (itemsForDate.get(i).getCategory().equalsIgnoreCase(categoty)) {
+                        categoryId = itemsForDate.get(i).getCategoryId();
+                        break;
+                    }
+                }
+
+                for (int i1 = 0; i1 < itemsForDate.size(); i1++) {
+                    if (itemsForDate.get(i1).getProduct().equalsIgnoreCase(product)) {
+                        productId = itemsForDate.get(i1).getProductId();
+                        break;
+                    }
+                }
+
+                for (int i2 = 0; i2 < itemsForDate.size(); i2++) {
+
+                    if (itemsForDate.get(i2).getCounterName().equalsIgnoreCase(counterName)) {
+                        counterId = Integer.parseInt(itemsForDate.get(i2).getCounterId());
+
+                    }
+
+                    designId = 0;
+                    purityId = 0;
+
+
+                }
+
+                Log.d("@@ categoryId", "categoryId" + categoryId);
+                Log.d("@@ productId", "productId" + productId);
+                Log.d("@@ categoryId", "categoryId" + purityId);
+                Log.d("@@ categoryId", "categoryId" + designId);
+                Log.d("@@ categoryId", "categoryId" + counterId);
+
+
+                StockVerificationRequestData stockVerificationRequestData = new StockVerificationRequestData();
+                stockVerificationRequestData.setClientCode(clientCode);
+
+
+                StockVerificationFilterModel stockVerificationFilterModel = new StockVerificationFilterModel();
+                StockVerificationFilter stockVerificationFilter = new StockVerificationFilter();
+                stockVerificationFilter.setId(0);
+                stockVerificationFilter.setCreatedOn("");
+                stockVerificationFilter.setLastUpdated("");
+                stockVerificationFilter.setStatusType(true);
+                stockVerificationFilter.setClientCode(clientCode);
+                stockVerificationFilter.setCounterId(counterId);
+                stockVerificationFilter.setCategoryId(categoryId);
+                stockVerificationFilter.setProductId(productId);
+                stockVerificationFilter.setDesignId(designId);
+                stockVerificationFilter.setPurityId(purityId);
+                stockVerificationFilter.setGrossWeight("string");
+                stockVerificationFilter.setNetWeight("string");
+                stockVerificationFilter.setQuantity("string");
+                stockVerificationFilter.setItemCode("string");
+
+
+                MatchQuantityRequest matchQuantityRequest = new MatchQuantityRequest();
+
+                List<String> itemCodes = new ArrayList<>();
+
+                List<Item> items = new ArrayList<>(); // ✅ Initialize once outside the loop
+
+                for (int i = 0; i < itemsForDate.size(); i++) {
+                    //   Log.d("@@ itemcodeSize", "@@" + bottommap.size());
+
+                    Itemmodel item = itemsForDate.get(i);
+                    Item itemData = new Item(); // ✅ Create a new item each loop
+
+                    itemData.setBranchId(0);
+                    itemData.setBranchName(item.getBranch());
+
+                    itemData.setCounterId(Integer.valueOf(item.getCounterId()));
+                    itemData.setCounterName(item.getCounterName());
+                    itemData.setCategoryId(item.getCategoryId());
+                    itemData.setCategoryName(item.getCategory());
+                    itemData.setProductId(item.getProductId());
+                    itemData.setProductName(item.getProduct());
+                    itemData.setPurityId(0);
+                    itemData.setPurityName(item.getPurity());
+                    itemData.setDesignId(item.getDesignId());
+                    itemData.setDesignName("");
+                    itemData.setCompanyId(0);
+                    itemData.setCompanyName("");
+                    itemData.setGrossWeight(0);
+                    itemData.setNetWeight(0);
+                    itemData.setQuantity(0);
+
+                    itemData.setItemCode(item.getItemCode());
+                    itemCodes.add(item.getItemCode());
+
+                    if (item.getAvlQty() == item.getMatchQty()) {
+                        item.setInventoryStatus("match");
+                        itemData.setStatus("match");
+                        Log.d("@@ itemcodeData", "@@" + item.getInventoryStatus());
+                    } else {
+                        item.setInventoryStatus("unmatch");
+                        itemData.setStatus("unmatch");
+                        Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
+                    }
+
+                    items.add(itemData); // ✅ Add to list
+                }
+
+
+                stockVerificationRequestData.setItems(items);
+                // stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
+                //stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
+
+
+                networkUtils = new NetworkUtils(DailyStockReportActivity.this);
+
+
+                networkUtils = new NetworkUtils(DailyStockReportActivity.this);
+
+                ApiProcess apiprocess = new ApiProcess();
+                ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
+                apiManager = new ApiManager(apiService);
+                if (networkUtils.isNetworkAvailable()) {
+                    apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
+                        @Override
+                        public void onSuccess(StockVerificationResponseNew result) {
+                            // if (!result=null) {
+                         /*   Activity activity = getActivity();
+                            if (activity != null) {
+                                activity.runOnUiThread(() -> {
+                                    new AlertDialog.Builder(activity)
+                                            .setTitle("Success")
+                                            .setMessage("Stock status has be updated to the server")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                });
+                            }*/
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new AlertDialog.Builder(DailyStockReportActivity.this)
+                                            .setTitle("Success")
+                                            .setMessage("Stock status has be updated to the server")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                    //  entryDatabase.makerfidentry(getActivity(), app, result);
+                                    // rfidList.addAll(result);
+                                    Log.e("RfidListCheck", "Rfid Scanned data: " + result);
+                                }
+                            });
+                        }
+
+
+                        @Override
+                        public void onError(Exception e) {
+                           /*// Activity activity = getActivity();
+                            //if (activity != null) {
+                              //  activity.runOnUiThread(() -> {
+                                    new AlertDialog.Builder(getApplicationContext())
+                                            .setTitle("Error")
+                                            .setMessage("Stock status has not uploaded. something went wrong")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                              //  });*/
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new AlertDialog.Builder(DailyStockReportActivity.this)
+                                            .setTitle("Error")
+                                            .setMessage("Stock status has not uploaded. something went wrong")
+                                            .setPositiveButton("OK", null)
+                                            .show();
+                                }
+                            });
+
+                        }
+                        // }
+                    });
+                }
+
 
             }
+
+
+//
+
         });
     }
 

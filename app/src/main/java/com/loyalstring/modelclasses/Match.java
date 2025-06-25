@@ -57,10 +57,10 @@ public class Match {
     private String branchName;
     @SerializedName("GrossWeight")
     @Expose
-    private Integer grossWeight;
+    private double grossWeight;
     @SerializedName("NetWeight")
     @Expose
-    private Integer netWeight;
+    private double netWeight;
     @SerializedName("Quantity")
     @Expose
     private Integer quantity;
@@ -213,19 +213,19 @@ public class Match {
         this.branchName = branchName;
     }
 
-    public Integer getGrossWeight() {
+    public double getGrossWeight() {
         return grossWeight;
     }
 
-    public void setGrossWeight(Integer grossWeight) {
+    public void setGrossWeight(double grossWeight) {
         this.grossWeight = grossWeight;
     }
 
-    public Integer getNetWeight() {
+    public double getNetWeight() {
         return netWeight;
     }
 
-    public void setNetWeight(Integer netWeight) {
+    public void setNetWeight(double netWeight) {
         this.netWeight = netWeight;
     }
 

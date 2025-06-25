@@ -18,25 +18,25 @@ public class StockVerificationResponseNew {
     private List<Unmatch> unmatch;
     @SerializedName("TotalMatchGrossWeight")
     @Expose
-    private Integer totalMatchGrossWeight;
+    private double totalMatchGrossWeight;
     @SerializedName("TotalMatchNetWeight")
     @Expose
-    private Integer totalMatchNetWeight;
+    private double totalMatchNetWeight;
     @SerializedName("TotalUnmatchGrossWeight")
     @Expose
-    private Integer totalUnmatchGrossWeight;
+    private double totalUnmatchGrossWeight;
     @SerializedName("TotalUnmatchNetWeight")
     @Expose
-    private Integer totalUnmatchNetWeight;
+    private double totalUnmatchNetWeight;
     @SerializedName("TotalQuantity")
     @Expose
     private Integer totalQuantity;
     @SerializedName("TotalGrossWeight")
     @Expose
-    private Integer totalGrossWeight;
+    private double totalGrossWeight;
     @SerializedName("TotalNetWeight")
     @Expose
-    private Integer totalNetWeight;
+    private double totalNetWeight;
     @SerializedName("TotalMatchQty")
     @Expose
     private Integer totalMatchQty;
@@ -68,35 +68,35 @@ public class StockVerificationResponseNew {
         this.unmatch = unmatch;
     }
 
-    public Integer getTotalMatchGrossWeight() {
+    public double getTotalMatchGrossWeight() {
         return totalMatchGrossWeight;
     }
 
-    public void setTotalMatchGrossWeight(Integer totalMatchGrossWeight) {
+    public void setTotalMatchGrossWeight(double totalMatchGrossWeight) {
         this.totalMatchGrossWeight = totalMatchGrossWeight;
     }
 
-    public Integer getTotalMatchNetWeight() {
+    public double getTotalMatchNetWeight() {
         return totalMatchNetWeight;
     }
 
-    public void setTotalMatchNetWeight(Integer totalMatchNetWeight) {
+    public void setTotalMatchNetWeight(double totalMatchNetWeight) {
         this.totalMatchNetWeight = totalMatchNetWeight;
     }
 
-    public Integer getTotalUnmatchGrossWeight() {
+    public double getTotalUnmatchGrossWeight() {
         return totalUnmatchGrossWeight;
     }
 
-    public void setTotalUnmatchGrossWeight(Integer totalUnmatchGrossWeight) {
+    public void setTotalUnmatchGrossWeight(double totalUnmatchGrossWeight) {
         this.totalUnmatchGrossWeight = totalUnmatchGrossWeight;
     }
 
-    public Integer getTotalUnmatchNetWeight() {
+    public double getTotalUnmatchNetWeight() {
         return totalUnmatchNetWeight;
     }
 
-    public void setTotalUnmatchNetWeight(Integer totalUnmatchNetWeight) {
+    public void setTotalUnmatchNetWeight(double totalUnmatchNetWeight) {
         this.totalUnmatchNetWeight = totalUnmatchNetWeight;
     }
 
@@ -108,7 +108,7 @@ public class StockVerificationResponseNew {
         this.totalQuantity = totalQuantity;
     }
 
-    public Integer getTotalGrossWeight() {
+    public double getTotalGrossWeight() {
         return totalGrossWeight;
     }
 
@@ -116,11 +116,11 @@ public class StockVerificationResponseNew {
         this.totalGrossWeight = totalGrossWeight;
     }
 
-    public Integer getTotalNetWeight() {
+    public double getTotalNetWeight() {
         return totalNetWeight;
     }
 
-    public void setTotalNetWeight(Integer totalNetWeight) {
+    public void setTotalNetWeight(double totalNetWeight) {
         this.totalNetWeight = totalNetWeight;
     }
 
