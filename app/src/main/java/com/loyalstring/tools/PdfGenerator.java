@@ -13,10 +13,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -50,7 +48,6 @@ import com.loyalstring.modelclasses.Itemmodel;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
@@ -87,7 +84,7 @@ public class PdfGenerator {
             if (i == 15) {
                 //modern
                 savePdfToDownloadFolder(billmap);
-            }else if (i == 2){
+            } else if (i == 2) {
                 Collections.sort(item, new Comparator<Itemmodel>() {
                     @Override
                     public int compare(Itemmodel item1, Itemmodel item2) {
@@ -96,14 +93,13 @@ public class PdfGenerator {
                 });
                 //reevazz
                 savePdfToDownloadFolder1(item);
-            }else if(i==3){
+            } else if (i == 3) {
                 //geesee
                 savePdfToDownloadFolder2(item);
-            }else if(i == 12){
+            } else if (i == 12) {
                 //jjj
                 savePdfToDownloadFolder3(item);
-            }
-            else if(i == 5){
+            } else if (i == 5) {
 //                List<Itemmodel> itemList = getDummyItems();
                 savemvspdf(item);
 //                savemvspdf(itemList);
@@ -111,14 +107,13 @@ public class PdfGenerator {
 //            else if(i == 12){
 //                jjjnewpdf(item);
 //            }
-            else if( i == 13){
+            else if (i == 13) {
                 //vakpati
 //                List<Itemmodel> itemList = getDummyItems();
                 savePdfToDownloadFolder7(item);
-            }
-            else if(i == 20){
+            } else if (i == 20) {
                 List<Itemmodel> itemList = getDummyItems();
-                pushpa11(billmap);
+                pushpa11(billmap, 20);
 //                if(f == 1){
 //                    //default
 //                    List<Itemmodel> itemList = getDummyItems();
@@ -134,11 +129,18 @@ public class PdfGenerator {
 //                }else{
 //
 //                }
-            }
-            else if(i == 37) {
+            } else if (i == 37) {
                 List<Itemmodel> itemList = getDummyItems();
-               Dnj(billmap);
-              //  savePdfToDownloadFolder2(item);
+                Dnj(billmap);
+
+                //  savePdfToDownloadFolder2(item);
+            } else if (i == 43) {
+                List<Itemmodel> itemList = getDummyItems();
+                pushpa11(billmap, 43);
+
+            } else if (i == 44) {
+                List<Itemmodel> itemList = getDummyItems();
+                pushpa11(billmap, 44);
             }
         }
     }
@@ -1688,7 +1690,7 @@ public class PdfGenerator {
     }*/
 
     @SuppressLint("Range")
-    private void pushpa11(HashMap<String, List<Itemmodel>> billmap) {
+    private void pushpa11(HashMap<String, List<Itemmodel>> billmap, int invoiceId) {
         String invoiceNumber = "";
         long tdate = 0;
         String cname = "", branch = "", via = "", kt = "", screw = "", tags = "", wast = "";
@@ -1795,7 +1797,11 @@ public class PdfGenerator {
                     dataTable.addCell(new Cell().add(new Paragraph(String.valueOf(i))));
                     dataTable.addCell(new Cell().add(new Paragraph(item.getItemCode())));
                     dataTable.addCell(new Cell().add(new Paragraph(item.getProduct())));
-                    dataTable.addCell(new Cell().add(new Paragraph(item.getDiamondClarity())));
+                    if(item.getDiamondClarity()!=null) {
+                        dataTable.addCell(new Cell().add(new Paragraph(item.getDiamondClarity())));
+                    }else {
+                        dataTable.addCell(new Cell().add(new Paragraph("")));
+                    }
                     dataTable.addCell(new Cell().add(new Paragraph(item.getStockKeepingUnit() != null ? item.getStockKeepingUnit() : "")));
                     dataTable.addCell(new Cell().add(new Paragraph(String.format("%.3f", grwt))));
                     dataTable.addCell(new Cell().add(new Paragraph(String.format("%.3f", stwt))));
@@ -1821,16 +1827,27 @@ public class PdfGenerator {
             dataTable.addCell(new Cell().add(new Paragraph(String.format("%.3f", totalStnValue)).setBold()));
 
             document.add(dataTable);
+            Paragraph footer;
+            if (invoiceId == 43) {
+                footer = new Paragraph("PAARVAI JEWELLERS\n")
+                        .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
 
-            Paragraph footer = new Paragraph("PUSHPA JEWELLERS LIMITED\n" +
-                    "ADDRESS - 4TH floor, Flat 4A, 22 East Topsia Road, Tirumala - 22, Kolkata - 700046\n" +
-                    "Contact - 9831545491\n" +
-                    "Email - info@pushpajewellers.in\n" +
-                    "GST - 19AAFCP0896D1Z9\n\n" +
-                    "BANK NAME - ICICI BANK LTD.\n" +
-                    "BANK A/C - 030505005192\n" +
-                    "BANK IFSC CODE - ICIC0006950")
-                    .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
+            } else if (invoiceId == 44) {
+                footer = new Paragraph("REEVAZZ JEWELLERS\n")
+                        .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
+            } else {
+                footer = new Paragraph("PUSHPA JEWELLERS LIMITED\n" +
+                        "ADDRESS - 4TH floor, Flat 4A, 22 East Topsia Road, Tirumala - 22, Kolkata - 700046\n" +
+                        "Contact - 9831545491\n" +
+                        "Email - info@pushpajewellers.in\n" +
+                        "GST - 19AAFCP0896D1Z9\n\n" +
+                        "BANK NAME - ICICI BANK LTD.\n" +
+                        "BANK A/C - 030505005192\n" +
+                        "BANK IFSC CODE - ICIC0006950")
+                        .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
+            }
+
+
 
             Paragraph note = new Paragraph("Note - This is not a Tax Invoice")
                     .setBold().setFontSize(10)

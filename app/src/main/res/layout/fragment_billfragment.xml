@@ -88,7 +88,7 @@
                     android:layout_weight="1"
                     android:background="@drawable/edittextsquare"
                     android:gravity="center"
-                    android:hint="Enter barcode/itemcode"
+                    android:hint="Enter Rfid/itemcode"
                     android:textColor="@color/black"
                     android:textSize="15dp" />
 
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.1"
                     android:gravity="center"
-                    android:text="Barcode"
+                    android:text="Rfid"
                     android:textColor="@color/black" />
 
                 <TextView

@@ -259,9 +259,11 @@ public class Excelopener {
     private void showSelection(List<String> excelHeadings, Sheet sheet1, FragmentActivity activity, ProgressDialog progressDialog) {
 
         String[] heading = {"TID Value", "EPC Value", "Category", "Product",
-                "Purity", "Barcode Number", "Item Code", "Box", "Gross Weight", "Stone Weight", "Net Weight",
+                "Purity", "RFID Code", "Item Code", "Box", "Gross Weight", "Stone Weight", "Net Weight",
                 "Making gm", "Making %", "Fixed amount", "Fixed Wastage", "Stone amount", "Mrp", "Huid code",
                 "Party code", "Updated Date", "Updated By"};
+
+
 
         List<String> myFields = Arrays.asList(heading);
         if (excelHeadings.size()<1) {
@@ -552,10 +554,18 @@ public class Excelopener {
                 e.printStackTrace();
             }
         }
-
+        String bar = "";
         for (Map.Entry<String, Itemmodel> entry : itemMap.entrySet()) {
 
-            String bar = entry.getValue().getBarCode().trim();
+
+            try {
+
+                bar = entry.getValue().getBarCode().trim();
+            } catch (Exception e) {
+                e.printStackTrace();
+
+
+            }
 
             if (bar != null && !bar.isEmpty()) {
                 String tid = findTidByBarcode(rfidList, bar);
@@ -607,11 +617,63 @@ public class Excelopener {
                     }
 
                 }
+            } else {
+
+                Itemmodel nitem = null;
+                Log.d("eitem tidvalue", "" + myapp.getInventoryMap().size());
+                nitem = myapp.checkitem(entry.getValue().getTidValue(), entryDatabase, act);
+                Itemmodel it = entry.getValue();
+                if (nitem == null) {
+
+                    Itemmodel item = new Itemmodel(System.currentTimeMillis(), System.currentTimeMillis(), 0, 0, it.getTidValue(), it.getTidValue(),
+                            "home", it.getCategory(), it.getProduct(), it.getPurity(), it.getDiamondMetal(), it.getDiamondColor(), it.getDiamondClarity(),
+                            it.getDiamondSetting(), it.getDiamondShape(), it.getDiamondSize(), it.getDiamondCertificate(), convertToHex(it.getItemCode()), it.getItemCode(),
+                            it.getBox(), it.getHuidCode(), it.getPartyCode(), it.getDescription(), "Active", TransactionIDGenerator.generateTransactionNumber("E"),
+                            "exceladd", it.getTransactionType(), it.getInvoiceNumber(), it.getCustomerName(), it.getItemAddmode(), it.getPaymentMode(),
+                            it.getPaymentDescription(), it.getGstApplied(), it.getDiamondWt(), it.getDiamondPcs(), it.getDiamondRate(), it.getDiamondAmount(), it.getGrossWt(), it.getStoneWt(),
+                            it.getNetWt(), it.getMakingGm(), it.getMakingPer(), it.getFixedAmount(), it.getFixedWastage(), it.getStoneAmount(), it.getMrp(),
+                            it.getHallmarkCharges(), 1, 0, 0, 0, 0, 0,
+                            0, 0, it.getGoldRate(), it.getTotalMaking(), it.getItemPrice(), it.getAppliedDiscount(),
+                            it.getItempriceAfterdiscount(), it.getGstRate(), it.getPayableAmount(), it.getPayableAmountincgst(), it.getItemGst(), it.getTotalBilleditems(),
+                            it.getTotalBilledgwt(), it.getTotalBilledamount(), it.getTotalBillAmountExcGst(), it.getTotalBillAmountincgst(), it.getTotalGst(),
+                            it.getTotalDiscount(), it.getPaidAmount(), it.getBalance(), it.getGunUpdate(), it.getWebUpdate(), it.getProductCode(), it.getCounterId(), it.getCounterName(), it.getTotPcs(), it.getTotMPcs(), it.getCategoryId(), it.getProductId(), it.getDesignId(), it.getPurityId());
+
+                    item.setImageUrl(it.getHuidCode());
+                    item.setBarCode(it.getItemCode());
+                    String hexvalue = convertToHex(item.getItemCode());
+                    item.setTidValue(hexvalue);
+                    itemlist.add(item);
+
+                    Log.d("", "item code" + item.getItemCode() + "tid value " + item.getTidValue() + "epc value " + item.getEpcValue());
+
+                }
             }
 
         }
         addItemsToDatabase(itemlist);
 
+    }
+
+    public String convertToHex(String input) {
+       /* StringBuilder hexBuilder = new StringBuilder();
+        for (char ch : input.toCharArray()) {
+            hexBuilder.append(String.format("%02X", (int) ch)); // Using uppercase hex format
+        }
+        return hexBuilder.toString();*/
+        StringBuilder hexBuilder = new StringBuilder();
+
+        // Step 1: Convert each character to 2-digit hex
+        for (char ch : input.toCharArray()) {
+            String hex = String.format("%02X", (int) ch); // e.g., 'A' -> "41"
+            hexBuilder.append(hex);
+        }
+
+        // Step 2: Add "00" at the beginning until total length is a multiple of 4
+        while (hexBuilder.length() % 4 != 0) {
+            hexBuilder.insert(0, "00"); // ✅ Adds at the start
+        }
+
+        return hexBuilder.toString();
     }
 
     private String findTidByBarcode(List<Rfidresponse.ItemModel> rfidList, String barcode) {
@@ -733,7 +795,7 @@ public class Excelopener {
                     item.setCounterName(value);
                 }
                 break;
-            case "Barcode Number":
+            case "RFID Code":
                 if (value == null || value.isEmpty()) {
                     issue(item, i, "tidvalue");
 

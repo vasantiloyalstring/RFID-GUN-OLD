@@ -25,7 +25,7 @@
                 android:layout_marginHorizontal="30dp"
                 android:background="@drawable/edittextsquare"
                 android:gravity="center"
-                android:hint="Enter Barcode/Itemcode" />
+                android:hint="Enter RFID code/Itemcode" />
 
         </RelativeLayout>
 
@@ -58,7 +58,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/barcode"
-                    android:text="Barcode"
+                    android:text="Rfid"
                     android:layout_weight="1"/>
 
 
