@@ -385,7 +385,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                         Log.e("TAG", "Error copying file: " + e.getMessage());
                     }
 
-                    fileMap.put(process + ".xlsx", targetFile.getAbsolutePath());
+                    fileMap.put(process + ".xlsx", outfile);
 
 
                 } catch (Exception e) {
@@ -561,7 +561,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                     }
 
                     // ✅ Delete the temporary .xls file
-                    try {
+                   /* try {
                         File tempFile = new File(outfile);
                         if (tempFile.exists()) {
                             boolean deleted = tempFile.delete();
@@ -571,11 +571,11 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                         }
                     } catch (Exception ex) {
                         Log.e("TAG", "Failed to delete temp file: " + ex.getMessage());
-                    }
+                    }*/
 
                     // ✅ Use actual .xlsx path in fileMap
                     if (!process.equalsIgnoreCase("")){
-                        fileMap.put(process + ".xlsx", targetFile.getAbsolutePath());
+                        fileMap.put(process + ".xlsx", outfile);
                     }
 
 
