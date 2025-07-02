@@ -120,7 +120,7 @@ public class XlsReader {
     private void showSelection(List<String> excelHeadings, HSSFSheet sheet1, FragmentActivity activity, ProgressDialog progressDialog) {
 
         String[] heading = {"TID Value", "EPC Value", "Category", "Product",
-                "Purity", "Barcode Number", "Item Code", "Box", "Gross Weight", "Stone Weight", "Net Weight",
+                "Purity", "RFID Code", "Item Code", "Box", "Gross Weight", "Stone Weight", "Net Weight",
                 "Making gm", "Making %", "Fixed amount", "Fixed Wastage", "Stone amount", "Mrp", "Huid code",
                 "Party code", "Updated Date", "Updated By"};
 
@@ -739,7 +739,7 @@ public class XlsReader {
                     item.setPurity(value);
                 }
                 break;
-            case "Barcode Number":
+            case "RFID Code":
                 if (value == null || value.isEmpty()) {
                     issue(item, i, "tidvalue");
 

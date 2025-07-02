@@ -1198,6 +1198,47 @@ public class Billfragment extends KeyDwonFragment implements BillAdapter.Removei
             String tidValue = fepc.substring(fepc.length() - 24);*/
 
             String trimmedTidValue = fepc;
+        /*  if (fepc.startsWith("00")) {
+              // Compare ignoring the first two characters
+              trimmedTidValue = fepc.substring(2); // Remove "00"
+          }*/
+
+
+            String epcValue = trimmedTidValue;
+            // Extract TID value (last 24 digits)
+            String tidValue = trimmedTidValue;
+
+            if (StringUtils.isNotEmpty(tidValue)) {
+                int index = checkIsExist(tidValue);
+                if (index == -1) {
+                    if (totalitems.containsKey(tidValue)) {
+                        Itemmodel item = new Itemmodel(totalitems.get(tidValue));
+                        item.setItemAddmode("yes");
+                        searchitems.put(String.valueOf(count), item);
+                        totalgwt = totalgwt + item.getGrossWt();
+                        totalnwt = totalnwt + item.getNetWt();
+                        count++;
+                    }
+                    tempDatas.add(tidValue);
+                }
+            }
+
+        }
+    }
+
+  /*  private void addDataToList(String fepc, String tidv, String rssi) {
+        Log.d("check fastid ", "  " + fepc + " " + tidv + "  " + rssi);
+
+        if (StringUtils.isNotEmpty(fepc)) {
+//            String epcValue = fepc;//fepc.substring(0, 24);
+            // Extract TID value (last 24 digits)
+//            String tidValue = fepc;//fepc.substring(fepc.length() - 24);
+
+            *//*String epcValue = fepc.substring(0, 24);
+            // Extract TID value (last 24 digits)
+            String tidValue = fepc.substring(fepc.length() - 24);*//*
+
+            String trimmedTidValue = fepc;
             if (fepc.startsWith("00")) {
                 // Compare ignoring the first two characters
                 trimmedTidValue = fepc.substring(2); // Remove "00"
@@ -1224,7 +1265,7 @@ public class Billfragment extends KeyDwonFragment implements BillAdapter.Removei
             }
 
         }
-    }
+    }*/
 
     public int checkIsExist(String epc) {
         if (StringUtils.isEmpty(epc)) {

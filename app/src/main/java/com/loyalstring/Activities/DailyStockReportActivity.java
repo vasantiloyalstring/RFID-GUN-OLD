@@ -680,13 +680,73 @@ public class DailyStockReportActivity extends AppCompatActivity {
         adapter.updateList(categoryList, CommonStockAdapter.LevelType.CATEGORY, groupedMap);
     }
 
-    private void showProducts(List<Itemmodel> itemsForCategory) {
+   /* private void showProducts(List<Itemmodel> itemsForCategory) {
         // ✅ Push current category state before navigating to products
         levelStack.push(new LevelState(adapter.getCurrentLevel(), adapter.getDisplayList(), adapter.getGroupedData()));
 
         adapter.updateGroupedData(null); // No grouped data at product level
         adapter.updateList(new ArrayList<>(itemsForCategory), CommonStockAdapter.LevelType.PRODUCT, null);
-    }
+    }*/
+/*   private void showProducts(List<Itemmodel> itemsForCategory) {
+       // ✅ Push current category state before navigating to products
+       levelStack.push(new LevelState(CommonStockAdapter.LevelType.CATEGORY, new ArrayList<>(adapter.getDisplayList()), adapter.getGroupedData()));
+
+       // Group items by product
+       groupedMap = CommonStockAdapter.groupBy(itemsForCategory, "product");
+
+       // Create a list of product keys
+       List<Object> productList = new ArrayList<>(groupedMap.keySet());
+
+       // Update the grouped data in the adapter (groupedMap contains the grouped data by product)
+       adapter.updateGroupedData(groupedMap);
+
+       // Update the list in the adapter to display products
+       adapter.updateList(productList, CommonStockAdapter.LevelType.PRODUCT, groupedMap);
+   }*/
+   private void showProducts(List<Itemmodel> itemsForCategory) {
+       // ✅ Push current category state before navigating to products
+       levelStack.push(new LevelState(CommonStockAdapter.LevelType.CATEGORY, new ArrayList<>(adapter.getDisplayList()), adapter.getGroupedData()));
+
+       // Group items by product (you will aggregate items with the same product name)
+       Map<String, List<Itemmodel>> tempGroupedMap = new LinkedHashMap<>(); // Temporary map to store aggregated data
+
+       // Iterate over the items and group them by product name
+       for (Itemmodel item : itemsForCategory) {
+           String productName = item.getProduct();
+
+           // If the product already exists in the map, we add the item to the existing list and aggregate the quantities
+           if (tempGroupedMap.containsKey(productName)) {
+               List<Itemmodel> existingItems = tempGroupedMap.get(productName);
+               // Aggregate the quantities and update the existing item data
+               Itemmodel existingItem = existingItems.get(0);  // Assuming all items of the same product have the same details (like product name, category, etc.)
+
+               // Aggregate fields (quantity, weight, match quantity, etc.)
+               existingItem.setAvlQty(existingItem.getAvlQty() + item.getAvlQty()); // Aggregate the available quantity
+               existingItem.setMatchQty(existingItem.getMatchQty() + item.getMatchQty()); // Aggregate the match quantity
+               existingItem.setGrossWt(existingItem.getGrossWt() + item.getGrossWt()); // Aggregate the gross weight
+               existingItem.setMatchGwt(existingItem.getMatchGwt() + item.getMatchGwt()); // Aggregate the matched gross weight
+
+               // You can add more fields to aggregate if needed, based on your data structure.
+           } else {
+               // If the product is not in the map, add it to the map
+               tempGroupedMap.put(productName, new ArrayList<>(List.of(item)));
+           }
+       }
+
+       // Now the items are grouped by product and aggregated. We will update the adapter.
+       groupedMap = tempGroupedMap;
+
+       // Create a list of product keys
+       List<Object> productList = new ArrayList<>(groupedMap.keySet());
+
+       // Update the grouped data in the adapter (groupedMap contains the grouped data by product)
+       adapter.updateGroupedData(groupedMap);
+
+       // Update the list in the adapter to display products
+       adapter.updateList(productList, CommonStockAdapter.LevelType.PRODUCT, groupedMap);
+   }
+
+
 
     @Override
     public void onBackPressed() {

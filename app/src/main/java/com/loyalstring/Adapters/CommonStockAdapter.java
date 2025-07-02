@@ -118,6 +118,7 @@ public class CommonStockAdapter extends RecyclerView.Adapter<CommonStockAdapter.
 
             case COUNTER:
             case CATEGORY:
+            case PRODUCT:
                 name = (String) item;
                 List<Itemmodel> groupItems = groupedData.get(name);
                 if (groupItems != null && !groupItems.isEmpty()) {
@@ -133,13 +134,13 @@ public class CommonStockAdapter extends RecyclerView.Adapter<CommonStockAdapter.
                 }
                 break;
 
-            case PRODUCT:
+           /* case PRODUCT:
                 Itemmodel model = (Itemmodel) item;
                 name = model.getProduct();
                 totQty = model.getAvlQty();
                 matchQty = model.getMatchQty();
                 dateStr = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH).format(new Date(model.getEntryDate()));
-                break;
+                break;*/
         }
 
         unmatchQty = totQty - matchQty;

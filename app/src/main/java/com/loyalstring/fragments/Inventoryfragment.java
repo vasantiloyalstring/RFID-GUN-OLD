@@ -1708,11 +1708,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 if (!bottomlist.isEmpty()) {
                     isCategorySelecetd = true;
                 }*/
-
-                if (isCounterSelected) {
-                    bottomlist.add(m.getCategory());
-                } else {
-                    bottomlist = db.getcatpro();
+                if (!bottomlist.contains(m.getCategory())) {
+                    if (isCounterSelected) {
+                        bottomlist.add(m.getCategory());
+                    } else {
+                        bottomlist = db.getcatpro();
+                    }
                 }
             }
             if (bottomlist.isEmpty()) {
@@ -1724,9 +1725,11 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         if (title.equalsIgnoreCase("product")) {
             //  if (isCategorySelecetd) {
             for (Itemmodel m : topmap.values()) {
-                bottomlist.add(m.getProduct());
-                if (!bottomlist.isEmpty()) {
-                    isProductSelecetd = true;
+                if (!bottomlist.contains(m.getProduct())) {
+                    bottomlist.add(m.getProduct());
+                    if (!bottomlist.isEmpty()) {
+                        isProductSelecetd = true;
+                    }
                 }
             }
           /*  }else {

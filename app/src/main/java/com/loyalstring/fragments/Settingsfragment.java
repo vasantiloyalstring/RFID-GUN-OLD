@@ -655,7 +655,7 @@ public class Settingsfragment extends Fragment implements interfaces.Imagedownlo
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
         int progress = sharedPreferences.getInt("download_progress", 0);
         // Display the progress in your settings UI
-        s.uploadbtn1.setText("Download Progress: " + progress + "%");
+        s.uploadbtn1.setText("Image Download Progress: " + progress + "%");
 //        refreshData();
     }
 
