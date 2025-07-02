@@ -27,7 +27,6 @@ import com.loyalstring.fsupporters.Globalcomponents;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.network.NetworkUtils;
 
-
 import org.dhatim.fastexcel.Workbook;
 import org.dhatim.fastexcel.Worksheet;
 
@@ -453,7 +452,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                         } else {
                             headers = new String[]{"Counter Name", "Category", "Product",
                                     "Purity", "Barcode Number", "Item Code", "Pieces", "Gross Weight", "Stone Weight", "Net Weight", "Mrp", "Status"};
-
+                            Log.d("@@", "un match");
                             for (int i = 0; i < headers.length; i++) {
                                 bottomsheet.value(0, i, headers[i]);
                             }
@@ -463,8 +462,9 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                             int progressUpdateInterval = 100;
 
                             for (Itemmodel item : processlist) {
+                                Log.d("@@", "un match detrails"+processlist.size());
                                 if (item != null && item.getAvlQty() != item.getMatchQty()) {
-
+                                    Log.d("@@", "un match detrails in loop");
                                         String op1 = "not found";
                                         String[] values = {item.getCounterName(),
                                                 item.getCategory(), item.getProduct(),item.getPurity(), item.getBarCode(),
@@ -478,6 +478,8 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                                         }
                                     }
                                 }
+                            bottomWorkbook.finish();
+                            bottomOutputStream.close();
 
                         }
                     } else {
@@ -576,7 +578,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                     // ✅ Use actual .xlsx path in fileMap
                     if (!process.equalsIgnoreCase("")){
                         fileMap.put(process + ".xlsx", outfile);
-                    }
+                   }
 
 
                 } catch (Exception e) {
