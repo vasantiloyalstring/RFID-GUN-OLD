@@ -333,6 +333,66 @@ public class ApiProcess {
                 }
             });
         }
+        else if(rfidType.equalsIgnoreCase("both")){
+            call2.enqueue(new Callback<List<AlllabelResponse.LabelItem>>() {
+                @Override
+                public void onResponse(Call<List<AlllabelResponse.LabelItem>> call, Response<List<AlllabelResponse.LabelItem>> response) {
+                    dialog.dismiss();
+                    Log.e("checking response ", "product response " + response);
+                    if (response.isSuccessful() && response.body() != null) {
+                        List<AlllabelResponse.LabelItem> i = response.body();
+
+                        for (int j = 0; j < i.size(); j++) {
+                            AlllabelResponse.LabelItem it = i.get(j);
+                            String item = it.getItemCode();
+                            if (it.getStatus().equalsIgnoreCase("active") || it.getStatus().equalsIgnoreCase("ApiActive")) {
+                                if (item != null && !item.isEmpty()) {
+                                    if(it.getrFIDCode()==null || it.getrFIDCode()=="" || it.getrFIDCode().equalsIgnoreCase("")){
+                                    String hexvalue = convertToHex(item);
+                                    if (hexvalue != null && !hexvalue.isEmpty()) {
+                                        it.settIDNumber(hexvalue);
+                                        it.setrFIDCode(item);
+                                        it.setProductName(it.getDesignName());
+                                        Log.d("@@","## vasannti"+it.gettIDNumber());
+                                        }
+
+//                                productList.add(j);
+                                    }
+                                    if (it.gettIDNumber() != null && !it.gettIDNumber().isEmpty()) {
+                                        productList.add(it);
+                                        Log.d("@@","## added"+it.gettIDNumber());
+
+                                    }
+
+                                }
+                            }
+
+                        }
+
+
+//                    for(int j =0; j<i.size(); j++){
+//                        AlllabelResponse.LabelItem it = i.get(j);
+//                        if(it.getStatus().equalsIgnoreCase("active")){
+//                            productList.add(it);
+//                        }
+//                    }
+
+//                    productList.addAll(i);
+                    } else {
+                        Toast.makeText(activity, "Product response was not successful", Toast.LENGTH_SHORT).show();
+                    }
+                    latch.countDown();
+                }
+
+                @Override
+                public void onFailure(Call<List<AlllabelResponse.LabelItem>> call, Throwable t) {
+                    dialog.dismiss();
+                    Log.e("check data", "labelstock  " + t.getMessage());
+                    Toast.makeText(activity, "Failed to load product data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    latch.countDown();
+                }
+            });
+        }
         else if (rfidType.toLowerCase().contains("custom")) {
 
             if (rfidType.toLowerCase().contains("reusable")) {
@@ -2187,6 +2247,7 @@ public void getproductscustom(HashMap<String, Itemmodel> ml, Context activity, S
 
 
     public void sheetprocess(HashMap<String, Itemmodel> ml, FragmentActivity activity, String sheeturl, EntryDatabase entryDatabase, MyApplication app, List<Rfidresponse.ItemModel> rfidList) {
+
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage("loading data");
         dialog.show();

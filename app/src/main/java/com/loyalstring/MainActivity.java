@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -300,16 +301,24 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
         }
 
         if (fragment != null) {
-            if (pemissionscheck.checkreadandwrite(MainActivity.this)) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.mainfragment, fragment, fragment.getClass().getSimpleName())
-                        .addToBackStack(null)
-                        .commit();
-                drawerLayout.closeDrawers(); // Close the navigation drawer
-                return true;
-            } else {
-                pemissionscheck.requestreadwrite(MainActivity.this);
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                if (pemissionscheck.checkreadandwrite(MainActivity.this)) {
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.mainfragment, fragment, fragment.getClass().getSimpleName())
+                            .addToBackStack(null)
+                            .commit();
+                    drawerLayout.closeDrawers(); // Close the navigation drawer
+                    return true;
+                } else {
+                    pemissionscheck.requestreadwrite(MainActivity.this);
+                }
             }
+        }else {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainfragment, fragment, fragment.getClass().getSimpleName())
+                    .addToBackStack(null)
+                    .commit();
+            drawerLayout.closeDrawers();
         }
         return false;
     }

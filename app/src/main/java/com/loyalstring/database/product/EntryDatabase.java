@@ -307,16 +307,49 @@ public class EntryDatabase extends SQLiteOpenHelper {
     }
 
     // Utility method to add columns if they don't already exist
-    private void addColumnIfNotExists(SQLiteDatabase db, String columnName, String columnType) {
+  /*  private void addColumnIfNotExists(SQLiteDatabase db, String columnName, String columnType) {
         try {
             db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN " + columnName + " " + columnType);
         } catch (Exception e) {
             Log.d("@@schema", "Column '" + columnName + "' already exists or error: " + e.getMessage());
         }
     }
+*/
+
+    private void addColumnIfNotExists(SQLiteDatabase db, String columnName, String columnType) {
+        Cursor cursor = null;
+        try {
+            // Check if the column already exists
+            cursor = db.rawQuery("PRAGMA table_info(" + INVENTORY_SAVE_TABLE + ")", null);
+            boolean columnExists = false;
+
+            if (cursor != null) {
+                int nameIndex = cursor.getColumnIndex("name");
+                while (cursor.moveToNext()) {
+                    if (columnName.equalsIgnoreCase(cursor.getString(nameIndex))) {
+                        columnExists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!columnExists) {
+                db.execSQL("ALTER TABLE " + INVENTORY_SAVE_TABLE + " ADD COLUMN " + columnName + " " + columnType);
+                Log.d("@@schema", "Column '" + columnName + "' added.");
+            } else {
+                Log.d("@@schema", "Column '" + columnName + "' already exists. Skipping.");
+            }
+        } catch (Exception e) {
+            Log.e("@@schema", "Error checking/adding column '" + columnName + "': " + e.getMessage());
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
 
 
-   /* public void updateInventoryStatus(List<Itemmodel> itemList) {
+    /* public void updateInventoryStatus(List<Itemmodel> itemList) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         db.beginTransaction();

@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -103,6 +104,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 
 
     EntryDatabase entryDatabase;
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1001;
 
     List<Itemmodel> itemlist = new ArrayList<>();
 
@@ -976,7 +978,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
         b.psheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+               // checkAndRequestPermissions(getActivity());
 
                 String clientcode = employee.getClientCode();
                 if (networkUtils.isNetworkAvailable()) {
@@ -1005,6 +1007,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                                                 }
                                             }
                                             if (storageClass.getSheeturl() != null && !storageClass.getSheeturl().isEmpty()) {
+
                                                 apiprocess.sheetprocess(ml, getActivity(), storageClass.getSheeturl(), entryDatabase, app, rfidList);
                                             } else {
                                                 Toast.makeText(mainActivity, "api url not found", Toast.LENGTH_SHORT).show();
@@ -1029,7 +1032,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                     rfidList.addAll(entryDatabase.getrfid(getActivity(), app));
                 }
 
-                Log.e("checking ", "check1 "+clients.getRfidType()+"   "+rfidList);
+              //  Log.e("checking ", "check1 "+clients.getRfidType()+"   "+rfidList);
 
 
 
@@ -1108,6 +1111,51 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 
         return b.getRoot();
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public void requestStoragePermission(Activity activity) {
+        if (!Environment.isExternalStorageManager()) {
+            // Request for MANAGE_EXTERNAL_STORAGE permission in Android 13+
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+            activity.startActivityForResult(intent, 100);  // Use your request code
+        } else {
+            // If already granted, proceed with your logic
+            proceedWithDataProcessing();
+        }
+    }
+
+    public void checkAndRequestPermissions(Activity activity) {
+        // For Android 13 and below, handle external storage permission
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                // Request permission for external storage if not granted
+                ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_STORAGE_PERMISSION);
+            } else {
+                proceedWithDataProcessing();  // If permission is granted, proceed with data processing
+            }
+        } else {
+            proceedWithDataProcessing();  // For versions below Marshmallow, permission is granted by default
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with data processing
+                proceedWithDataProcessing();
+            } else {
+                // Permission denied, show a message or handle accordingly
+                Toast.makeText(getActivity(), "Permission denied! Cannot access storage.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void proceedWithDataProcessing() {
+        // Your existing code for processing data
+       // sheetprocess(ml, activity, sheeturl, entryDatabase, app, rfidList);
+    }
+
 
     private void fetchbills(com.loyalstring.interfaces.interfaces.Fetchbills fetchbills) {
         ubilllist.clear();
@@ -1737,7 +1785,12 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 //                    Itemmodel item = inventorydata.get(tidv);
                             StringBuilder stringBuilder = new StringBuilder();
                             String tidValue1 = nitem.getTidValue();
-                            String barcode = nitem.getBarCode();
+                            String barcode;
+                            if(nitem.getBarCode()==null){
+                                barcode = nitem.getItemCode();
+                            }else {
+                                barcode = nitem.getBarCode();
+                            }
                             String cat = nitem.getCategory();
                             String pro = nitem.getProduct();
                             stringBuilder.append("Item: ").append(cat).append("/").append(pro).append(" Barcode: ").append(barcode).append("\n");

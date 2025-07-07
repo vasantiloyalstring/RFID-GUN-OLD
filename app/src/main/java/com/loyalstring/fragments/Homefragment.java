@@ -4,20 +4,20 @@ import static com.loyalstring.MainActivity.invf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.cardview.widget.CardView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.cardview.widget.CardView;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.loyalstring.Activities.DailyStockReportActivity;
 import com.loyalstring.MainActivity;
@@ -237,16 +237,24 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
     }
 
     private void displayfragemnt(Fragment h) {
-        if(pcheck.checkreadandwrite(mainActivity)){
-
+     //   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (pcheck.checkreadandwrite(mainActivity)) {
+                FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.mainfragment, h);
+                transaction.addToBackStack(null); // Add the transaction to the back stack
+                transaction.commit();
+                mListener.onFragmentChanged(h.getId());
+            } else {
+                pcheck.requestreadwrite(getActivity());
+            }
+        /*} else {
             FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainfragment, h);
             transaction.addToBackStack(null); // Add the transaction to the back stack
             transaction.commit();
             mListener.onFragmentChanged(h.getId());
-        }else{
-            pcheck.requestreadwrite(getActivity());
-        }
+        }*/
+
 
     }
 }
