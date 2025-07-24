@@ -66,12 +66,4 @@ public class Pemissionscheck {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         activity.startActivityForResult(Intent.createChooser(intent, "Select Excel File"), PICK_EXCEL_REQUEST);
     }
-
-
-
-
-
-
-
-
 }

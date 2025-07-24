@@ -95,6 +95,7 @@ public class ApiProcess {
         // Step 2: Add "00" at the beginning until total length is a multiple of 4
         while (hexBuilder.length() % 4 != 0) {
             hexBuilder.insert(0, "00"); // ✅ Adds at the start
+           // hexBuilder.append("00");// add at end
         }
 
         return hexBuilder.toString();
@@ -400,6 +401,7 @@ public class ApiProcess {
                             if (it.getStatus().equalsIgnoreCase("active") || it.getStatus().equalsIgnoreCase("ApiActive")) {
                                 if (item != null && !item.isEmpty()) {
                                     String hexvalue = convertToHex(item);
+                                    Log.d("@@","## hexvalue"+hexvalue);
                                     if (hexvalue != null && !hexvalue.isEmpty()) {
                                         it.settIDNumber(hexvalue);
                                         it.setrFIDCode(item);

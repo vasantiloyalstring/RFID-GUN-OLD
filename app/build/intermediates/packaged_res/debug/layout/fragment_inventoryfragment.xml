@@ -819,7 +819,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="Barcode"
+                        android:text="Rfid"
                         android:textColor="@color/Maincolor"
                         android:textStyle="bold" />
 

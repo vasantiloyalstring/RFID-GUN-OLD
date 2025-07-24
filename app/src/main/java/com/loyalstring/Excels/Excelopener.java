@@ -641,6 +641,7 @@ public class Excelopener {
                     item.setImageUrl(it.getHuidCode());
                     item.setBarCode(it.getItemCode());
                     String hexvalue = convertToHex(item.getItemCode());
+                    Log.d("", "hexvalue" +hexvalue);
                     item.setTidValue(hexvalue);
                     itemlist.add(item);
 

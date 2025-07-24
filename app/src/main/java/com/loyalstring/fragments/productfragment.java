@@ -995,17 +995,21 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                                     getActivity().runOnUiThread(() -> {
 
                                         if( !rfidList.isEmpty()){
-
+                                            Log.e("@@", "RfidList: " + rfidList);
                                             HashMap<String, Itemmodel> ml = new HashMap<>();
                                             if (app.getInventoryMap().size() > 0) {
                                                 for (Map.Entry<String, Itemmodel> entry : app.getInventoryMap().entrySet()) {
+                                                    Log.e("@@11", "RfidList: " + rfidList);
                                                     Itemmodel m = new Itemmodel(entry.getValue());
+                                                    Log.e("@@2", "RfidList: " + rfidList);
                                                     ml.put(m.getTidValue(), m);
                                                 }
                                             }
                                             if (storageClass.getSheeturl() != null && !storageClass.getSheeturl().isEmpty()) {
+                                                Log.e("@@3", "RfidList: " + rfidList);
                                                 apiprocess.sheetprocess(ml, getActivity(), storageClass.getSheeturl(), entryDatabase, app, rfidList);
                                             } else {
+                                                Log.e("@@4", "RfidList: " + rfidList);
                                                 Toast.makeText(mainActivity, "api url not found", Toast.LENGTH_SHORT).show();
                                             }
 

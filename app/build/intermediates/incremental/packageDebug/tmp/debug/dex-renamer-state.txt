@@ -1,4 +1,4 @@
-#Tue Jun 03 00:46:51 PDT 2025
+#Wed Jul 23 19:16:15 IST 2025
 base.0=E\:\\LoyalStringProjects\\vasanti\\pushpa\\pushpa\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=E\:\\LoyalStringProjects\\vasanti\\pushpa\\pushpa\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.10=E\:\\LoyalStringProjects\\vasanti\\pushpa\\pushpa\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\4\\classes.dex

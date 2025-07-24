@@ -1,9 +1,5 @@
 [
     {
-        "merged": "com.loyalstring.app-mergeDebugResources-46:/layout/fragment_inventoryfragment.xml",
-        "source": "com.loyalstring.app-main-49:/layout/fragment_inventoryfragment.xml"
-    },
-    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\fragment_billfragment.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\fragment_billfragment.xml"
     },
@@ -92,6 +88,10 @@
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\search_item_layout.xml"
     },
     {
+        "merged": "com.loyalstring.app-mergeDebugResources-46:/layout/fragment_billfragment.xml",
+        "source": "com.loyalstring.app-main-49:/layout/fragment_billfragment.xml"
+    },
+    {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\dialog_spinner.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\dialog_spinner.xml"
     },
@@ -102,6 +102,10 @@
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\issue_item.xml",
         "source": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-main-49:\\layout\\issue_item.xml"
+    },
+    {
+        "merged": "com.loyalstring.app-mergeDebugResources-46:/layout/fragment_searchfragment.xml",
+        "source": "com.loyalstring.app-main-49:/layout/fragment_searchfragment.xml"
     },
     {
         "merged": "C:\\Users\\Admin\\.gradle\\daemon\\8.9\\com.loyalstring.app-mergeDebugResources-46:\\layout\\stockverfylayout.xml",

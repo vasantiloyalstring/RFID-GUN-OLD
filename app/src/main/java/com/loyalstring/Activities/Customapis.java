@@ -292,6 +292,7 @@ public class Customapis extends AppCompatActivity {
                     Toast.makeText(Customapis.this, "failed to verify api", Toast.LENGTH_SHORT).show();
                 }
                 if(response.isSuccessful()){
+
                     progressBar.dismiss();
                     Toast.makeText(Customapis.this, "url verified successfully", Toast.LENGTH_SHORT).show();
                     verified = true;
