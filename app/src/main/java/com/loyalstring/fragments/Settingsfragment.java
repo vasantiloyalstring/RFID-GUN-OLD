@@ -1,5 +1,6 @@
 package com.loyalstring.fragments;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -13,11 +14,13 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -197,6 +200,14 @@ public class Settingsfragment extends Fragment implements interfaces.Imagedownlo
 
             }
         });
+        s.stockTransferUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                showStockTransferUrlDialog();
+
+            }
+        });
 
 
         s.resetbtn.setOnClickListener(new View.OnClickListener() {
@@ -326,6 +337,37 @@ public class Settingsfragment extends Fragment implements interfaces.Imagedownlo
 
     List<String> imageurls = new ArrayList<>();
     List<File> destinationFiles = new ArrayList<>();
+
+    private void showStockTransferUrlDialog() {
+        Context context = requireContext();
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Set Stock Transfer URL");
+
+        final EditText input = new EditText(context);
+        input.setHint("https://sapphirejewelryny.com/RFID/");
+        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
+
+        String savedUrl = sharedPreferencesManager.getStockTransferUrl();
+        input.setText(savedUrl);
+
+        builder.setView(input);
+
+        builder.setPositiveButton("Save", (dialog, which) -> {
+            String url = input.getText().toString().trim();
+
+            if (!url.isEmpty() && android.util.Patterns.WEB_URL.matcher(url).matches()) {
+                sharedPreferencesManager.saveStockTransferUrl(url);
+                Toast.makeText(context, "Stock Transfer URL saved", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Please enter a valid URL", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+        builder.show();
+    }
+
+
 
     public void sheetprocess(FragmentActivity activity, String sheeturl) {
         // Create and show a loading message without blocking the UI

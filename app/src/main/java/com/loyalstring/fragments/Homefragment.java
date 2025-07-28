@@ -32,7 +32,7 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
 
     View view;
     CardView cproduct, cinventory, cbill, csearch, cstocktransfer
-            , cstockhistory, cstockreport, csalereport, csettings, remap, issue;
+            , cstockhistory, cstockreport, csalereport, csettings, remap,stockTransfer, issue;
 
     MainActivity mainActivity;
     StorageClass storageClass;
@@ -70,6 +70,7 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
         csettings = view.findViewById(R.id.csettings);
         testbtn = view.findViewById(R.id.testbtn);
         remap = view.findViewById(R.id.remap);
+        stockTransfer = view.findViewById(R.id.stock_transfer);
         issue = view.findViewById(R.id.issue);
         csalereport= view.findViewById(R.id.csalereport);
 
@@ -163,6 +164,13 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
             @Override
             public void onClick(View view) {
                 Fragment h = new remap();
+                displayfragemnt(h);
+            }
+        });
+        stockTransfer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Fragment h = new Stocktransferfragment();
                 displayfragemnt(h);
             }
         });

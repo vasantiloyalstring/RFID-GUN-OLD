@@ -21,6 +21,7 @@ import com.loyalstring.modelclasses.RequestBodyBill;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.SyncRequest;
 import com.loyalstring.modelclasses.jjjresponse;
 
 

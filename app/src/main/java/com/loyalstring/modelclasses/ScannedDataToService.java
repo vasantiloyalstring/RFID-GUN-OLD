@@ -29,6 +29,19 @@ public class ScannedDataToService {
     @Expose
     private String rFIDCode;
 
+    public String getItemCode() {
+        return itemCode;
+    }
+
+    public void setItemCode(String itemCode) {
+        this.itemCode = itemCode;
+    }
+
+    @SerializedName("ItemCode")
+    @Expose
+    private String itemCode;
+
+
     public Integer getId() {
         return id;
     }

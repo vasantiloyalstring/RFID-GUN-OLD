@@ -17,6 +17,8 @@ public class SharedPreferencesManager {
 
     private SharedPreferences sharedPreferences;
     private String key_rfidtype = "RfidType";
+    private static final String KEY_STOCK_TRANSFER_URL = "stock_transfer_url";
+
 
     public SharedPreferencesManager(Context context) {
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -227,5 +229,13 @@ public class SharedPreferencesManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
         editor.apply();
+    }
+
+    public void saveStockTransferUrl(String url) {
+        sharedPreferences.edit().putString(KEY_STOCK_TRANSFER_URL, url).apply();
+    }
+
+    public String getStockTransferUrl() {
+        return sharedPreferences.getString(KEY_STOCK_TRANSFER_URL, "");
     }
 }
