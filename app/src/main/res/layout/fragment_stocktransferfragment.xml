@@ -89,6 +89,20 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:overScrollMode="never"
+        android:layout_marginTop="4dp" />
+
+    <!-- Total Items Fixed TextView -->
+    <TextView
+        android:id="@+id/tv_total_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total items: 0"
+        android:gravity="end"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:background="#EEEEEE"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="12dp"
         android:overScrollMode="never" />

@@ -64,6 +64,7 @@ public class Stocktransferfragment extends Fragment {
     private MainActivity mainActivity;
     private Handler handler;
     private TextView singletext;
+    private TextView tvTotalItems;
     private EditText editBoxName;
     private Button btnScanBox;
     private LinearLayout layoutScan,layoutSync,singlereset;
@@ -98,6 +99,8 @@ public class Stocktransferfragment extends Fragment {
         singlereset = view.findViewById(R.id.singlereset);
         singleimage = view.findViewById(R.id.singleimage);
         singletext = view.findViewById(R.id.singletext);
+        tvTotalItems = view.findViewById(R.id.tv_total_items);
+
 
         btnScanBox = view.findViewById(R.id.btn_scan_box);
         editBoxName = view.findViewById(R.id.ed_boxName);
@@ -119,7 +122,8 @@ public class Stocktransferfragment extends Fragment {
         }
 
         fetchRFIDListFromApi();
-        fetchLabelledStockListFromApi();
+     //   fetchLabelledStockListFromApi();
+
 
         handler = new Handler(msg -> {
             UHFTAGInfo tagInfo = (UHFTAGInfo) msg.obj;
@@ -129,6 +133,16 @@ public class Stocktransferfragment extends Fragment {
                     scannedEpcList.add(epc);
                     Log.d("SCAN", "EPC Collected: " + epc);
                     mainActivity.playSound(1);
+                    ScannedDataToService item = findProductByEPC(epc);
+                    if (item != null) {
+                        requireActivity().runOnUiThread(() -> {
+                            scannedList.add(item);
+                            adapter.notifyDataSetChanged();
+                            tvTotalItems.setText("Total items: " + scannedList.size());
+                        });
+                    } else {
+                        Log.w("RFID", "Unmapped EPC during scan: " + epc);
+                    }
                 }
             }
             return true;
@@ -136,26 +150,18 @@ public class Stocktransferfragment extends Fragment {
 
         layoutScan.setOnClickListener(v -> startOrStopScan());
 
-        layoutSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                addScanDatatoWeb(scannedList, success -> {
-                    if (success) {
-                        requireActivity().runOnUiThread(() -> {
-                            Toast.makeText(getContext(), "Stock transfer successful", Toast.LENGTH_SHORT).show();
-                            scannedList.clear();
-                            adapter.notifyDataSetChanged();
-                        });
-                    } else {
-                        requireActivity().runOnUiThread(() ->
-                                Toast.makeText(getContext(), "Stock transfer failed", Toast.LENGTH_SHORT).show()
-                        );
-                    }
-                });
-
-            }
-        });
+        layoutSync.setOnClickListener(view1 -> addScanDatatoWeb(scannedList, success -> {
+            requireActivity().runOnUiThread(() -> {
+                if (success) {
+                    Toast.makeText(getContext(), "Stock transfer successful", Toast.LENGTH_SHORT).show();
+                    scannedList.clear();
+                    adapter.notifyDataSetChanged();
+                    tvTotalItems.setText("Total items: 0");
+                } else {
+                    Toast.makeText(getContext(), "Stock transfer failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }));
         btnScanBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -176,15 +182,16 @@ public class Stocktransferfragment extends Fragment {
             }
         });
 
-        singlereset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                rfidList.clear();
-                labelledStockList.clear();
-                scannedList.clear();
-            }
-        });
+        singlereset.setOnClickListener(v -> {
+            rfidList.clear();
+            labelledStockList.clear();
+            scannedList.clear();
+            adapter.notifyDataSetChanged();
+            tvTotalItems.setText("Total items: 0");
 
+            fetchRFIDListFromApi();         // refetch mappings
+            fetchLabelledStockListFromApi();
+        });
         return view;
     }
 
@@ -241,10 +248,16 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private void startOrStopScan() {
-        if (mainActivity == null || mainActivity.mReader == null) return;
+        if (mainActivity == null || mainActivity.mReader == null) {
+            Log.e("SCAN", "Reader not ready");
+            return;
+        }
 
         mainActivity.mReader.setPower(30);
-        if (mainActivity.mReader.startInventoryTag()) {
+        boolean isStarted = mainActivity.mReader.startInventoryTag();
+        Log.d("SCAN", "startInventoryTag: " + isStarted);
+
+        if (isStarted) {
             singletext.setText("Stop Scan");
             singleimage.setImageResource(R.drawable.ic_cancelblack);
             new TagThread().start();
@@ -252,8 +265,11 @@ public class Stocktransferfragment extends Fragment {
             stopScanner();
             singletext.setText("Scan");
             singleimage.setImageResource(R.drawable.ic_scanblack);
+          //  Toast.makeText(getContext(), "Failed to start scanning", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     private void stopScanner() {
         if (mainActivity != null && mainActivity.mReader != null) {
@@ -262,28 +278,86 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private class TagThread extends Thread {
+        @SuppressLint("HardwareIds")
         @Override
         public void run() {
+            Log.d("SCAN", "TagThread started");
+
             while (mainActivity != null && mainActivity.mReader != null && mainActivity.mReader.isInventorying()) {
                 UHFTAGInfo tagInfo = mainActivity.mReader.readTagFromBuffer();
+
                 if (tagInfo != null) {
-                    Message msg = handler.obtainMessage();
-                    msg.obj = tagInfo;
-                    handler.sendMessage(msg);
+                    String epc = tagInfo.getEPC();
+                    Log.d("SCAN", "Read EPC: " + epc);
+
+                    if (!scannedEpcList.contains(epc)) {
+                        scannedEpcList.add(epc);
+                        mainActivity.playSound(1);
+
+                        // Only map EPC → RFID (Barcode)
+                        String rfidCode = getRfidFromEpc(epc);
+
+                        if (rfidCode != null) {
+                            ScannedDataToService item = new ScannedDataToService();
+                            item.setTIDValue(epc);
+                            item.setRFIDCode(rfidCode); // Only set RFID
+                            item.setItemCode("");       // Leave ItemCode blank or null
+                            item.setStatusType(true);
+
+                            Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+                            String clientCode = clients.getClientCode();
+                            String androidId="";
+                            Log.e("check body client code", "  " + clientCode);
+                            if (clientCode != null || !clientCode.isEmpty()) {
+                                androidId = Settings.Secure.getString(
+                                        getActivity().getContentResolver(),
+                                        Settings.Secure.ANDROID_ID
+                                );
+                            }
+                            LocalDateTime currentDateTime = LocalDateTime.now();
+                            String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+                            item.setDeviceId(androidId);
+                            item.setCreatedOn(formatted);
+                            item.setLastUpdated(formatted);
+                            item.setStatusType(true);
+                            item.setId(0);
+                            item.setClientCode(clientCode);
+
+                            requireActivity().runOnUiThread(() -> {
+                                scannedList.add(item);
+                                adapter.notifyDataSetChanged();
+                                tvTotalItems.setText("Total items: " + scannedList.size());
+                            });
+                        } else {
+                            Log.w("SCAN", "No RFID mapping for EPC: " + epc);
+                        }
+                    }
                 }
+
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
+
             requireActivity().runOnUiThread(() -> {
                 singletext.setText("Scan Box");
-             //   singletext.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_scanblack, 0, 0, 0);
-                processScannedEpcs();
+                singleimage.setImageResource(R.drawable.ic_scanblack);
             });
         }
     }
+
+    private String getRfidFromEpc(String epc) {
+        for (Rfidresponse.ItemModel rfidItem : rfidList) {
+            if (epc.equalsIgnoreCase(rfidItem.getTid())) {
+                return rfidItem.getBarcodeNumber(); // This is your RFID code
+            }
+        }
+        return null;
+    }
+
 
     private void processScannedEpcs() {
         scannedList.clear();
@@ -296,8 +370,10 @@ public class Stocktransferfragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
+        tvTotalItems.setText("Total items: " + scannedList.size());
         scannedEpcList.clear();
     }
+
 
     @SuppressLint("HardwareIds")
     private ScannedDataToService findProductByEPC(String epc) {
