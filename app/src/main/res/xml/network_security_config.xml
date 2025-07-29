@@ -3,5 +3,6 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">43.241.147.162</domain>
         <domain includeSubdomains="true">goldstringwebapp.loyalstring.co.in</domain>
+        <domain includeSubdomains="true">sapphirejewelryny.com</domain>
     </domain-config>
 </network-security-config>

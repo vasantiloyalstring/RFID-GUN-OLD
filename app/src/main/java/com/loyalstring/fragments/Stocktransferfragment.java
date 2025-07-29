@@ -48,11 +48,20 @@ import com.rscja.barcode.BarcodeFactory;
 import com.rscja.deviceapi.entity.BarcodeEntity;
 import com.rscja.deviceapi.entity.UHFTAGInfo;
 
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -121,9 +130,9 @@ public class Stocktransferfragment extends Fragment {
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
 
-        fetchRFIDListFromApi();
-     //   fetchLabelledStockListFromApi();
 
+        fetchRFIDListFromApi();
+        fetchLabelledStockListFromApi();
 
         handler = new Handler(msg -> {
             UHFTAGInfo tagInfo = (UHFTAGInfo) msg.obj;
@@ -150,11 +159,19 @@ public class Stocktransferfragment extends Fragment {
 
         layoutScan.setOnClickListener(v -> startOrStopScan());
 
-        layoutSync.setOnClickListener(view1 -> addScanDatatoWeb(scannedList, success -> {
+      /*  layoutSync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                syncToServer(scannedList);
+            }
+        });*/
+
+        layoutSync.setOnClickListener(view1 -> syncToServer(scannedList, success -> {
             requireActivity().runOnUiThread(() -> {
                 if (success) {
                     Toast.makeText(getContext(), "Stock transfer successful", Toast.LENGTH_SHORT).show();
                     scannedList.clear();
+                    editBoxName.setText("");
                     adapter.notifyDataSetChanged();
                     tvTotalItems.setText("Total items: 0");
                 } else {
@@ -248,16 +265,10 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private void startOrStopScan() {
-        if (mainActivity == null || mainActivity.mReader == null) {
-            Log.e("SCAN", "Reader not ready");
-            return;
-        }
+        if (mainActivity == null || mainActivity.mReader == null) return;
 
         mainActivity.mReader.setPower(30);
-        boolean isStarted = mainActivity.mReader.startInventoryTag();
-        Log.d("SCAN", "startInventoryTag: " + isStarted);
-
-        if (isStarted) {
+        if (mainActivity.mReader.startInventoryTag()) {
             singletext.setText("Stop Scan");
             singleimage.setImageResource(R.drawable.ic_cancelblack);
             new TagThread().start();
@@ -287,52 +298,9 @@ public class Stocktransferfragment extends Fragment {
                 UHFTAGInfo tagInfo = mainActivity.mReader.readTagFromBuffer();
 
                 if (tagInfo != null) {
-                    String epc = tagInfo.getEPC();
-                    Log.d("SCAN", "Read EPC: " + epc);
-
-                    if (!scannedEpcList.contains(epc)) {
-                        scannedEpcList.add(epc);
-                        mainActivity.playSound(1);
-
-                        // Only map EPC → RFID (Barcode)
-                        String rfidCode = getRfidFromEpc(epc);
-
-                        if (rfidCode != null) {
-                            ScannedDataToService item = new ScannedDataToService();
-                            item.setTIDValue(epc);
-                            item.setRFIDCode(rfidCode); // Only set RFID
-                            item.setItemCode("");       // Leave ItemCode blank or null
-                            item.setStatusType(true);
-
-                            Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
-                            String clientCode = clients.getClientCode();
-                            String androidId="";
-                            Log.e("check body client code", "  " + clientCode);
-                            if (clientCode != null || !clientCode.isEmpty()) {
-                                androidId = Settings.Secure.getString(
-                                        getActivity().getContentResolver(),
-                                        Settings.Secure.ANDROID_ID
-                                );
-                            }
-                            LocalDateTime currentDateTime = LocalDateTime.now();
-                            String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-
-                            item.setDeviceId(androidId);
-                            item.setCreatedOn(formatted);
-                            item.setLastUpdated(formatted);
-                            item.setStatusType(true);
-                            item.setId(0);
-                            item.setClientCode(clientCode);
-
-                            requireActivity().runOnUiThread(() -> {
-                                scannedList.add(item);
-                                adapter.notifyDataSetChanged();
-                                tvTotalItems.setText("Total items: " + scannedList.size());
-                            });
-                        } else {
-                            Log.w("SCAN", "No RFID mapping for EPC: " + epc);
-                        }
-                    }
+                    Message msg = handler.obtainMessage();
+                    msg.obj = tagInfo;
+                    handler.sendMessage(msg);
                 }
 
                 try {
@@ -344,7 +312,8 @@ public class Stocktransferfragment extends Fragment {
 
             requireActivity().runOnUiThread(() -> {
                 singletext.setText("Scan Box");
-                singleimage.setImageResource(R.drawable.ic_scanblack);
+             //   singletext.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_scanblack, 0, 0, 0);
+                processScannedEpcs();
             });
         }
     }
@@ -452,10 +421,10 @@ public class Stocktransferfragment extends Fragment {
     }
 
 
-    private void syncToServer(List<ScannedDataToService> scannedList) {
+    private void syncToServer(List<ScannedDataToService> scannedList, ScanDataCallback callback) {
         String url = sharedPreferencesManager.getStockTransferUrl();
         if (url.isEmpty()) {
-            Toast.makeText(getContext(), "Please set Stock Transfer URL first.", LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Please set Stock Transfer URL first.", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -465,10 +434,11 @@ public class Stocktransferfragment extends Fragment {
         }
 
         SyncRequest request = new SyncRequest("success", editBoxName.getText().toString(), items);
-
+        OkHttpClient client = getUnsafeOkHttpClient();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://dummy.url/")  // unused dummy base
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
                 .build();
 
         String fullUrl = sharedPreferencesManager.getStockTransferUrl(); // e.g., https://sapphirejewelryny.com/RFID
@@ -486,15 +456,47 @@ public class Stocktransferfragment extends Fragment {
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(getContext(), "Synced successfully", LENGTH_SHORT).show();
+               // Toast.makeText(getContext(), "Synced successfully", Toast.LENGTH_SHORT).show();
+                callback.onResult(true);
+
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), "Sync failed: " + t.getMessage(), LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "Sync failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("FAILED",t.getMessage().toString());
+                callback.onResult(false);
+
             }
         });
     }
+
+
+
+    private static OkHttpClient getUnsafeOkHttpClient() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[]{
+                    new X509TrustManager() {
+                        @Override public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                        @Override public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                        @Override public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[]{}; }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("SSL");
+            sslContext.init(null, trustAllCerts, new SecureRandom());
+            SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+            return new OkHttpClient.Builder()
+                    .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
+                    .hostnameVerifier((hostname, session) -> true)
+                    .build();
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     @Override
     public void onPause() {

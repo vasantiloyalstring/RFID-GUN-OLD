@@ -43,8 +43,8 @@ public class ScannedDataAdapter extends RecyclerView.Adapter<ScannedDataAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ScannedDataToService item = list.get(position);
         holder.tvSrNo.setText(String.valueOf(position + 1));
-        holder.tvEpc.setText(item.getTIDValue());
-        holder.tvProduct.setText(item.getRFIDCode());
+        holder.tvEpc.setText(item.getRFIDCode());
+        holder.tvProduct.setText(item.getItemCode());
     }
 
     @Override
