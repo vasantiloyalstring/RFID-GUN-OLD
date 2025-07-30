@@ -374,9 +374,18 @@ public class Pdfreportgenerator {
                         document.add(table);
 
 
-                        String imageUrl = m.getItemCode() + ".jpg";
-                        File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
-                                + File.separator + "Loyalstring files" + File.separator + "images" + File.separator + imageUrl);
+                        String imageUrlString = m.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+                        String onlineimage="";
+                        if (imageUrlString != null && !imageUrlString.isEmpty()) {
+                            String[] imageUrls = imageUrlString.split(",");
+                            String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+                            onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+                            // Use `onlineImage` as needed
+                        } else {
+                            // fallback or placeholder
+                            onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+                        }
+                        File imageFile = new File(onlineimage);
 
                         if (checkIfFileExists(imageFile)) {
                             ImageData imageData = ImageDataFactory.create(imageFile.getAbsolutePath());

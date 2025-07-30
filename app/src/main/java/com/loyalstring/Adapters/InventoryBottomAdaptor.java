@@ -195,8 +195,18 @@ public class InventoryBottomAdaptor extends RecyclerView.Adapter<InventoryBottom
         String basePath = getExternalStoragePath(context);
         // Load the image into the ImageView
         // Here you need to replace `item.getImageUrl()` with the actual method to get the image URL or resource ID
+        String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+        String onlineimage="";
+        if (imageUrlString != null && !imageUrlString.isEmpty()) {
+            String[] imageUrls = imageUrlString.split(",");
+            String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+            onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+            // Use `onlineImage` as needed
+        } else {
+            // fallback or placeholder
+            onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+        }
 
-        String onlineimage = item.getImageUrl();
         String iname = item.getItemCode();
 
 

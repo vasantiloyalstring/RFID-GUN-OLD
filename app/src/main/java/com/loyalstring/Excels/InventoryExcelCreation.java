@@ -146,6 +146,20 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                             for (Itemmodel item1 : processlist) {
                                 Itemmodel item = null;
                                 item = item1;
+
+
+                                String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+                                String onlineimage="";
+                                if (imageUrlString != null && !imageUrlString.isEmpty()) {
+                                    String[] imageUrls = imageUrlString.split(",");
+                                    String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+                                    onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+                                    // Use `onlineImage` as needed
+                                } else {
+                                    // fallback or placeholder
+                                    onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+                                }
+
                                 if (item != null) {
                                     boolean op = item.getAvlQty() == item.getMatchQty();
                                     String op1 = "";
@@ -153,7 +167,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                                         op1 = "found";
                                         String[] values = {item.getTidValue(), item.getEpcValue(), item.getCounterName(),
                                                 item.getCategory(), item.getProduct(),item.getProductCode() ,item.getPurity(), item.getBarCode(),
-                                                item.getItemCode(), item.getBox(),item.getPcs(), item.getDiamondClarity(), item.getImageUrl(), String.valueOf(item.getGrossWt()),
+                                                item.getItemCode(), item.getBox(),item.getPcs(), item.getDiamondClarity(), onlineimage, String.valueOf(item.getGrossWt()),
                                                 String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
                                                 String.valueOf(item.getMakingGm()), String.valueOf(item.getMakingPer()), String.valueOf(item.getFixedAmount()), String.valueOf(item.getFixedWastage()),
                                                 String.valueOf(item.getStoneAmount()), String.valueOf(item.getMrp()), item.getHuidCode(), item.getPartyCode(),
@@ -190,6 +204,18 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                             for (Itemmodel item1 : processlist) {
                                 Itemmodel item = null;
                                 item = item1;
+                                String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+                                String onlineimage="";
+                                if (imageUrlString != null && !imageUrlString.isEmpty()) {
+                                    String[] imageUrls = imageUrlString.split(",");
+                                    String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+                                    onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+                                    // Use `onlineImage` as needed
+                                } else {
+                                    // fallback or placeholder
+                                    onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+                                }
+
                                 if (item != null) {
                                     boolean op = item.getAvlQty() == item.getMatchQty();
                                     String op1 = "";
@@ -199,7 +225,7 @@ public class InventoryExcelCreation extends AsyncTask<Void, Integer, String> {
                                         op1 = "not found";
                                         String[] values = {item.getTidValue(), item.getEpcValue(),item.getCounterName(),
                                                 item.getCategory(), item.getProduct(),item.getProductCode() ,item.getPurity(), item.getBarCode(),
-                                                item.getItemCode(), item.getBox(), item.getPcs(),item.getDiamondClarity(), item.getImageUrl(), String.valueOf(item.getGrossWt()),
+                                                item.getItemCode(), item.getBox(), item.getPcs(),item.getDiamondClarity(),onlineimage, String.valueOf(item.getGrossWt()),
                                                 String.valueOf(item.getStoneWt()), String.valueOf(item.getNetWt()),
                                                 String.valueOf(item.getMakingGm()), String.valueOf(item.getMakingPer()), String.valueOf(item.getFixedAmount()), String.valueOf(item.getFixedWastage()),
                                                 String.valueOf(item.getStoneAmount()), String.valueOf(item.getMrp()), item.getHuidCode(), item.getPartyCode(),

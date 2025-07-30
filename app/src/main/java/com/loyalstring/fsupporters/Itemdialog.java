@@ -111,14 +111,28 @@ public class Itemdialog {
         // Load the image into the ImageView
         // Here you need to replace `item.getImageUrl()` with the actual method to get the image URL or resource ID
 
-        String onlineimage = item.getImageUrl();
+        String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+        String onlineimage="";
+        if (imageUrlString != null && !imageUrlString.isEmpty()) {
+            String[] imageUrls = imageUrlString.split(",");
+            String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+            onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+            // Use `onlineImage` as needed
+        } else {
+            // fallback or placeholder
+            onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+        }
+
+
         String iname = item.getItemCode();
+
+        Log.d("IMAGE URL",onlineimage);
 
 
         String imageUrl = iname + ".jpg"; // Assuming you have a method to get the image URL
         Log.e("loadimage", "" + imageUrl);
 
-        if (onlineimage != null && !onlineimage.isEmpty()) {
+        if (!onlineimage.isEmpty()) {
             Glide.with(context)
                     .load(onlineimage)
                     .placeholder(R.drawable.logo) // Optional: a placeholder image while loading
@@ -339,8 +353,17 @@ public class Itemdialog {
         String basePath = getExternalStoragePath(context);
         // Load the image into the ImageView
         // Here you need to replace `item.getImageUrl()` with the actual method to get the image URL or resource ID
-
-        String onlineimage = item.getImageUrl();
+        String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+        String onlineimage="";
+        if (imageUrlString != null && !imageUrlString.isEmpty()) {
+            String[] imageUrls = imageUrlString.split(",");
+            String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+            onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+            // Use `onlineImage` as needed
+        } else {
+            // fallback or placeholder
+            onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+        }
         String iname = item.getItemCode();
 
 

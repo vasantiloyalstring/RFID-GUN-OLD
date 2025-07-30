@@ -364,7 +364,7 @@ public class ApiProcess {
                                 i.setTotalStoneWeight(item.getStoneWeight());
                                 i.setNetWt(item.getNetWt());
                                 i.setPieces(item.getPcs());
-                                i.setImages(item.getImageurl());
+                                i.setImages(baseUrl+item.getImageurl());
                                 productList.add(i);
                             }
 

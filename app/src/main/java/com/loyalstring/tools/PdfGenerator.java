@@ -13,11 +13,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
@@ -71,6 +73,7 @@ public class PdfGenerator {
         this.context = context;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     public void generatePdf(HashMap<String, List<Itemmodel>> billmap, List<Itemmodel> item, int i) throws IOException {
         // Check for WRITE_EXTERNAL_STORAGE permission
 
@@ -95,7 +98,16 @@ public class PdfGenerator {
                 savePdfToDownloadFolder1(item);
             } else if (i == 3) {
                 //geesee
-                savePdfToDownloadFolder2(item);
+//                savePdfToDownloadFolder2(item);
+
+                new Thread(() -> {
+                    try {
+                        savePdfToDownloadFolder2(item); // Move your PDF logic here
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
             } else if (i == 12) {
                 //jjj
                 savePdfToDownloadFolder3(item);
@@ -145,6 +157,7 @@ public class PdfGenerator {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @SuppressLint("Range")
     private void Dnj(HashMap<String, List<Itemmodel>> billmap) {
         String invoiceNumber = "";
@@ -775,103 +788,86 @@ public class PdfGenerator {
 
 
     public void savePdfToDownloadFolder2(List<Itemmodel> item) throws FileNotFoundException, MalformedURLException {
+        if (item == null || item.isEmpty()) return;
 
         String invoiceNumber = item.get(0).getInvoiceNumber();
         long tdate = item.get(0).getOperationTime();
         String cname = item.get(0).getCustomerName();
 
-        if (invoiceNumber.isEmpty()) {
-            invoiceNumber = "unknown_invoice"; // Default if no invoice number found
+        if (invoiceNumber == null || invoiceNumber.isEmpty()) {
+            invoiceNumber = "unknown_invoice";
         }
-        String dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + cname+invoiceNumber + ".pdf";
+        if (cname == null || cname.isEmpty()) {
+            cname = "customer";
+        }
+
+        String dest = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                + "/" + cname + "_" + invoiceNumber + ".pdf";
+
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc, PageSize.A4);
-        Paragraph header = new Paragraph("Bill Report ")
+
+        Paragraph header = new Paragraph("Bill Report")
                 .setTextAlignment(TextAlignment.LEFT)
                 .setFontSize(18);
         document.add(header);
 
-        for(int i = 0; i<item.size(); i++){
-
+        for (int i = 0; i < item.size(); i++) {
             Itemmodel m = item.get(i);
-//            Paragraph details = new Paragraph("ITEM NAME  \n"+m.getProduct())
-//                    .setTextAlignment(TextAlignment.LEFT)
-//                    .setFontSize(18);
-//            document.add(details);
-//
-//            Paragraph partyname = new Paragraph("PARTY NAME  \n"+m.getCustomerName())
-//                    .setTextAlignment(TextAlignment.LEFT)
-//                    .setFontSize(18);
-//            document.add(partyname);
-//
-//            Paragraph tgwt = new Paragraph("TOTAL WEIGHT  \n"+m.getGrossWt())
-//                    .setTextAlignment(TextAlignment.LEFT)
-//                    .setFontSize(18);
-//            document.add(tgwt);
-//
-//
-//            Paragraph note = new Paragraph("Note  \n"+m.getPartyCode())
-//                    .setTextAlignment(TextAlignment.LEFT)
-//                    .setFontSize(18);
-//            document.add(note);
 
             Table table = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
 
-// First cell: Right-aligned text
-            Paragraph details1 = new Paragraph("G wt  : " + m.getGrossWt() + "\nS wt  : " + m.getStoneWt()
-                    + "\nN Wt  : " + m.getNetWt())
-                    .setTextAlignment(TextAlignment.RIGHT)
-                    .setFontSize(14);
-
-
-
-// Second cell: Left-aligned text
-            Paragraph details = new Paragraph("Customer Name  : " + m.getCustomerName() + "\nOrder No  : "+m.getInvoiceNumber()
-                    + "\nItemcode  : " + m.getItemCode()+"\nNotes  : "+m.getPartyCode())
+            // Left aligned details
+            Paragraph leftDetails = new Paragraph("Customer Name  : " + safe(m.getCustomerName())
+                    + "\nOrder No  : " + safe(m.getInvoiceNumber())
+                    + "\nItemcode  : " + safe(m.getItemCode())
+                    + "\nNotes  : " + safe(m.getPartyCode()))
                     .setTextAlignment(TextAlignment.LEFT)
                     .setFontSize(14);
 
-            table.addCell(details);
-            table.addCell(details1);
+            // Right aligned weights
+            Paragraph rightDetails = new Paragraph("G wt  : " + safe(String.valueOf(m.getGrossWt()))
+                    + "\nS wt  : " + safe(String.valueOf(m.getStoneWt()))
+                    + "\nN Wt  : " + safe(String.valueOf(m.getNetWt())))
+                    .setTextAlignment(TextAlignment.RIGHT)
+                    .setFontSize(14);
+
+            table.addCell(leftDetails);
+            table.addCell(rightDetails);
             document.add(table);
 
+            // Handle Image
+            try {
+                String imageUrlStr = m.getImageUrl();
+                if (imageUrlStr != null && !imageUrlStr.trim().isEmpty()) {
+                    String[] split = imageUrlStr.split(",");
+                    String lastImage = split[split.length - 1].trim();
+                    String fullImageUrl = "https://rrgold.loyalstring.co.in/" + lastImage;
 
-
-
-
-            String imageUrl = m.getItemCode() + ".jpg";
-            File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Loyalstring files/images/" + imageUrl);
-
-            if (checkIfFileExists(imageFile)) {
-                ImageData imageData = ImageDataFactory.create(imageFile.getAbsolutePath());
-                Image image = new Image(imageData);
-                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
-//                image.scaleToFit(400, 500); // Scale image to fit within the box
-                image.setWidth(400);
-                image.setHeight(500);
-                document.add(image);
+                    ImageData imageData = ImageDataFactory.create(fullImageUrl);
+                    Image image = new Image(imageData);
+                    image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                    image.setWidth(400);
+                    image.setHeight(500);
+                    document.add(image);
+                }
+            } catch (Exception e) {
+                e.printStackTrace(); // Optional: log or handle image loading failure
             }
 
-            if(i+1 < item.size()){
+            if (i + 1 < item.size()) {
                 document.add(new AreaBreak());
             }
-
-
-
         }
-
-        // Add company details
-
-
-        // Add footer details
-//        Paragraph footer = new Paragraph("Delivery To: \nAdvance: \nCustomer Sign.:")
-//                .setTextAlignment(TextAlignment.LEFT)
-//                .setFontSize(12);
-//        document.add(footer);
 
         document.close();
         openPdf1(dest);
+    }
+
+    // Utility to handle null strings safely
+    private String safe(String input) {
+        return input != null ? input : "";
     }
     public void savePdfToDownloadFolder3(List<Itemmodel> item) throws FileNotFoundException, MalformedURLException {
 
@@ -990,10 +986,25 @@ public class PdfGenerator {
                 cell.add(new Paragraph(item.getItemCode()));
 
                 // Add the image
-                ImageData imageData = ImageDataFactory.create(item.getImageUrl()); // Make sure the image URL is accessible
+
+                String imageUrlString = item.getImageUrl(); // e.g., "img1.jpg,img2.jpg,img3.jpg"
+                String onlineimage="";
+                if (imageUrlString != null && !imageUrlString.isEmpty()) {
+                    String[] imageUrls = imageUrlString.split(",");
+                    String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+                    onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+                    // Use `onlineImage` as needed
+                } else {
+                    // fallback or placeholder
+                    onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+                }
+
+                ImageData imageData = ImageDataFactory.create(onlineimage); // pass URL
                 Image image = new Image(imageData);
-                image.scaleToFit(100, 100); // Scale image to fit within the box
-                cell.add(image);
+                image.setHorizontalAlignment(HorizontalAlignment.CENTER);
+                image.setWidth(400);
+                image.setHeight(500);
+                document.add(image);
 
                 // Add the cell to the table
                 table.addCell(cell);
@@ -1072,10 +1083,14 @@ public class PdfGenerator {
             double tgross = 0;
             double tnet = 0;
             String it = "";
+            String onlineimage = "";
+            String imageUrlString = "";
             for (Itemmodel item : items) {
                 tgross = tgross + item.getGrossWt();
                 tnet = tnet + item.getNetWt();
                 it = it + item.getProduct() + " G Wt " + decimalFormat.format(item.getGrossWt()) + " N Wt " + decimalFormat.format(item.getNetWt()) + "\n";
+
+                imageUrlString = item.getImageUrl();
             }
 
             Cell itemCell = new Cell();
@@ -1086,12 +1101,28 @@ public class PdfGenerator {
             String imageUrl = itemCode + ".jpg";
             File imageFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS) + "/Loyalstring files/images/" + imageUrl);
 
-            if (checkIfFileExists(imageFile)) {
-                ImageData imageData = ImageDataFactory.create(imageFile.getAbsolutePath());
+
+           // e.g., "img1.jpg,img2.jpg,img3.jpg"
+            if (imageUrlString != null && !imageUrlString.isEmpty()) {
+                String[] imageUrls = imageUrlString.split(",");
+                String lastImage = imageUrls[imageUrls.length - 1].trim(); // get last and trim spaces
+                onlineimage = "https://rrgold.loyalstring.co.in/" + lastImage;
+                // Use `onlineImage` as needed
+            } else {
+                // fallback or placeholder
+                onlineimage = "https://rrgold.loyalstring.co.in/default.jpg";
+            }
+
+
+            try {
+                ImageData imageData = ImageDataFactory.create(onlineimage); // URL-based
                 Image image = new Image(imageData);
                 image.setHorizontalAlignment(HorizontalAlignment.CENTER);
-                image.scaleToFit(100, 100); // Scale image to fit within the box
-                itemCell.add(image);
+                image.setWidth(400);
+                image.setHeight(500);
+                document.add(image);
+            } catch (Exception e) {
+                Log.e("PDF Image Load", "Failed to load image from URL: " + onlineimage, e);
             }
 
             itemCell.add(new Paragraph(it));
@@ -1720,7 +1751,11 @@ public class PdfGenerator {
             contentValues.put(MediaStore.Downloads.MIME_TYPE, "application/pdf");
             contentValues.put(MediaStore.Downloads.IS_PENDING, 1);
 
-            Uri collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            Uri collection = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                collection = MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            }
+            assert collection != null;
             Uri fileUri = resolver.insert(collection, contentValues);
 
             if (fileUri == null) {
