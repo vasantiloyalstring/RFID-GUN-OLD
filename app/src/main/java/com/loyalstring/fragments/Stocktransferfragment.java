@@ -391,7 +391,7 @@ public class Stocktransferfragment extends Fragment {
         if (!rfidList.isEmpty() && !labelledStockList.isEmpty()) {
             itemCodeToRfidMap.clear();
             for (AlllabelResponse.LabelItem labelItem : labelledStockList) {
-                String itemCode = labelItem.getItemCode();
+                String itemCode = labelItem.getProductName();
                 String rfid = labelItem.getrFIDCode();
                 if (itemCode != null && rfid != null) {
                     itemCodeToRfidMap.add(new Pair<>(itemCode, rfid));
