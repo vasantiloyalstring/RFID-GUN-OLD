@@ -54,13 +54,16 @@ public final class FragmentHomefragmentBinding implements ViewBinding {
   public final CardView remap;
 
   @NonNull
+  public final CardView stockTransfer;
+
+  @NonNull
   public final Button testbtn;
 
   private FragmentHomefragmentBinding(@NonNull FrameLayout rootView, @NonNull CardView cbill,
       @NonNull CardView cinventory, @NonNull CardView cproduct, @NonNull CardView csalereport,
       @NonNull CardView csearch, @NonNull CardView csettings, @NonNull CardView cstockhistory,
       @NonNull CardView cstockreport, @NonNull CardView cstocktransfer, @NonNull CardView issue,
-      @NonNull CardView remap, @NonNull Button testbtn) {
+      @NonNull CardView remap, @NonNull CardView stockTransfer, @NonNull Button testbtn) {
     this.rootView = rootView;
     this.cbill = cbill;
     this.cinventory = cinventory;
@@ -73,6 +76,7 @@ public final class FragmentHomefragmentBinding implements ViewBinding {
     this.cstocktransfer = cstocktransfer;
     this.issue = issue;
     this.remap = remap;
+    this.stockTransfer = stockTransfer;
     this.testbtn = testbtn;
   }
 
@@ -169,6 +173,12 @@ public final class FragmentHomefragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.stock_transfer;
+      CardView stockTransfer = ViewBindings.findChildViewById(rootView, id);
+      if (stockTransfer == null) {
+        break missingId;
+      }
+
       id = R.id.testbtn;
       Button testbtn = ViewBindings.findChildViewById(rootView, id);
       if (testbtn == null) {
@@ -177,7 +187,7 @@ public final class FragmentHomefragmentBinding implements ViewBinding {
 
       return new FragmentHomefragmentBinding((FrameLayout) rootView, cbill, cinventory, cproduct,
           csalereport, csearch, csettings, cstockhistory, cstockreport, cstocktransfer, issue,
-          remap, testbtn);
+          remap, stockTransfer, testbtn);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

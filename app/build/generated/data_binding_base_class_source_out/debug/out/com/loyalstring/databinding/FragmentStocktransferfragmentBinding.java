@@ -4,25 +4,90 @@ package com.loyalstring.databinding;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewbinding.ViewBinding;
+import androidx.viewbinding.ViewBindings;
 import com.loyalstring.R;
 import java.lang.NullPointerException;
 import java.lang.Override;
+import java.lang.String;
 
 public final class FragmentStocktransferfragmentBinding implements ViewBinding {
   @NonNull
-  private final FrameLayout rootView;
+  private final LinearLayout rootView;
 
-  private FragmentStocktransferfragmentBinding(@NonNull FrameLayout rootView) {
+  @NonNull
+  public final Button btnScanBox;
+
+  @NonNull
+  public final EditText edBoxName;
+
+  @NonNull
+  public final LinearLayout layScanProducts;
+
+  @NonNull
+  public final LinearLayout layoutStock;
+
+  @NonNull
+  public final LinearLayout layoutSync;
+
+  @NonNull
+  public final LinearLayout llTableHeader;
+
+  @NonNull
+  public final RecyclerView recyclerViewScanneddata;
+
+  @NonNull
+  public final LinearLayout singlefbtns;
+
+  @NonNull
+  public final ImageView singleimage;
+
+  @NonNull
+  public final LinearLayout singlereset;
+
+  @NonNull
+  public final TextView singletext;
+
+  @NonNull
+  public final TextView tvBoxHeader;
+
+  @NonNull
+  public final TextView tvTotalItems;
+
+  private FragmentStocktransferfragmentBinding(@NonNull LinearLayout rootView,
+      @NonNull Button btnScanBox, @NonNull EditText edBoxName,
+      @NonNull LinearLayout layScanProducts, @NonNull LinearLayout layoutStock,
+      @NonNull LinearLayout layoutSync, @NonNull LinearLayout llTableHeader,
+      @NonNull RecyclerView recyclerViewScanneddata, @NonNull LinearLayout singlefbtns,
+      @NonNull ImageView singleimage, @NonNull LinearLayout singlereset,
+      @NonNull TextView singletext, @NonNull TextView tvBoxHeader, @NonNull TextView tvTotalItems) {
     this.rootView = rootView;
+    this.btnScanBox = btnScanBox;
+    this.edBoxName = edBoxName;
+    this.layScanProducts = layScanProducts;
+    this.layoutStock = layoutStock;
+    this.layoutSync = layoutSync;
+    this.llTableHeader = llTableHeader;
+    this.recyclerViewScanneddata = recyclerViewScanneddata;
+    this.singlefbtns = singlefbtns;
+    this.singleimage = singleimage;
+    this.singlereset = singlereset;
+    this.singletext = singletext;
+    this.tvBoxHeader = tvBoxHeader;
+    this.tvTotalItems = tvTotalItems;
   }
 
   @Override
   @NonNull
-  public FrameLayout getRoot() {
+  public LinearLayout getRoot() {
     return rootView;
   }
 
@@ -43,10 +108,90 @@ public final class FragmentStocktransferfragmentBinding implements ViewBinding {
 
   @NonNull
   public static FragmentStocktransferfragmentBinding bind(@NonNull View rootView) {
-    if (rootView == null) {
-      throw new NullPointerException("rootView");
-    }
+    // The body of this method is generated in a way you would not otherwise write.
+    // This is done to optimize the compiled bytecode for size and performance.
+    int id;
+    missingId: {
+      id = R.id.btn_scan_box;
+      Button btnScanBox = ViewBindings.findChildViewById(rootView, id);
+      if (btnScanBox == null) {
+        break missingId;
+      }
 
-    return new FragmentStocktransferfragmentBinding((FrameLayout) rootView);
+      id = R.id.ed_boxName;
+      EditText edBoxName = ViewBindings.findChildViewById(rootView, id);
+      if (edBoxName == null) {
+        break missingId;
+      }
+
+      id = R.id.lay_scan_products;
+      LinearLayout layScanProducts = ViewBindings.findChildViewById(rootView, id);
+      if (layScanProducts == null) {
+        break missingId;
+      }
+
+      LinearLayout layoutStock = (LinearLayout) rootView;
+
+      id = R.id.layout_sync;
+      LinearLayout layoutSync = ViewBindings.findChildViewById(rootView, id);
+      if (layoutSync == null) {
+        break missingId;
+      }
+
+      id = R.id.ll_table_header;
+      LinearLayout llTableHeader = ViewBindings.findChildViewById(rootView, id);
+      if (llTableHeader == null) {
+        break missingId;
+      }
+
+      id = R.id.recyclerView_scanneddata;
+      RecyclerView recyclerViewScanneddata = ViewBindings.findChildViewById(rootView, id);
+      if (recyclerViewScanneddata == null) {
+        break missingId;
+      }
+
+      id = R.id.singlefbtns;
+      LinearLayout singlefbtns = ViewBindings.findChildViewById(rootView, id);
+      if (singlefbtns == null) {
+        break missingId;
+      }
+
+      id = R.id.singleimage;
+      ImageView singleimage = ViewBindings.findChildViewById(rootView, id);
+      if (singleimage == null) {
+        break missingId;
+      }
+
+      id = R.id.singlereset;
+      LinearLayout singlereset = ViewBindings.findChildViewById(rootView, id);
+      if (singlereset == null) {
+        break missingId;
+      }
+
+      id = R.id.singletext;
+      TextView singletext = ViewBindings.findChildViewById(rootView, id);
+      if (singletext == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_box_header;
+      TextView tvBoxHeader = ViewBindings.findChildViewById(rootView, id);
+      if (tvBoxHeader == null) {
+        break missingId;
+      }
+
+      id = R.id.tv_total_items;
+      TextView tvTotalItems = ViewBindings.findChildViewById(rootView, id);
+      if (tvTotalItems == null) {
+        break missingId;
+      }
+
+      return new FragmentStocktransferfragmentBinding((LinearLayout) rootView, btnScanBox,
+          edBoxName, layScanProducts, layoutStock, layoutSync, llTableHeader,
+          recyclerViewScanneddata, singlefbtns, singleimage, singlereset, singletext, tvBoxHeader,
+          tvTotalItems);
+    }
+    String missingId = rootView.getResources().getResourceName(id);
+    throw new NullPointerException("Missing required view with ID: ".concat(missingId));
   }
 }

@@ -36,6 +36,10 @@ import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.apiresponse.AlllabelResponse;
 import com.loyalstring.apiresponse.Rfidresponse;
+import com.loyalstring.database.StorageClass;
+import com.loyalstring.database.product.EntryDatabase;
+import com.loyalstring.fsupporters.Globalcomponents;
+import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.DynamicSyncService;
 import com.loyalstring.interfaces.ScanDataCallback;
@@ -92,6 +96,12 @@ public class Stocktransferfragment extends Fragment {
     private final List<Rfidresponse.ItemModel> rfidList = new ArrayList<>();
     private final List<AlllabelResponse.LabelItem> labelledStockList = new ArrayList<>();
     private final List<Pair<String, String>> itemCodeToRfidMap = new ArrayList<>();
+    Globalcomponents globalcomponents;
+    MyApplication myApplication;
+
+    String transactionno = "";
+
+    StorageClass storageClass;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -115,6 +125,20 @@ public class Stocktransferfragment extends Fragment {
         editBoxName = view.findViewById(R.id.ed_boxName);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
+
+        globalcomponents = new Globalcomponents();
+        storageClass = new StorageClass(getActivity());
+        myApplication = (MyApplication) requireActivity().getApplicationContext();
+       // entryDatabase = new EntryDatabase(getActivity());
+
+        mainActivity.toolpower.setVisibility(View.VISIBLE);
+        mainActivity.toolpower.setText(String.valueOf(mainActivity.mReader.getPower()));
+        mainActivity.toolpower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                globalcomponents.changepowerg(getActivity(), "transaction", storageClass, mainActivity.toolpower, mainActivity.mReader);
+            }
+        });
 
         adapter = new ScannedDataAdapter(scannedList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -267,7 +291,7 @@ public class Stocktransferfragment extends Fragment {
     private void startOrStopScan() {
         if (mainActivity == null || mainActivity.mReader == null) return;
 
-        mainActivity.mReader.setPower(30);
+        mainActivity.mReader.setPower(mainActivity.mReader.getPower());
         if (mainActivity.mReader.startInventoryTag()) {
             singletext.setText("Stop Scan");
             singleimage.setImageResource(R.drawable.ic_cancelblack);

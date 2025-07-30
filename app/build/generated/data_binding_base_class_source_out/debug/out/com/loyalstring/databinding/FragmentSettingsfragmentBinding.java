@@ -103,6 +103,9 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
   public final TextView sreadtext;
 
   @NonNull
+  public final LinearLayout stockTransferUrl;
+
+  @NonNull
   public final LinearLayout storemanagelay;
 
   @NonNull
@@ -124,6 +127,9 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
   public final TextView treadtext;
 
   @NonNull
+  public final TextView tvStockTransferUrl;
+
+  @NonNull
   public final Button uploadbtn;
 
   @NonNull
@@ -142,10 +148,10 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
       @NonNull TextView preadtext, @NonNull TextView ptext, @NonNull Button resetbtn,
       @NonNull Button setmode, @NonNull LinearLayout shreadlay, @NonNull TextView shreadtext,
       @NonNull LinearLayout sreadlay, @NonNull TextView sreadtext,
-      @NonNull LinearLayout storemanagelay, @NonNull LinearLayout streadlay,
-      @NonNull TextView streadtext, @NonNull LinearLayout synclay, @NonNull TextView synctext,
-      @NonNull LinearLayout treadlay, @NonNull TextView treadtext, @NonNull Button uploadbtn,
-      @NonNull Button uploadbtn1) {
+      @NonNull LinearLayout stockTransferUrl, @NonNull LinearLayout storemanagelay,
+      @NonNull LinearLayout streadlay, @NonNull TextView streadtext, @NonNull LinearLayout synclay,
+      @NonNull TextView synctext, @NonNull LinearLayout treadlay, @NonNull TextView treadtext,
+      @NonNull TextView tvStockTransferUrl, @NonNull Button uploadbtn, @NonNull Button uploadbtn1) {
     this.rootView = rootView;
     this.accountlay = accountlay;
     this.accounttext = accounttext;
@@ -174,6 +180,7 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
     this.shreadtext = shreadtext;
     this.sreadlay = sreadlay;
     this.sreadtext = sreadtext;
+    this.stockTransferUrl = stockTransferUrl;
     this.storemanagelay = storemanagelay;
     this.streadlay = streadlay;
     this.streadtext = streadtext;
@@ -181,6 +188,7 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
     this.synctext = synctext;
     this.treadlay = treadlay;
     this.treadtext = treadtext;
+    this.tvStockTransferUrl = tvStockTransferUrl;
     this.uploadbtn = uploadbtn;
     this.uploadbtn1 = uploadbtn1;
   }
@@ -374,6 +382,12 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.stock_transfer_url;
+      LinearLayout stockTransferUrl = ViewBindings.findChildViewById(rootView, id);
+      if (stockTransferUrl == null) {
+        break missingId;
+      }
+
       id = R.id.storemanagelay;
       LinearLayout storemanagelay = ViewBindings.findChildViewById(rootView, id);
       if (storemanagelay == null) {
@@ -416,6 +430,12 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.tv_stock_transfer_url;
+      TextView tvStockTransferUrl = ViewBindings.findChildViewById(rootView, id);
+      if (tvStockTransferUrl == null) {
+        break missingId;
+      }
+
       id = R.id.uploadbtn;
       Button uploadbtn = ViewBindings.findChildViewById(rootView, id);
       if (uploadbtn == null) {
@@ -432,8 +452,8 @@ public final class FragmentSettingsfragmentBinding implements ViewBinding {
           backuplay, backuptext, branchlayout, branchtext, categorytext, catgorylayout, dynamicapis,
           dynamicapitext, emaillay, emailtext, googlesheet, googlesheettext, iratelay, ireadlay,
           ireadtext, permissionlay, preadlay, preadtext, ptext, resetbtn, setmode, shreadlay,
-          shreadtext, sreadlay, sreadtext, storemanagelay, streadlay, streadtext, synclay, synctext,
-          treadlay, treadtext, uploadbtn, uploadbtn1);
+          shreadtext, sreadlay, sreadtext, stockTransferUrl, storemanagelay, streadlay, streadtext,
+          synclay, synctext, treadlay, treadtext, tvStockTransferUrl, uploadbtn, uploadbtn1);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

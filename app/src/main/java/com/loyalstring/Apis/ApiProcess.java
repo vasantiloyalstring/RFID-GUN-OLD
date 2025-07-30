@@ -804,10 +804,10 @@ public class ApiProcess {
                             deleteitems(entryDatabase, activity, dmap, app);
 
 
-                           // if (totalissueitem.get() > 0) {
-                              //  Toast.makeText(activity, "failed items " + totalissueitem.get(), Toast.LENGTH_SHORT).show();
+                           /* if (totalissueitem.get() > 0) {
+                                Toast.makeText(activity, "failed items " + totalissueitem.get(), Toast.LENGTH_SHORT).show();
 
-                           // }
+                            }*/
                             dialog.dismiss();
 
                         }
