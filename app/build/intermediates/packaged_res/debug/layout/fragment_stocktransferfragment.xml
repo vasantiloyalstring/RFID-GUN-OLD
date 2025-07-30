@@ -1,14 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_stock"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.Stocktransferfragment">
+    android:orientation="vertical"
+    android:background="#FFFFFF">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- Scan Box Header -->
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/tv_box_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan Box Bar Code"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingTop="16dp"
+        android:layout_marginBottom="8dp" />
 
-</FrameLayout>
+    <!-- Scan Box Input + Button -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/ed_boxName"
+            android:layout_width="0dp"
+            android:layout_weight="0.7"
+            android:layout_height="48dp"
+            android:hint="Box Name"
+            android:textSize="16sp"
+            android:padding="10dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/edittextsquare"
+            android:importantForAccessibility="yes" />
+
+        <Button
+            android:id="@+id/btn_scan_box"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="48dp"
+            android:text="Scan Box"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:importantForAccessibility="yes" />
+    </LinearLayout>
+
+    <!-- Table Header Row -->
+    <LinearLayout
+        android:id="@+id/ll_table_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_marginTop="10dp"
+        android:background="#DDDDDD">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Sr No."
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:text="RFID"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:text="Product"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
+
+    <!-- RecyclerView for scanned products -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView_scanneddata"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
+        android:layout_marginTop="4dp" />
+
+    <!-- Total Items Fixed TextView -->
+    <TextView
+        android:id="@+id/tv_total_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Total items: 0"
+        android:gravity="end"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:padding="8dp"
+        android:background="#EEEEEE"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="12dp"
+        android:overScrollMode="never" />
+
+    <!-- Footer Buttons: Sync, Scan, Reset -->
+    <LinearLayout
+        android:id="@+id/singlefbtns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edittextsquare"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <!-- Save / Sync -->
+        <LinearLayout
+            android:id="@+id/layout_sync"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Sync scanned data to server">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_saveblack"
+                android:contentDescription="Sync Icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- Scan -->
+        <LinearLayout
+            android:id="@+id/lay_scan_products"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Start or Stop scanning">
+
+            <ImageView
+                android:id="@+id/singleimage"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_scanblack"
+                android:contentDescription="Scan Icon" />
+
+            <TextView
+                android:id="@+id/singletext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- Reset -->
+        <LinearLayout
+            android:id="@+id/singlereset"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="Reset scanned list">
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@drawable/ic_cancelblack"
+                android:contentDescription="Reset Icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

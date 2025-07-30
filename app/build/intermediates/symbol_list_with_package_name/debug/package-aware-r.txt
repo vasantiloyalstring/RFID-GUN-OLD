@@ -3317,6 +3317,7 @@ id bsscanlay
 id bstext
 id btnSave
 id btn_save
+id btn_scan_box
 id bulkbtn
 id bulkheading
 id bulklay
@@ -3451,6 +3452,7 @@ id easeIn
 id easeInOut
 id easeOut
 id east
+id ed_boxName
 id edge
 id editText
 id edit_grosswt
@@ -3615,11 +3617,14 @@ id ittstonewt
 id jumpToEnd
 id jumpToStart
 id labeled
+id lay_scan_products
 id layliststate
 id layout
 id layout_api_key
 id layout_basic_auth
 id layout_oauth
+id layout_stock
+id layout_sync
 id lbarcode
 id ldelete
 id ledit
@@ -3638,6 +3643,7 @@ id listbuttons
 id listlay
 id listrecycler
 id litemcode
+id ll_table_header
 id loginBtn
 id loginbtn
 id lproduct
@@ -3803,6 +3809,7 @@ id ratio
 id rectangles
 id recyclerView
 id recyclerViewFields
+id recyclerView_scanneddata
 id remap
 id report_drawn
 id reportitemscroll
@@ -3923,6 +3930,8 @@ id startVertical
 id startbtn
 id staticLayout
 id staticPostLayout
+id stock_transfer
+id stock_transfer_url
 id stock_verification
 id stop
 id stopbtn
@@ -4051,14 +4060,20 @@ id ttotalamont
 id ttotalamount
 id ttqty
 id ttswt
+id tv_box_header
 id tv_category
 id tv_counter
 id tv_date
+id tv_epc
 id tv_gr_wt
 id tv_match_qty
 id tv_net_wt
+id tv_product
+id tv_sr_no
+id tv_stock_transfer_url
 id tv_stone_wt
 id tv_tot_qty
+id tv_total_items
 id tv_um_qty
 id twobtns
 id unchecked
@@ -4280,6 +4295,7 @@ layout item_bill_layout
 layout item_bill_view_layout
 layout item_field
 layout item_issue
+layout item_scanned_row
 layout item_skureport
 layout listrecycler_layout
 layout m3_alert_dialog
