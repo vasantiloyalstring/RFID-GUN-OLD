@@ -344,7 +344,7 @@ public class Settingsfragment extends Fragment implements interfaces.Imagedownlo
         builder.setTitle("Set Stock Transfer URL");
 
         final EditText input = new EditText(context);
-        input.setHint("https://sapphirejewelryny.com/RFID/");
+        input.setHint("");
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI);
 
         String savedUrl = sharedPreferencesManager.getStockTransferUrl();

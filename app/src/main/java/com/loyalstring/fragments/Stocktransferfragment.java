@@ -1,6 +1,5 @@
+// Imports remain the same
 package com.loyalstring.fragments;
-
-import static android.widget.Toast.LENGTH_SHORT;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -8,7 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.util.Log;
-import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,18 +34,14 @@ import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.apiresponse.AlllabelResponse;
-import com.loyalstring.apiresponse.Rfidresponse;
-import com.loyalstring.database.StorageClass;
-import com.loyalstring.database.product.EntryDatabase;
 import com.loyalstring.fsupporters.Globalcomponents;
-import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.DynamicSyncService;
 import com.loyalstring.interfaces.ScanDataCallback;
-import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.SyncRequest;
 import com.loyalstring.network.NetworkUtils;
+import com.loyalstring.readersupport.KeyDwonFragment;
 import com.rscja.barcode.BarcodeDecoder;
 import com.rscja.barcode.BarcodeFactory;
 import com.rscja.deviceapi.entity.BarcodeEntity;
@@ -59,30 +54,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 
 import okhttp3.OkHttpClient;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
+import retrofit2.*;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class Stocktransferfragment extends Fragment {
+public class Stocktransferfragment extends KeyDwonFragment {
 
     private MainActivity mainActivity;
     private Handler handler;
-    private TextView singletext;
-    private TextView tvTotalItems;
+    private TextView singletext, tvTotalItems;
     private EditText editBoxName;
-    private Button btnScanBox;
-    private LinearLayout layoutScan,layoutSync,singlereset;
+    private LinearLayout layoutScan, layoutSync, singlereset;
     private RecyclerView recyclerView;
     private ImageView singleimage;
+    private Button btnScanBox;
     private ScannedDataAdapter adapter;
 
     private SharedPreferencesManager sharedPreferencesManager;
@@ -90,18 +77,11 @@ public class Stocktransferfragment extends Fragment {
     private ApiManager apiManager;
     private NetworkUtils networkUtils;
     public BarcodeDecoder barcodeDecoder = BarcodeFactory.getInstance().getBarcodeDecoder();
+    public KeyDwonFragment currentFragment=null;
 
     private final List<ScannedDataToService> scannedList = new ArrayList<>();
     private final List<String> scannedEpcList = new ArrayList<>();
-    private final List<Rfidresponse.ItemModel> rfidList = new ArrayList<>();
     private final List<AlllabelResponse.LabelItem> labelledStockList = new ArrayList<>();
-    private final List<Pair<String, String>> itemCodeToRfidMap = new ArrayList<>();
-    Globalcomponents globalcomponents;
-    MyApplication myApplication;
-
-    String transactionno = "";
-
-    StorageClass storageClass;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,10 +91,11 @@ public class Stocktransferfragment extends Fragment {
         sharedPreferencesManager = new SharedPreferencesManager(requireContext());
         apiService = RetrofitClient.getClient().create(ApiService.class);
         apiManager = new ApiManager(apiService);
-        networkUtils = new NetworkUtils(getActivity());
+        mainActivity.currentFragment = Stocktransferfragment.this;
 
-        layoutSync = view.findViewById(R.id.layout_sync);
+
         layoutScan = view.findViewById(R.id.lay_scan_products);
+        layoutSync = view.findViewById(R.id.layout_sync);
         singlereset = view.findViewById(R.id.singlereset);
         singleimage = view.findViewById(R.id.singleimage);
         singletext = view.findViewById(R.id.singletext);
@@ -124,21 +105,6 @@ public class Stocktransferfragment extends Fragment {
         btnScanBox = view.findViewById(R.id.btn_scan_box);
         editBoxName = view.findViewById(R.id.ed_boxName);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
-        recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
-
-        globalcomponents = new Globalcomponents();
-        storageClass = new StorageClass(getActivity());
-        myApplication = (MyApplication) requireActivity().getApplicationContext();
-       // entryDatabase = new EntryDatabase(getActivity());
-
-        mainActivity.toolpower.setVisibility(View.VISIBLE);
-        mainActivity.toolpower.setText(String.valueOf(mainActivity.mReader.getPower()));
-        mainActivity.toolpower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                globalcomponents.changepowerg(getActivity(), "transaction", storageClass, mainActivity.toolpower, mainActivity.mReader);
-            }
-        });
 
         adapter = new ScannedDataAdapter(scannedList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -147,15 +113,10 @@ public class Stocktransferfragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         ActionBar actionBar = mainActivity.getSupportActionBar();
         if (actionBar != null) {
-            // Update ActionBar properties
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle("Stock Transfer");
-
-            // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
 
-
-        fetchRFIDListFromApi();
         fetchLabelledStockListFromApi();
 
         handler = new Handler(msg -> {
@@ -164,7 +125,6 @@ public class Stocktransferfragment extends Fragment {
                 String epc = tagInfo.getEPC();
                 if (!scannedEpcList.contains(epc)) {
                     scannedEpcList.add(epc);
-                    Log.d("SCAN", "EPC Collected: " + epc);
                     mainActivity.playSound(1);
                     ScannedDataToService item = findProductByEPC(epc);
                     if (item != null) {
@@ -173,8 +133,6 @@ public class Stocktransferfragment extends Fragment {
                             adapter.notifyDataSetChanged();
                             tvTotalItems.setText("Total items: " + scannedList.size());
                         });
-                    } else {
-                        Log.w("RFID", "Unmapped EPC during scan: " + epc);
                     }
                 }
             }
@@ -182,22 +140,19 @@ public class Stocktransferfragment extends Fragment {
         });
 
         layoutScan.setOnClickListener(v -> startOrStopScan());
-
-      /*  layoutSync.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                syncToServer(scannedList);
-            }
-        });*/
-
         layoutSync.setOnClickListener(view1 -> syncToServer(scannedList, success -> {
+
             requireActivity().runOnUiThread(() -> {
                 if (success) {
+                    startOrStopScan();
                     Toast.makeText(getContext(), "Stock transfer successful", Toast.LENGTH_SHORT).show();
-                    scannedList.clear();
                     editBoxName.setText("");
+                    scannedList.clear();
+                    scannedEpcList.clear();
+                    labelledStockList.clear();
                     adapter.notifyDataSetChanged();
                     tvTotalItems.setText("Total items: 0");
+                    fetchLabelledStockListFromApi();
                 } else {
                     Toast.makeText(getContext(), "Stock transfer failed", Toast.LENGTH_SHORT).show();
                 }
@@ -212,9 +167,12 @@ public class Stocktransferfragment extends Fragment {
                 mainActivity.barcodeDecoder.setDecodeCallback(new BarcodeDecoder.DecodeCallback() {
                     @Override
                     public void onDecodeComplete(BarcodeEntity barcodeEntity) {
-                        if (barcodeEntity != null){
+                        if (barcodeEntity != null && barcodeEntity.getBarcodeData() != null){
                             Log.e("BARCODE", barcodeEntity.getBarcodeData());
-                            editBoxName.setText(barcodeEntity.getBarcodeData());
+                            if(!mainActivity.mReader.isInventorying()){
+                                editBoxName.setText(barcodeEntity.getBarcodeData());
+
+                            }
 
                         }
 
@@ -224,43 +182,18 @@ public class Stocktransferfragment extends Fragment {
         });
 
         singlereset.setOnClickListener(v -> {
-            rfidList.clear();
-            labelledStockList.clear();
+            stopScanner();
+            editBoxName.setText("");
             scannedList.clear();
+            scannedEpcList.clear();
+            labelledStockList.clear();
             adapter.notifyDataSetChanged();
             tvTotalItems.setText("Total items: 0");
 
-            fetchRFIDListFromApi();         // refetch mappings
             fetchLabelledStockListFromApi();
         });
+
         return view;
-    }
-
-
-    private void fetchAllBranches(){
-
-
-    }
-
-    private void fetchRFIDListFromApi() {
-        Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
-        String clientCode = clients.getClientCode();
-
-        if (clientCode != null && !clientCode.isEmpty()) {
-            apiManager.fetchallrfid(clientCode, new interfaces.OnRFIDFetched() {
-                @Override
-                public void onSuccess(List<Rfidresponse.ItemModel> result) {
-                    rfidList.clear();
-                    rfidList.addAll(result);
-                    tryBuildItemCodeRfidMapping();
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    Log.e("API", "Failed to fetch RFID list", e);
-                }
-            });
-        }
     }
 
     private void fetchLabelledStockListFromApi() {
@@ -268,20 +201,19 @@ public class Stocktransferfragment extends Fragment {
         String clientCode = clients.getClientCode();
 
         if (clientCode != null && !clientCode.isEmpty()) {
-            apiManager.fetchAllLabeledStock(clientCode, new interfaces.ApiCallback<List<AlllabelResponse.LabelItem>>() {
+            apiManager.fetchAllLabeledStock(clientCode, new com.loyalstring.interfaces.interfaces.ApiCallback<List<AlllabelResponse.LabelItem>>() {
                 @Override
                 public void onSuccess(List<AlllabelResponse.LabelItem> result) {
                     requireActivity().runOnUiThread(() -> {
                         labelledStockList.clear();
                         labelledStockList.addAll(result);
-                        tryBuildItemCodeRfidMapping();
                     });
                 }
 
                 @Override
                 public void onError(Exception e) {
                     requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getActivity(), "Failed to fetch Labeled Stock", LENGTH_SHORT).show()
+                            Toast.makeText(getActivity(), "Failed to fetch Labeled Stock", Toast.LENGTH_SHORT).show()
                     );
                 }
             });
@@ -292,19 +224,20 @@ public class Stocktransferfragment extends Fragment {
         if (mainActivity == null || mainActivity.mReader == null) return;
 
         mainActivity.mReader.setPower(mainActivity.mReader.getPower());
+
         if (mainActivity.mReader.startInventoryTag()) {
+            editBoxName.setEnabled(false);
             singletext.setText("Stop Scan");
             singleimage.setImageResource(R.drawable.ic_cancelblack);
             new TagThread().start();
         } else {
             stopScanner();
+            editBoxName.setEnabled(true);
+
             singletext.setText("Scan");
             singleimage.setImageResource(R.drawable.ic_scanblack);
-          //  Toast.makeText(getContext(), "Failed to start scanning", Toast.LENGTH_SHORT).show();
         }
     }
-
-
 
     private void stopScanner() {
         if (mainActivity != null && mainActivity.mReader != null) {
@@ -313,20 +246,15 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private class TagThread extends Thread {
-        @SuppressLint("HardwareIds")
         @Override
         public void run() {
-            Log.d("SCAN", "TagThread started");
-
             while (mainActivity != null && mainActivity.mReader != null && mainActivity.mReader.isInventorying()) {
                 UHFTAGInfo tagInfo = mainActivity.mReader.readTagFromBuffer();
-
                 if (tagInfo != null) {
                     Message msg = handler.obtainMessage();
                     msg.obj = tagInfo;
                     handler.sendMessage(msg);
                 }
-
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -335,120 +263,56 @@ public class Stocktransferfragment extends Fragment {
             }
 
             requireActivity().runOnUiThread(() -> {
-                singletext.setText("Scan Box");
-             //   singletext.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_scanblack, 0, 0, 0);
-                processScannedEpcs();
+                singletext.setText("Scan");
+                singleimage.setImageResource(R.drawable.ic_scanblack);
             });
         }
     }
-
-    private String getRfidFromEpc(String epc) {
-        for (Rfidresponse.ItemModel rfidItem : rfidList) {
-            if (epc.equalsIgnoreCase(rfidItem.getTid())) {
-                return rfidItem.getBarcodeNumber(); // This is your RFID code
-            }
-        }
-        return null;
-    }
-
-
-    private void processScannedEpcs() {
-        scannedList.clear();
-        for (String epc : scannedEpcList) {
-            ScannedDataToService item = findProductByEPC(epc);
-            if (item != null) {
-                scannedList.add(item);
-            } else {
-                Log.w("RFID", "Unmapped EPC: " + epc);
-            }
-        }
-        adapter.notifyDataSetChanged();
-        tvTotalItems.setText("Total items: " + scannedList.size());
-        scannedEpcList.clear();
-    }
-
 
     @SuppressLint("HardwareIds")
     private ScannedDataToService findProductByEPC(String epc) {
+        for (AlllabelResponse.LabelItem labelItem : labelledStockList) {
+            String itemCode = labelItem.getItemCode();
+            if (itemCode != null && !itemCode.isEmpty()) {
+                String hexCode = convertToHex(itemCode);
+                if (epc.equalsIgnoreCase(hexCode)) {
+                    ScannedDataToService item = new ScannedDataToService();
+                    item.setTIDValue(epc);
+                    item.setRFIDCode(hexCode);
+                    item.setItemCode(itemCode);
 
+                    String androidId = Settings.Secure.getString(
+                            getActivity().getContentResolver(),
+                            Settings.Secure.ANDROID_ID
+                    );
+                    Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
+                    String clientCode = clients.getClientCode();
 
-        for (Rfidresponse.ItemModel rfidItem : rfidList) {
-            if (epc.equalsIgnoreCase(rfidItem.getTid())) {
-                String barcode = rfidItem.getBarcodeNumber();
-                for (Pair<String, String> map : itemCodeToRfidMap) {
-                    if (map.second.equalsIgnoreCase(barcode)) {
-                        String itemCode = map.first;
-                        ScannedDataToService item = new ScannedDataToService();
-                        item.setTIDValue(epc);
-                        item.setRFIDCode(barcode);
-                        item.setItemCode(itemCode);
-                        Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
-                        String clientCode = clients.getClientCode();
-                        String androidId="";
-                        Log.e("check body client code", "  " + clientCode);
-                        if (clientCode != null || !clientCode.isEmpty()) {
-                            androidId = Settings.Secure.getString(
-                                    getActivity().getContentResolver(),
-                                    Settings.Secure.ANDROID_ID
-                            );
-                        }
-                        LocalDateTime currentDateTime = LocalDateTime.now();
-                        String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+                    LocalDateTime currentDateTime = LocalDateTime.now();
+                    String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-                        item.setDeviceId(androidId);
-                        item.setCreatedOn(formatted);
-                        item.setLastUpdated(formatted);
-                        item.setStatusType(true);
-                        item.setId(0);
-                        item.setClientCode(clientCode);
+                    item.setDeviceId(androidId);
+                    item.setCreatedOn(formatted);
+                    item.setLastUpdated(formatted);
+                    item.setStatusType(true);
+                    item.setId(0);
+                    item.setClientCode(clientCode);
 
-
-                        return item;
-                    }
+                    return item;
                 }
             }
         }
         return null;
     }
-
-    private void tryBuildItemCodeRfidMapping() {
-        if (!rfidList.isEmpty() && !labelledStockList.isEmpty()) {
-            itemCodeToRfidMap.clear();
-            for (AlllabelResponse.LabelItem labelItem : labelledStockList) {
-                String itemCode = labelItem.getProductName();
-                String rfid = labelItem.getrFIDCode();
-                if (itemCode != null && rfid != null) {
-                    itemCodeToRfidMap.add(new Pair<>(itemCode, rfid));
-                }
-            }
-        }
-    }
-
-    private void addScanDatatoWeb(List<ScannedDataToService> scannedList, ScanDataCallback callback) {
-        if (networkUtils.isNetworkAvailable()) {
-            apiManager.addAllScannedData(scannedList, new interfaces.FetchAllRFIDData() {
-                @Override
-                public void onSuccess(List<ScannedDataToService> result) {
-                    boolean isSuccess = result != null && !result.isEmpty();
-                    Log.e("RfidListCheck", "Rfid Scanned data: " + result.size());
-                    callback.onResult(isSuccess);
-                }
-
-                @Override
-                public void onError(Exception e) {
-                    callback.onResult(false);
-                }
-            });
-        } else {
-            callback.onResult(false);
-        }
-    }
-
 
     private void syncToServer(List<ScannedDataToService> scannedList, ScanDataCallback callback) {
         String url = sharedPreferencesManager.getStockTransferUrl();
         if (url.isEmpty()) {
             Toast.makeText(getContext(), "Please set Stock Transfer URL first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (editBoxName.getText().toString().isEmpty()){
+            Toast.makeText(getContext(), "Please scan box name first", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -459,54 +323,43 @@ public class Stocktransferfragment extends Fragment {
 
         SyncRequest request = new SyncRequest("success", editBoxName.getText().toString(), items);
         OkHttpClient client = getUnsafeOkHttpClient();
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://dummy.url/")  // unused dummy base
+                .baseUrl("https://dummy.url/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();
 
-        String fullUrl = sharedPreferencesManager.getStockTransferUrl(); // e.g., https://sapphirejewelryny.com/RFID
-        if (!fullUrl.endsWith("/")) fullUrl += "/";
-
-
+        if (!url.endsWith("/")) url += "/";
         DynamicSyncService service = retrofit.create(DynamicSyncService.class);
         Call<Void> call = service.sendSyncData(url, request);
 
-        Log.e("URL",url);
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        String jsonRequest = gson.toJson(request);
-        Log.e("REQUEST_JSON", jsonRequest);
+        Log.e("SYNC_URL", url);
+        Log.e("SYNC_REQ", new GsonBuilder().setPrettyPrinting().create().toJson(request));
 
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-               // Toast.makeText(getContext(), "Synced successfully", Toast.LENGTH_SHORT).show();
                 callback.onResult(true);
-
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                //Toast.makeText(getContext(), "Sync failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("FAILED",t.getMessage().toString());
+                Log.e("SYNC_FAILED", t.getMessage());
                 callback.onResult(false);
-
             }
         });
     }
 
-
-
-    private static OkHttpClient getUnsafeOkHttpClient() {
+    private OkHttpClient getUnsafeOkHttpClient() {
         try {
-            TrustManager[] trustAllCerts = new TrustManager[]{
+            TrustManager[] trustAllCerts = new TrustManager[] {
                     new X509TrustManager() {
-                        @Override public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-                        @Override public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-                        @Override public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[]{}; }
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[]{}; }
                     }
             };
-
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, trustAllCerts, new SecureRandom());
             SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
@@ -515,16 +368,39 @@ public class Stocktransferfragment extends Fragment {
                     .sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0])
                     .hostnameVerifier((hostname, session) -> true)
                     .build();
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private String convertToHex(String input) {
+        StringBuilder hexBuilder = new StringBuilder();
+        for (char ch : input.toCharArray()) {
+            hexBuilder.append(String.format("%02X", (int) ch));
+        }
+        while (hexBuilder.length() % 4 != 0) {
+            hexBuilder.insert(0, "00");
+        }
+        return hexBuilder.toString();
+    }
+
+    @Override
+    public void myOnKeyDwon(String process) {
+       // super.myOnKeyDwon(process);
+        Log.e("PROCESS :",process);
+        if (process.equalsIgnoreCase("scan")) {
+            layoutScan.performClick();
+        } else {
+            btnScanBox.performClick();
+        }
+
+    }
 
     @Override
     public void onPause() {
         super.onPause();
         stopScanner();
     }
+
+
 }
