@@ -9,6 +9,8 @@ import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.StockVerificationRequestData;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -100,12 +102,12 @@ public class ApiManager {
     }
 
     /*stock varification*/
-    public void stockVarificationDataData(StockVerificationFilterModel stockVerificationFilterModel, interfaces.FetchAllVerificxationData fetchAllRFIDData) {
+    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
         // Create a defensive copy of the list to prevent concurrent modifications
         new Thread(() -> {
             try {
-                Call<StockVerificationFilterModelResponse> call = apiService.stockVarification(stockVerificationFilterModel);
-                Response<StockVerificationFilterModelResponse> response = call.execute();
+                Call<StockVerificationResponseNew> call = apiService.stockVarificationNew(stockVerificationRequestData);
+                Response<StockVerificationResponseNew> response = call.execute();
 
                 if (response.isSuccessful() && response.body() != null) {
                     fetchAllRFIDData.onSuccess(response.body());
@@ -118,8 +120,6 @@ public class ApiManager {
             }
         }).start();
     }
-
-
 
 
 }

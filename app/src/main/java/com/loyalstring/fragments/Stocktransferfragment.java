@@ -36,6 +36,10 @@ import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.apiresponse.AlllabelResponse;
 import com.loyalstring.apiresponse.Rfidresponse;
+import com.loyalstring.database.StorageClass;
+import com.loyalstring.database.product.EntryDatabase;
+import com.loyalstring.fsupporters.Globalcomponents;
+import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.DynamicSyncService;
 import com.loyalstring.interfaces.ScanDataCallback;
@@ -83,6 +87,10 @@ public class Stocktransferfragment extends Fragment {
     private final List<Rfidresponse.ItemModel> rfidList = new ArrayList<>();
     private final List<AlllabelResponse.LabelItem> labelledStockList = new ArrayList<>();
     private final List<Pair<String, String>> itemCodeToRfidMap = new ArrayList<>();
+    MyApplication myApplication;
+
+    Globalcomponents globalcomponents;
+    StorageClass storageClass;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,6 +114,20 @@ public class Stocktransferfragment extends Fragment {
         editBoxName = view.findViewById(R.id.ed_boxName);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
+
+        globalcomponents = new Globalcomponents();
+        storageClass = new StorageClass(getActivity());
+        myApplication = (MyApplication) requireActivity().getApplicationContext();
+
+
+        mainActivity.toolpower.setVisibility(View.VISIBLE);
+        mainActivity.toolpower.setText(String.valueOf(mainActivity.mReader.getPower()));
+        mainActivity.toolpower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                globalcomponents.changepowerg(getActivity(), "stocktransfer", storageClass, mainActivity.toolpower, mainActivity.mReader);
+            }
+        });
 
         adapter = new ScannedDataAdapter(scannedList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -141,7 +163,7 @@ public class Stocktransferfragment extends Fragment {
                             tvTotalItems.setText("Total items: " + scannedList.size());
                         });
                     } else {
-                        Log.w("RFID", "Unmapped EPC during scan: " + epc);
+                        Log.d("RFID", "Unmapped EPC during scan: " + epc);
                     }
                 }
             }
@@ -171,7 +193,7 @@ public class Stocktransferfragment extends Fragment {
                 mainActivity.barcodeDecoder.setDecodeCallback(new BarcodeDecoder.DecodeCallback() {
                     @Override
                     public void onDecodeComplete(BarcodeEntity barcodeEntity) {
-                        if (barcodeEntity != null){
+                        if (barcodeEntity != null && barcodeEntity.getBarcodeData() != null) {
                             Log.e("BARCODE", barcodeEntity.getBarcodeData());
                             editBoxName.setText(barcodeEntity.getBarcodeData());
 
@@ -183,14 +205,16 @@ public class Stocktransferfragment extends Fragment {
         });
 
         singlereset.setOnClickListener(v -> {
+
             rfidList.clear();
             labelledStockList.clear();
             scannedList.clear();
+            scannedEpcList.clear();
             adapter.notifyDataSetChanged();
             tvTotalItems.setText("Total items: 0");
 
             fetchRFIDListFromApi();         // refetch mappings
-            fetchLabelledStockListFromApi();
+            //fetchLabelledStockListFromApi();
         });
         return view;
     }
@@ -211,7 +235,7 @@ public class Stocktransferfragment extends Fragment {
                 public void onSuccess(List<Rfidresponse.ItemModel> result) {
                     rfidList.clear();
                     rfidList.addAll(result);
-                    tryBuildItemCodeRfidMapping();
+                  //  tryBuildItemCodeRfidMapping();
                 }
 
                 @Override
@@ -233,7 +257,7 @@ public class Stocktransferfragment extends Fragment {
                     requireActivity().runOnUiThread(() -> {
                         labelledStockList.clear();
                         labelledStockList.addAll(result);
-                        tryBuildItemCodeRfidMapping();
+                       // tryBuildItemCodeRfidMapping();
                     });
                 }
 
@@ -253,7 +277,7 @@ public class Stocktransferfragment extends Fragment {
             return;
         }
 
-        mainActivity.mReader.setPower(30);
+        mainActivity.mReader.setPower(mainActivity.mReader.getPower());
         boolean isStarted = mainActivity.mReader.startInventoryTag();
         Log.d("SCAN", "startInventoryTag: " + isStarted);
 
@@ -380,7 +404,7 @@ public class Stocktransferfragment extends Fragment {
 
 
         for (Rfidresponse.ItemModel rfidItem : rfidList) {
-            if (epc.equalsIgnoreCase(rfidItem.getTid())) {
+         //   if (epc.equalsIgnoreCase(rfidItem.getTid())) {
                 String barcode = rfidItem.getBarcodeNumber();
                 for (Pair<String, String> map : itemCodeToRfidMap) {
                     if (map.second.equalsIgnoreCase(barcode)) {
@@ -388,7 +412,7 @@ public class Stocktransferfragment extends Fragment {
                         ScannedDataToService item = new ScannedDataToService();
                         item.setTIDValue(epc);
                         item.setRFIDCode(barcode);
-                        item.setItemCode(itemCode);
+                       // item.setItemCode(itemCode);
                         Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
                         String clientCode = clients.getClientCode();
                         String androidId="";
@@ -413,8 +437,8 @@ public class Stocktransferfragment extends Fragment {
                         return item;
                     }
                 }
-            }
         }
+      //  }
         return null;
     }
 
@@ -432,6 +456,8 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private void addScanDatatoWeb(List<ScannedDataToService> scannedList, ScanDataCallback callback) {
+
+        Log.e("SCANNED LIST ",scannedList.toString());
         if (networkUtils.isNetworkAvailable()) {
             apiManager.addAllScannedData(scannedList, new interfaces.FetchAllRFIDData() {
                 @Override

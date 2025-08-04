@@ -28,6 +28,16 @@ public class Itemmodel implements Parcelable {
     private int SKUId,totPcs,totMPcs;
 
     private int categoryId, productId, designId, purityId;
+    private  String inventoryStatus;
+
+
+    public String getInventoryStatus() {
+        return inventoryStatus;
+    }
+
+    public void setInventoryStatus(String inventoryStatus) {
+        this.inventoryStatus = inventoryStatus;
+    }
 
 
 

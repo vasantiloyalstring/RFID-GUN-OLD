@@ -15,6 +15,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.loyalstring.LatestApis.LoginApiSupport.Clients;
 import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.apiresponse.AlllabelResponse;
@@ -793,8 +795,10 @@ public class ApiProcess {
                 List<Itemmodel> itemlist = new ArrayList<>(nmap.values());
 
 
+
+
                 new Handler(Looper.getMainLooper()).post(() -> {
-                    entryDatabase.saveAllItem(itemlist);
+                    //entryDatabase.saveAllItem(itemlist);
                     entryDatabase.makeentry(activity, itemlist, "excel", "product", app, issueitem, new SaveCallback() {
 
                         @Override
@@ -827,18 +831,30 @@ public class ApiProcess {
                 // For example:
                 // updateDatabase(nmap);
 
+              /*  ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+                executor.execute(() -> {
+                    try {
+                        entryDatabase.saveAllItem(itemlist); // Heavy DB operation
+
+                        // ✅ Step 3: Switch to UI to call makeentry
+
+
+                    } catch (Exception e) {
+                        handler.post(() -> {
+                            Toast.makeText(activity, "Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            if (dialog.isShowing()) dialog.dismiss();
+                        });
+                        Log.e("DB_SAVE_ERROR", "Exception while saving", e);
+                    }
+                });*/
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }).start();
 
     }
-
-
-
-
-
-
 
     /*//this is all apis
     public void getproducts(HashMap<String, Itemmodel> ml, Context activity, String baseUrl, String rfidurl, EntryDatabase entryDatabase, MyApplication app) {

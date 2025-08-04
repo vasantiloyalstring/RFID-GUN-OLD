@@ -64,12 +64,15 @@ import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.SaveCallback;
 import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.Issuemode;
+import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.MatchQuantityRequest;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilter;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
+import com.loyalstring.modelclasses.StockVerificationRequestData;
+import com.loyalstring.modelclasses.StockVerificationResponseNew;
 import com.loyalstring.network.NetworkUtils;
 import com.loyalstring.readersupport.KeyDwonFragment;
 import com.loyalstring.tools.StringUtils;
@@ -571,12 +574,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                     }
                 }
 
-                    for (int i1=0; i1<itemmodelList.size(); i1++) {
-                        if (itemmodelList.get(i1).getProduct().equalsIgnoreCase(product)) {
-                            productId = itemmodelList.get(i1).getProductId();
-                            break;
-                        }
+                for (int i1=0; i1<itemmodelList.size(); i1++) {
+                    if (itemmodelList.get(i1).getProduct().equalsIgnoreCase(product)) {
+                        productId = itemmodelList.get(i1).getProductId();
+                        break;
                     }
+                }
 
                 for (int i2=0; i2<itemmodelList.size(); i2++) {
 
@@ -596,13 +599,17 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 Log.d("@@ productId","productId"+productId);
                 Log.d("@@ categoryId","categoryId"+purityId);
                 Log.d("@@ categoryId","categoryId"+designId);
-               Log.d("@@ categoryId","categoryId"+counterId);
+                Log.d("@@ categoryId","categoryId"+counterId);
+
+                StockVerificationRequestData stockVerificationRequestData = new StockVerificationRequestData();
+                stockVerificationRequestData.setClientCode(clientCode);
+
 
 
                 StockVerificationFilterModel stockVerificationFilterModel = new StockVerificationFilterModel();
                 StockVerificationFilter stockVerificationFilter = new StockVerificationFilter();
-                stockVerificationFilter.setId(1);
-                stockVerificationFilter.setCreatedOn("02/06/2025");
+                stockVerificationFilter.setId(0);
+                stockVerificationFilter.setCreatedOn("");
                 stockVerificationFilter.setLastUpdated("");
                 stockVerificationFilter.setStatusType(true);
                 stockVerificationFilter.setClientCode(clientCode);
@@ -620,34 +627,67 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 MatchQuantityRequest matchQuantityRequest = new MatchQuantityRequest();
 
                 List<String> itemCodes = new ArrayList<>();
+
+                List<Item> items = new ArrayList<>(); // ✅ Initialize once outside the loop
+
                 for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
+                    Log.d("@@ itemcodeSize", "@@" + bottommap.size());
+
                     Itemmodel item = entry.getValue();
+                    Item itemData = new Item(); // ✅ Create a new item each loop
+
+                    itemData.setBranchId(0);
+                    itemData.setBranchName(item.getBranch());
+
+                    itemData.setCounterId(Integer.valueOf(item.getCounterId()));
+                    itemData.setCounterName(item.getCounterName());
+                    itemData.setCategoryId(item.getCategoryId());
+                    itemData.setCategoryName(item.getCategory());
+                    itemData.setProductId(item.getProductId());
+                    itemData.setProductName(item.getProduct());
+                    itemData.setPurityId(0);
+                    itemData.setPurityName(item.getPurity());
+                    itemData.setDesignId(item.getDesignId());
+                    itemData.setDesignName("");
+                    itemData.setCompanyId(0);
+                    itemData.setCompanyName("");
+                    itemData.setGrossWeight(0);
+                    itemData.setNetWeight(0);
+                    itemData.setQuantity(0);
+
+                    itemData.setItemCode(item.getItemCode());
+                    itemCodes.add(item.getItemCode());
+
                     if (item.getAvlQty() == item.getMatchQty()) {
-
-
-                        itemCodes.add(item.getItemCode());
-                        Log.d("@@ itemcode", "@@" + item.getItemCode());
+                        item.setInventoryStatus("match");
+                        itemData.setStatus("match");
+                        Log.d("@@ itemcodeData", "@@" + item.getInventoryStatus());
+                    } else {
+                        item.setInventoryStatus("unmatch");
+                        itemData.setStatus("unmatch");
+                        Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
                     }
+
+                    items.add(itemData); // ✅ Add to list
                 }
 
-// Set once after loop
-                matchQuantityRequest.setClientCode(clientCode);
-                matchQuantityRequest.setItemCodes(itemCodes);
 
-                stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
-                stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
+                stockVerificationRequestData.setItems(items);
+                // stockVerificationFilterModel.setStockVerificationFilter(stockVerificationFilter);
+                //stockVerificationFilterModel.setMatchQuantityRequest(matchQuantityRequest);
 
 
                 networkUtils = new NetworkUtils(getActivity());
 
-              ApiProcess  apiprocess = new ApiProcess();
+
+                ApiProcess  apiprocess = new ApiProcess();
                 ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
                 apiManager = new ApiManager(apiService);
                 if (networkUtils.isNetworkAvailable()) {
-                    apiManager.stockVarificationDataData(stockVerificationFilterModel, new interfaces.FetchAllVerificxationData() {
+                    apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
                         @Override
-                        public void onSuccess(StockVerificationFilterModelResponse result) {
-                           // if (!result=null) {
+                        public void onSuccess(StockVerificationResponseNew result) {
+                            // if (!result=null) {
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(() -> {
@@ -658,9 +698,9 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                                             .show();
                                 });
                             }
-                                //  entryDatabase.makerfidentry(getActivity(), app, result);
-                                // rfidList.addAll(result);
-                                Log.e("RfidListCheck", "Rfid Scanned data: " + result);
+                            //  entryDatabase.makerfidentry(getActivity(), app, result);
+                            // rfidList.addAll(result);
+                            Log.e("RfidListCheck", "Rfid Scanned data: " + result);
                             //}
                         }
 
@@ -2319,8 +2359,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                     }
                 }*/
                 Gson gson = new Gson();
-                String json = gson.toJson(item);
-                Log.d("@@", "item.getPcs()" + json);
+
                 // Add to aggregatedItems map
                 totalqty = totalqty + 1;
                 totalgwt = totalgwt + item.getGrossWt();

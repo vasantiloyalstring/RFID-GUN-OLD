@@ -592,6 +592,10 @@ public class Globalcomponents {
                     storageClass.setshpower(selecteditem);
                     set = storageClass.getshpower();
                 }
+                if (tit.equalsIgnoreCase("stocktransfer")) {
+                    storageClass.setstapower(selecteditem);
+                    set = storageClass.getstapower();
+                }
                 if (selecteditem.equals(set)) {
                     toolbartext2.setText(set);
                     if (mReader != null) {

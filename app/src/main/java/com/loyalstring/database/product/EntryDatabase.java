@@ -59,9 +59,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-import java.lang.reflect.Type;
-
-
 public class EntryDatabase extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "loyalstring.db";
     private static final int DATABASE_VERSION = 1;
@@ -205,7 +202,7 @@ public class EntryDatabase extends SQLiteOpenHelper {
         Log.d("@@ data", "data added");
         db.close();
     }*/
-public void saveAllItem(List<Itemmodel> itemList) {
+public synchronized void saveAllItem(List<Itemmodel> itemList) {
     SQLiteDatabase db = this.getWritableDatabase();
 
     // Start a transaction for batch insert
@@ -986,7 +983,7 @@ public void saveAllItem(List<Itemmodel> itemList) {
                 db.beginTransaction(); // Start transaction
                 int index = 0;
 
-                Log.e("totaldeleteatdb4", "count  " + mItemList.size() + "  " + mEType);
+               // Log.e("totaldeleteatdb4", "count  " + mItemList.size() + "  " + mEType);
                 List<Itemmodel> localItemList = new ArrayList<>(mItemList);
                 if (mFrag.equalsIgnoreCase("product")) {
 
@@ -1035,98 +1032,19 @@ public void saveAllItem(List<Itemmodel> itemList) {
                         if (cursor != null) {
                             cursor.close();
                         }
-                        if (!exists1) {
-
-                            Log.e("countername", "count  " + mItemList.size() + "  " + item.getCategory());
-
-                            Log.d("check catcat", "" + item.getCategory());
-                            ContentValues values = new ContentValues();
-                            values.put(C_CATEGORY, item.getCategory());
-
-                            // Insert the new row, returning the primary key value of the new row
-                            db.insert(CATTABLE, null, values);
-                        }
-                        //adding product
-                        cursor = db.query(
-                                PROTABLE,
-                                null, // Select all columns
-                                C_CATEGORY + " COLLATE NOCASE = ? AND " + C_PRODUCT + " COLLATE NOCASE = ?",
-                                new String[]{item.getCategory().toLowerCase(Locale.ROOT), item.getProduct().toLowerCase(Locale.ROOT)},
-                                null, // No group by
-                                null, // No having clause
-                                null  // No order by
-                        );
-
-                        boolean exists = cursor != null && cursor.getCount() > 0;
-                        if (cursor != null) {
-                            cursor.close();
-                        }
-
-                        if (!exists) {
-                            // Combination does not exist, insert the new rate
-                            ContentValues pvalues = new ContentValues();
-                            pvalues.put(C_CATEGORY, item.getCategory());
-                            pvalues.put(C_PRODUCT, item.getProduct());
-
-                            long id = db.insert(PROTABLE, null, pvalues);
-                        }
-                        //adding box
-                        if (item.getBox() != null && !item.getBox().isEmpty()) {
-                            if (!boxExists(db, item.getBox())) {
-                                ContentValues values1 = new ContentValues();
-                                values1.put(C_BOX, item.getBox());
-
-                                db.insert(BOXTABLE, null, values1);
-                            }
-                        }
-
-                        //adding counter
-                        if (item.getCounterName() != null && !item.getCounterName().isEmpty()) {
-                            Log.e("countername", "count  " + mItemList.size() + "  " + item.getCounterName());
-
-                            if (!counterExist(db, item.getCounterName())) {
-                                ContentValues values1 = new ContentValues();
-                                values1.put(COUNTER_NAME, item.getCounterName());
-                                values1.put(C_CATEGORY, item.getCategory());
-                                values1.put(C_PRODUCT, item.getProduct());
-                                values1.put(C_BOX, item.getBox());
-
-                                db.insert(COUNTER_TABLE, null, values1);
-                                Log.d("check catcat", "Inserted Counter: " + "COUNTER");
-                            }
-                        }
-                    }
-
-                    Log.e("totaldeleteatdb3", "count  " + mItemList.size() + "  " + mEType);
-                    if (mEType.equalsIgnoreCase("adding")) {
-
-                        /*for(Itemmodel item : mItemList){
-                            Cursor cursor = null;
-
-                            cursor = db.query(
-                                    CATTABLE,                            // Table name
-                                    null,                                // All columns
-                                    C_CATEGORY + " COLLATE NOCASE = ?", // Selection
-                                    new String[]{item.getCategory().toLowerCase(Locale.ROOT)}, // SelectionArgs
-                                    null,                                // GroupBy
-                                    null,                                // Having
-                                    null                                 // OrderBy
-
-                            );
-                            boolean exists1 = cursor != null && cursor.getCount() > 0;
-                            if (cursor != null) {
-                                cursor.close();
-                            }
+                        try {
                             if (!exists1) {
 
+                               // Log.e("countername", "count  " + mItemList.size() + "  " + item.getCategory());
 
-                                Log.d("check catcat", "" + item.getCategory());
+                               // Log.d("check catcat", "" + item.getCategory());
                                 ContentValues values = new ContentValues();
                                 values.put(C_CATEGORY, item.getCategory());
 
                                 // Insert the new row, returning the primary key value of the new row
                                 db.insert(CATTABLE, null, values);
                             }
+
                             //adding product
                             cursor = db.query(
                                     PROTABLE,
@@ -1160,11 +1078,32 @@ public void saveAllItem(List<Itemmodel> itemList) {
                                     db.insert(BOXTABLE, null, values1);
                                 }
                             }
-                        }*/
 
+                            //adding counter
+                            if (item.getCounterName() != null && !item.getCounterName().isEmpty()) {
+                               // Log.e("countername", "count  " + mItemList.size() + "  " + item.getCounterName());
 
+                                if (!counterExist(db, item.getCounterName())) {
+                                    ContentValues values1 = new ContentValues();
+                                    values1.put(COUNTER_NAME, item.getCounterName());
+                                    values1.put(C_CATEGORY, item.getCategory());
+                                    values1.put(C_PRODUCT, item.getProduct());
+                                    values1.put(C_BOX, item.getBox());
 
+                                    db.insert(COUNTER_TABLE, null, values1);
+                                   // Log.d("check catcat", "Inserted Counter: " + "COUNTER");
+                                }
+                            }
 
+                        } catch (Exception e) {
+                            e.printStackTrace();
+
+                            Log.d("Exception", "" + e);
+                        }
+                    }
+
+                  //  Log.e("totaldeleteatdb3", "count  " + mItemList.size() + "  " + mEType);
+                    if (mEType.equalsIgnoreCase("adding")) {
                         for (Itemmodel item : mItemList) {
 
                             ContentValues values = new ContentValues();
@@ -1279,7 +1218,7 @@ public void saveAllItem(List<Itemmodel> itemList) {
 
                         List<Itemmodel> copyOfItemList = new ArrayList<>(localItemList);
 
-                        Log.e("totaldeleteatdb1", "count  " + copyOfItemList.size() + "   " + mItemList.size());
+                     //   Log.e("totaldeleteatdb1", "count  " + copyOfItemList.size() + "   " + mItemList.size());
                         for (Itemmodel item : copyOfItemList) {
 //                            String whereClause = "TidValue = ?";
 //                            String[] whereArgs = {item.getTidValue()};
@@ -1290,7 +1229,7 @@ public void saveAllItem(List<Itemmodel> itemList) {
 
                             // Delete the item from ALL_TABLE
                             int rowsDeleted = db.delete(ALL_TABLE, whereClause, whereArgs);
-                            Log.e("totaldeleteatdb", "count  " + rowsDeleted + "  " + item.getTidValue());
+                           // Log.e("totaldeleteatdb", "count  " + rowsDeleted + "  " + item.getTidValue());
                             if (rowsDeleted > 0) {
                                 mapp.removeite(item);
                                 totalDeleted++;
@@ -1337,9 +1276,9 @@ public void saveAllItem(List<Itemmodel> itemList) {
                             }
                         }
 
-                        Log.d("totalDeleted", "Count: " + totalDeleted);
+                        //Log.d("totalDeleted", "Count: " + totalDeleted);
 
-                        // Mark the transaction as successful if all deletions were successful
+                       // // Mark the transaction as successful if all deletions were successful
                         db.setTransactionSuccessful();
 
                     }

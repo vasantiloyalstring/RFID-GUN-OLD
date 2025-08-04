@@ -13,6 +13,7 @@ public class StorageClass {
     private static final String KEY_PRODUCTPOWER = "productpower";
     private static final String KEY_INVENTORYPOWER = "inventorypower";
     private static final String KEY_SEARCHPOWER = "searchpower";
+    private static final String KEY_STOCKTRA = "stocktransfer";
     private static final String KEY_TRANSACTIONPOWER = "transactionpower";
     private static final String KEY_STOCKTRANSFERPOWER = "stocktransferpower";
     private static final String KEY_STOCKHISTORYPOWER = "stockhistorypower";
@@ -166,6 +167,8 @@ public class StorageClass {
         return sharedPreferences.getString(KEY_SEARCHPOWER, "");
     }
 
+
+
     public void settpower(String power) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_TRANSACTIONPOWER, power);
@@ -195,6 +198,17 @@ public class StorageClass {
     public String getshpower() {
         return sharedPreferences.getString(KEY_STOCKHISTORYPOWER, "");
     }
+
+    public void setstapower(String power) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_STOCKTRA, power);
+        editor.apply();
+    }
+
+    public String getstapower() {
+        return sharedPreferences.getString(KEY_STOCKTRA, "");
+    }
+
 
 
     public void setbaseurl(String url) {
