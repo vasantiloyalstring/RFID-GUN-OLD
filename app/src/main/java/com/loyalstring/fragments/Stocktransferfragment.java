@@ -151,7 +151,7 @@ public class Stocktransferfragment extends Fragment {
             UHFTAGInfo tagInfo = (UHFTAGInfo) msg.obj;
             if (tagInfo != null) {
                 String epc = tagInfo.getEPC();
-                if (!scannedEpcList.contains(epc)) {
+              //  if (!scannedEpcList.contains(epc)) {
                     scannedEpcList.add(epc);
                     Log.d("SCAN", "EPC Collected: " + epc);
                     mainActivity.playSound(1);
@@ -166,7 +166,7 @@ public class Stocktransferfragment extends Fragment {
                         Log.d("RFID", "Unmapped EPC during scan: " + epc);
                     }
                 }
-            }
+           // }
             return true;
         });
 
@@ -314,7 +314,7 @@ public class Stocktransferfragment extends Fragment {
                     String epc = tagInfo.getEPC();
                     Log.d("SCAN", "Read EPC: " + epc);
 
-                    if (!scannedEpcList.contains(epc)) {
+                 //   if (!scannedEpcList.contains(epc)) {
                         scannedEpcList.add(epc);
                         mainActivity.playSound(1);
 
@@ -357,7 +357,7 @@ public class Stocktransferfragment extends Fragment {
                             Log.w("SCAN", "No RFID mapping for EPC: " + epc);
                         }
                     }
-                }
+             //   }
 
                 try {
                     Thread.sleep(50);
@@ -374,7 +374,10 @@ public class Stocktransferfragment extends Fragment {
     }
 
     private String getRfidFromEpc(String epc) {
+        Log.d("SCAN", "get rfid: " +  epc);
         for (Rfidresponse.ItemModel rfidItem : rfidList) {
+            Log.d("SCAN", "get rfid: " +  rfidItem.getBarcodeNumber());
+
             if (epc.equalsIgnoreCase(rfidItem.getTid())) {
                 return rfidItem.getBarcodeNumber(); // This is your RFID code
             }
