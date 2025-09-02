@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.modelclasses.Itemmodel;
+import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 import com.loyalstring.modelclasses.StockVerificationResponseNew;
@@ -68,8 +69,14 @@ public class interfaces {
         void onError(Exception e);
     }
 
+  /* old code
     public interface FetchAllVerificxationDataNew{
         void onSuccess(StockVerificationResponseNew result);
+        void onError(Exception e);
+    }*/
+
+    public interface FetchAllVerificxationDataNew{
+        void onSuccess(ScanSessionResponse result);
         void onError(Exception e);
     }
 

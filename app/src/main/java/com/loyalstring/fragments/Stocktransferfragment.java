@@ -91,6 +91,8 @@ public class Stocktransferfragment extends Fragment {
 
     Globalcomponents globalcomponents;
     StorageClass storageClass;
+    private final java.util.Set<String> seenEpcs =
+            java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -276,6 +278,7 @@ public class Stocktransferfragment extends Fragment {
             Log.e("SCAN", "Reader not ready");
             return;
         }
+        seenEpcs.clear();
 
         mainActivity.mReader.setPower(mainActivity.mReader.getPower());
         boolean isStarted = mainActivity.mReader.startInventoryTag();
@@ -313,9 +316,15 @@ public class Stocktransferfragment extends Fragment {
                 if (tagInfo != null) {
                     String epc = tagInfo.getEPC();
                     Log.d("SCAN", "Read EPC: " + epc);
+                    if (epc == null || epc.isEmpty()) continue;
+                    if (!seenEpcs.add(epc)) {
+                        continue;
+                    }
 
-                 //   if (!scannedEpcList.contains(epc)) {
+
+                    //   if (!scannedEpcList.contains(epc)) {
                         scannedEpcList.add(epc);
+
                         mainActivity.playSound(1);
 
                         // Only map EPC → RFID (Barcode)
@@ -341,7 +350,7 @@ public class Stocktransferfragment extends Fragment {
                             LocalDateTime currentDateTime = LocalDateTime.now();
                             String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
-                            item.setDeviceId(androidId);
+                            item.setDeviceId(shortSerial(androidId));
                             item.setCreatedOn(formatted);
                             item.setLastUpdated(formatted);
                             item.setStatusType(true);
@@ -349,9 +358,11 @@ public class Stocktransferfragment extends Fragment {
                             item.setClientCode(clientCode);
 
                             requireActivity().runOnUiThread(() -> {
+                                if (!containsEpc(scannedList, epc)) {
                                 scannedList.add(item);
                                 adapter.notifyDataSetChanged();
                                 tvTotalItems.setText("Total items: " + scannedList.size());
+                                }
                             });
                         } else {
                             Log.w("SCAN", "No RFID mapping for EPC: " + epc);
@@ -366,6 +377,8 @@ public class Stocktransferfragment extends Fragment {
                 }
             }
 
+
+
             requireActivity().runOnUiThread(() -> {
                 singletext.setText("Scan Box");
                 singleimage.setImageResource(R.drawable.ic_scanblack);
@@ -373,13 +386,43 @@ public class Stocktransferfragment extends Fragment {
         }
     }
 
+    public String shortSerial(String serial) {
+        if (serial == null || serial.length() < 2) {
+            return "A" + (serial != null ? serial : "");
+        }
+        String lastTwo  = serial.substring(serial.length() - 2); // get last 2 chars
+        return "A" + lastTwo ;
+    }
+
+    private boolean containsEpc(List<ScannedDataToService> list, String epc) {
+        for (ScannedDataToService s : list) {
+            if (epc.equalsIgnoreCase(s.getTIDValue())) return true;
+        }
+        return false;
+    }
+
     private String getRfidFromEpc(String epc) {
-        Log.d("SCAN", "get rfid: " +  epc);
+        /*Log.d("SCAN", "get rfid: " +  epc);
         for (Rfidresponse.ItemModel rfidItem : rfidList) {
             Log.d("SCAN", "get rfid: " +  rfidItem.getBarcodeNumber());
 
             if (epc.equalsIgnoreCase(rfidItem.getTid())) {
                 return rfidItem.getBarcodeNumber(); // This is your RFID code
+            }
+        }
+        return null;*/
+        if (epc == null) return null;
+
+        // take a snapshot under lock
+        List<Rfidresponse.ItemModel> snapshot;
+        synchronized (rfidList) {
+            snapshot = new ArrayList<>(rfidList);
+        }
+
+        for (Rfidresponse.ItemModel item : snapshot) {
+            final String tid = item.getTid();
+            if (tid != null && epc.equalsIgnoreCase(tid)) {
+                return item.getBarcodeNumber();
             }
         }
         return null;

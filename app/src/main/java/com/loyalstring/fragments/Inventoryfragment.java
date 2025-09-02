@@ -67,6 +67,7 @@ import com.loyalstring.modelclasses.Issuemode;
 import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.MatchQuantityRequest;
+import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilter;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
@@ -86,6 +87,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -656,7 +658,8 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                     itemData.setQuantity(0);
 
                     itemData.setItemCode(item.getItemCode());
-                    itemCodes.add(item.getItemCode());
+                    itemCodes.add
+                            (item.getItemCode());
 
                     if (item.getAvlQty() == item.getMatchQty()) {
                         item.setInventoryStatus("match");
@@ -686,7 +689,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 if (networkUtils.isNetworkAvailable()) {
                     apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
                         @Override
-                        public void onSuccess(StockVerificationResponseNew result) {
+                        public void onSuccess(ScanSessionResponse result) {
                             // if (!result=null) {
                             Activity activity = getActivity();
                             if (activity != null) {
@@ -1515,18 +1518,41 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 isCategorySelecetd = true;
             }*/
 
-            for (Itemmodel m : topmap.values()) {
-              /*  bottomlist.add(m.getCategory());
+        /*    for (Itemmodel m : topmap.values()) {
+              *//*  bottomlist.add(m.getCategory());
                 if (!bottomlist.isEmpty()) {
                     isCategorySelecetd = true;
-                }*/
+                }*//*
 
                 if (isCounterSelected) {
                     bottomlist.add(m.getCategory());
                 } else {
                     bottomlist = db.getcatpro();
                 }
+            }*/
+            if (title.equalsIgnoreCase("category")) {
+                Log.d("@@ title", " @@ title " + title);
+
+                Set<String> uniqueCategories = new HashSet<>();
+
+                for (Itemmodel m : topmap.values()) {
+                    if (isCounterSelected) {
+                        uniqueCategories.add(m.getCategory()); // ✅ only unique categories
+                    } else {
+                        bottomlist = db.getcatpro();
+                    }
+                }
+
+                if (!uniqueCategories.isEmpty()) {
+                    bottomlist = new ArrayList<>(uniqueCategories);
+                    isCategorySelecetd = true;
+                }
+
+                if (bottomlist.isEmpty()) {
+                    bottomlist = db.getcatpro();
+                }
             }
+
             if (bottomlist.isEmpty()) {
                 bottomlist = db.getcatpro();
 

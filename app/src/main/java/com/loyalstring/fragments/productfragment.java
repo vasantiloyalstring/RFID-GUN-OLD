@@ -596,7 +596,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                                 scannedDataToService.setTIDValue(itemmodel.getTidValue());
                                 scannedDataToService.setStatusType(true);
                                 scannedDataToService.setId(0);
-                                scannedDataToService.setDeviceId(androidId );
+                                scannedDataToService.setDeviceId(shortSerial(androidId) );
                                 scannedDataToServiceList.add(scannedDataToService);
                             }catch (Exception e)
                             {
@@ -1032,7 +1032,7 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
                     rfidList.addAll(entryDatabase.getrfid(getActivity(), app));
                 }
 
-                Log.e("checking  new", "check1 "+clients.getRfidType()+"   "+rfidList);
+               // Log.e("checking  new", "check1 "+clients.getRfidType()+"   "+rfidList);
 
 
 
@@ -1110,6 +1110,14 @@ public class productfragment extends KeyDwonFragment implements interfaces.Permi
 
 
         return b.getRoot();
+    }
+
+    public String shortSerial(String serial) {
+        if (serial == null || serial.length() < 2) {
+            return "A" + (serial != null ? serial : "");
+        }
+        String lastTwo  = serial.substring(serial.length() - 2); // get last 2 chars
+        return "A" + lastTwo ;
     }
 
     private void fetchbills(com.loyalstring.interfaces.interfaces.Fetchbills fetchbills) {

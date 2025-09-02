@@ -6,6 +6,7 @@ import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
@@ -101,13 +102,32 @@ public class ApiManager {
         }).start();
     }
 
-    /*stock varification*/
-    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
+    /* old stock varification*/
+/*    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
         // Create a defensive copy of the list to prevent concurrent modifications
         new Thread(() -> {
             try {
                 Call<StockVerificationResponseNew> call = apiService.stockVarificationNew(stockVerificationRequestData);
                 Response<StockVerificationResponseNew> response = call.execute();
+
+                if (response.isSuccessful() && response.body() != null) {
+                    fetchAllRFIDData.onSuccess(response.body());
+                } else {
+                    String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                    fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+                }
+            } catch (IOException e) {
+                fetchAllRFIDData.onError(e);
+            }
+        }).start();
+    }*/
+
+    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
+        // Create a defensive copy of the list to prevent concurrent modifications
+        new Thread(() -> {
+            try {
+                Call<ScanSessionResponse> call = apiService.stockVarificationNew(stockVerificationRequestData);
+                Response<ScanSessionResponse> response = call.execute();
 
                 if (response.isSuccessful() && response.body() != null) {
                     fetchAllRFIDData.onSuccess(response.body());
