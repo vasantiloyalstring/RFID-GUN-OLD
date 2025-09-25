@@ -85,6 +85,8 @@ public class BaseTabFragmentActivity extends AppCompatActivity{
             BarcodeUtility.getInstance().enableEnter(this,true);//addition enter
 
             BarcodeUtility.getInstance().enableContinuousScan(this,true);//Continuous scanning
+
+
             BarcodeUtility.getInstance().setContinuousScanIntervalTime(this,100);//Unit: milliseconds
             BarcodeUtility.getInstance().setContinuousScanTimeOut(this,9999);//Unit: milliseconds
             */
@@ -139,7 +141,7 @@ public class BaseTabFragmentActivity extends AppCompatActivity{
         protected Boolean doInBackground(String... params) {
             // TODO Auto-generated method stub
 
-            return mReader.init();
+            return mReader.init(getApplicationContext());
         }
 
         @Override

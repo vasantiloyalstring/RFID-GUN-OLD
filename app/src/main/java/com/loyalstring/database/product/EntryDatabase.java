@@ -540,7 +540,7 @@ public synchronized void saveAllItem(List<Itemmodel> itemList) {
             for (Itemmodel item : items) {
                 ContentValues values = new ContentValues();
                 Field[] fields = Itemmodel.class.getDeclaredFields();
-
+                fields = new Field[0];
                 for (Field field : fields) {
                     field.setAccessible(true);
                     String columnName = field.getName();
