@@ -58,7 +58,7 @@ public interface ApiService {
     @POST("api/ProductMaster/UpdateGunProduct")
     Call<ProductUpdateResponse> updateProduct(@Body List<ProductUpdate> productUpdate);
 
-    @POST("api/ProductMaster/GetAllLabeledStock")
+    @POST("api/ProductMaster/GetAllStockAndroid")
     Call<List<AlllabelResponse.LabelItem>> getAlllableproducts(@Body ClientCodeRequest clientCodeRequest);
 
     @POST("api/ProductMaster/GetAllSKU")
