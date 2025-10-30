@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.loyalstring.interfaces.interfaces;
@@ -23,20 +25,93 @@ public class Pemissionscheck {
         this.callback = callback;
     }
 
-    public boolean checkreadandwrite(Context context) {
+/*    public boolean checkreadandwrite(Context context) {
 
         int readPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
         int writePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED;
 
+    }*/
+
+    public boolean checkreadandwrite(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+
+            int readImages = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_IMAGES);
+            int readVideo = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_VIDEO);
+            int readAudio = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_MEDIA_AUDIO);
+
+            return readImages == PackageManager.PERMISSION_GRANTED
+                    && readVideo == PackageManager.PERMISSION_GRANTED
+                    && readAudio == PackageManager.PERMISSION_GRANTED;
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11–12
+            int readPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+            return readPermission == PackageManager.PERMISSION_GRANTED;
+        } else {
+            // Android 10 and below
+            int readPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE);
+            int writePermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    public void requestreadwrite(Object caller) {
+        String[] permissions;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+        } else {
+            permissions = new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            };
+        }
+
+        if (caller instanceof Fragment) {
+            ((Fragment) caller).requestPermissions(
+                    permissions,
+                    STORAGE_PERMISSION_READWRITE_CODE
+            );
+        } else if (caller instanceof Activity) {
+            ActivityCompat.requestPermissions(
+                    (Activity) caller,
+                    permissions,
+                    STORAGE_PERMISSION_READWRITE_CODE
+            );
+        } else {
+            throw new IllegalArgumentException("Caller must be Activity or Fragment");
+        }
     }
 
 
-    public void requestreadwrite(FragmentActivity activity) {
-        ActivityCompat.requestPermissions(activity,
+
+
+    /* public void requestreadwrite(FragmentActivity activity) {
+       *//* ActivityCompat.requestPermissions(activity,
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                STORAGE_PERMISSION_READWRITE_CODE);
-    }
+                STORAGE_PERMISSION_READWRITE_CODE);*//*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // Android 13+
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES},
+                    STORAGE_PERMISSION_READWRITE_CODE);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            // Android 11–12
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    STORAGE_PERMISSION_READWRITE_CODE);
+        } else {
+            // Android 10 and below
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
+                    STORAGE_PERMISSION_READWRITE_CODE);
+        }
+    }*/
 
     public void onActivityResults(int requestCode, int resultCode, Intent data) {
 //        if (requestCode == STORAGE_PERMISSION_READWRITE_CODE) {

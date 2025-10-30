@@ -7,7 +7,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
- //   private static final String BASE_URL = "https://testing.loyalstring.co.in/api/";
+    //   private static final String BASE_URL = "https://testing.loyalstring.co.in/api/";
     private  static  String BASE_URL="https://rrgold.loyalstring.co.in/api/";
     private static Retrofit retrofit;
 

@@ -1,5 +1,8 @@
 package com.loyalstring.Apis;
 
+import android.util.Log;
+
+import com.google.gson.Gson;
 import com.loyalstring.apiresponse.AlllabelResponse;
 import com.loyalstring.apiresponse.ClientCodeRequest;
 import com.loyalstring.apiresponse.Rfidresponse;
@@ -14,10 +17,18 @@ import com.loyalstring.modelclasses.StockVerificationRequestData;
 import com.loyalstring.modelclasses.StockVerificationResponseNew;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ApiManager {
@@ -122,24 +133,82 @@ public class ApiManager {
         }).start();
     }*/
 
-    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
-        // Create a defensive copy of the list to prevent concurrent modifications
-        new Thread(() -> {
-            try {
-                Call<ScanSessionResponse> call = apiService.stockVarificationNew(stockVerificationRequestData);
-                Response<ScanSessionResponse> response = call.execute();
+    public void stockVarificationDataDataNew(
+            StockVerificationRequestData stockVerificationRequestData,
+            interfaces.FetchAllVerificxationDataNew fetchAllRFIDData
+    ) {
+        //Call<ScanSessionResponse> call = apiService.stockVarificationNew(stockVerificationRequestData);
 
+      /*  call.enqueue(new Callback<ScanSessionResponse>() {
+            @Override
+            public void onResponse(Call<ScanSessionResponse> call, Response<ScanSessionResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.d("@@","data found");
                     fetchAllRFIDData.onSuccess(response.body());
                 } else {
-                    String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                    fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+                    try {
+                        Log.d("@@","not data found");
+                        String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                        fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+                    } catch (IOException e) {
+                        Log.d("@@","not data found111");
+                        fetchAllRFIDData.onError(e);
+                    }
                 }
-            } catch (IOException e) {
-                fetchAllRFIDData.onError(e);
             }
-        }).start();
+
+            @Override
+            public void onFailure(Call<ScanSessionResponse> call, Throwable t) {
+                Log.e("@@ NETWORK FAIL", "Exception: " + t.getClass().getSimpleName() + " | Message: " + t.getMessage());
+                if (t instanceof SocketTimeoutException) {
+                    Log.e("NETWORK", "READ TIMEOUT — server took too long to send data");
+                } else if (t instanceof ConnectException) {
+                    Log.e("NETWORK", "CONNECT TIMEOUT — server didn’t accept the connection");
+                } else {
+                    Log.e("NETWORK", "OTHER ERROR: " + t);
+                }
+                fetchAllRFIDData.onError(new Exception("Network call failed: " + t.getMessage(), t));
+            }
+        });*/
+
+        Gson gson = new Gson();
+
+// Convert to JSON once
+        String json = gson.toJson(stockVerificationRequestData);
+
+// Create a streaming request body
+        RequestBody body = RequestBody.create(
+                json,
+                MediaType.parse("application/json; charset=utf-8")
+        );
+
+// Now make the call
+        Call<ResponseBody> call = apiService.stockVarificationNew(body);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try (Reader reader = new InputStreamReader(response.body().byteStream())) {
+                        ScanSessionResponse parsed = gson.fromJson(reader, ScanSessionResponse.class);
+                        fetchAllRFIDData.onSuccess(parsed);
+                    } catch (Exception e) {
+                        fetchAllRFIDData.onError(e);
+                    }
+                } else {
+                    fetchAllRFIDData.onError(new Exception("HTTP " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("NETWORK FAIL", t.toString());
+                fetchAllRFIDData.onError(new Exception("Network call failed: " + t.getMessage(), t));
+            }
+        });
+
     }
+
 
 
 }

@@ -1,7 +1,12 @@
 package com.loyalstring;
 
+import static com.loyalstring.fsupporters.Pemissionscheck.STORAGE_PERMISSION_READWRITE_CODE;
+
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Bundle;
@@ -15,6 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -49,6 +56,7 @@ import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.readersupport.BaseTabFragmentActivity;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -64,6 +72,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
     public TextView toolpower;
     StorageClass storageClass;
     Pemissionscheck pemissionscheck;
+    private Fragment pendingFragment;
 //    BarcodeDecoder barcodeDecoder= BarcodeFactory.getInstance().getBarcodeDecoder();
 
     public static Fragment invf;
@@ -83,6 +92,7 @@ public class MainActivity extends BaseTabFragmentActivity implements NavigationV
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ensurePermissions(this);
 
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         toolbar = findViewById(R.id.toolbar);
@@ -263,7 +273,22 @@ try {
 
     }
 
-
+    private void ensurePermissions(Activity activity) {
+        String[] permissions = {
+                android.Manifest.permission.BLUETOOTH_SCAN,
+                android.Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        };
+        List<String> req = new ArrayList<>();
+        for (String p : permissions) {
+            if (ContextCompat.checkSelfPermission(activity, p) != PackageManager.PERMISSION_GRANTED) {
+                req.add(p);
+            }
+        }
+        if (!req.isEmpty()) {
+            ActivityCompat.requestPermissions(activity, req.toArray(new String[0]), 1001);
+        }
+    }
 
     private String getsvalue(String serial) {
         if (serial == null || serial.isEmpty()) {
@@ -324,16 +349,20 @@ try {
                         .replace(R.id.mainfragment, fragment, fragment.getClass().getSimpleName())
                         .addToBackStack(null)
                         .commit();
-                drawerLayout.closeDrawers(); // Close the navigation drawer
+                drawerLayout.closeDrawer(GravityCompat.START);   // <-- ensure close
                 return true;
             } else {
+                pendingFragment = fragment;
                 pemissionscheck.requestreadwrite(MainActivity.this);
+                drawerLayout.closeDrawer(GravityCompat.START);   // <-- close even when requesting
+                return true;                                     // mark handled so drawer doesn’t linger
             }
         }
         return false;
-    }
+        }
 
-    private void displayfragemnt(Fragment h) {
+
+        private void displayfragemnt(Fragment h) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.mainfragment, h)
                 .commit();
@@ -544,14 +573,34 @@ try {
         });
 
         // Fetch Labeled Stock data
-
-
-
-
-
     }
 
+    public void requestPermissionAndNavigate(Fragment target) {
+        if (pemissionscheck.checkreadandwrite(this)) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mainfragment, target).addToBackStack(null).commit();
+        } else {
+            pendingFragment = target; // keep it here (Activity)
+            pemissionscheck.requestreadwrite(this); // request FROM Activity
+        }
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-
+        if (requestCode == STORAGE_PERMISSION_READWRITE_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted → re-call displayfragemnt() with saved fragment
+                if (pendingFragment != null) {
+                    displayfragemnt(pendingFragment);
+                    pendingFragment = null; // reset
+                }
+            } else {
+                Toast.makeText(this, "Storage permission is required!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 }

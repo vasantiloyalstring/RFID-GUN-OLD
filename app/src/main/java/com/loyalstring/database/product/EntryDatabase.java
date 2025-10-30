@@ -2601,7 +2601,7 @@ public synchronized void saveAllItem(List<Itemmodel> itemList) {
                     // Handle insertion failure if needed
                     Log.e("SQLite", "Failed to insert item: " + item.getTid());
                 } else {
-                    Log.e("SQLite", "sucess");
+                  //  Log.e("SQLite", "sucess");
                 }
             }
             db.setTransactionSuccessful();
@@ -2611,7 +2611,7 @@ public synchronized void saveAllItem(List<Itemmodel> itemList) {
             db.endTransaction();
         }
 
-        db.close();
+       // db.close();
     }
 
 

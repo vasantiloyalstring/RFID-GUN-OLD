@@ -251,7 +251,12 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 }
             }).start();
         } else {
-            totalitems = myapp.getInventoryMap();
+            try {
+                totalitems = myapp.getInventoryMap();
+            }catch (Exception e)
+            {
+                e.printStackTrace();
+            }
 
         }
 
@@ -423,6 +428,8 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
             }
         });
+
+
 
 
         b.nlist.setOnClickListener(new View.OnClickListener() {
@@ -633,7 +640,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 List<Item> items = new ArrayList<>(); // ✅ Initialize once outside the loop
 
                 for (Map.Entry<String, Itemmodel> entry : bottommap.entrySet()) {
-                    Log.d("@@ itemcodeSize", "@@" + bottommap.size());
+
 
                     Itemmodel item = entry.getValue();
                     Item itemData = new Item(); // ✅ Create a new item each loop
@@ -668,7 +675,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                     } else {
                         item.setInventoryStatus("unmatch");
                         itemData.setStatus("unmatch");
-                        Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
+                       // Log.d("@@ itemcodeinavctive", "@@" + item.getInventoryStatus());
                     }
 
                     items.add(itemData); // ✅ Add to list
@@ -957,10 +964,14 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
 
     private boolean areStoragePermissionsGranted() {
-        int readPermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
-        int writePermission = ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        return readPermission == PackageManager.PERMISSION_GRANTED && writePermission == PackageManager.PERMISSION_GRANTED;
-    }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10+ (incl. 11/12/13): we’ll write to app-private external storage,
+            // so NO runtime storage permission is needed.
+            return true;
+        }
+        int r = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+        int w = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return r == PackageManager.PERMISSION_GRANTED && w == PackageManager.PERMISSION_GRANTED;    }
 
     private File createfile(String fname) {
         File file = null;

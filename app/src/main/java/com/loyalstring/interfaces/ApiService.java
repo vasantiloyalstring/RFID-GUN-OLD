@@ -1,10 +1,7 @@
 package com.loyalstring.interfaces;
 
 
-import androidx.annotation.RawRes;
-
 import com.loyalstring.Apis.ActivationResponse;
-import com.loyalstring.Billmodels.Customersmodel;
 import com.loyalstring.Billmodels.CustomersmodelItem;
 import com.loyalstring.Billmodels.Onboardmodel;
 import com.loyalstring.LatestApis.BillSupport.BillRequest;
@@ -16,21 +13,16 @@ import com.loyalstring.apiresponse.ProductUpdate;
 import com.loyalstring.apiresponse.ProductUpdateResponse;
 import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
-import com.loyalstring.modelclasses.Productmodel;
 import com.loyalstring.modelclasses.RequestBodyBill;
 import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
-import com.loyalstring.modelclasses.StockVerificationFilterModel;
-import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 import com.loyalstring.modelclasses.StockVerificationRequestData;
-import com.loyalstring.modelclasses.StockVerificationResponseNew;
-import com.loyalstring.modelclasses.SyncRequest;
 import com.loyalstring.modelclasses.jjjresponse;
-
 
 import java.util.List;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -38,6 +30,7 @@ import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Streaming;
 
 public interface ApiService {
 
@@ -101,8 +94,9 @@ public interface ApiService {
     Call<StockVerificationResponseNew> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);*/
 
     /*new*/
-   @POST("api/ProductMaster/AddStockVerificationBySession")
-    Call<ScanSessionResponse> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
 
+   @POST("api/ProductMaster/AddStockVerificationBySession")
+   // Call<ScanSessionResponse> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
+   Call<ResponseBody> stockVarificationNew(@Body RequestBody body);
 
 }
