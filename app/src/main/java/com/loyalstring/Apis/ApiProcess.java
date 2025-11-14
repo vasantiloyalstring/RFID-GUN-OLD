@@ -407,7 +407,7 @@ public class ApiProcess {
                                     if (hexvalue != null && !hexvalue.isEmpty()) {
                                         it.settIDNumber(hexvalue);
                                         it.setrFIDCode(item);
-                                        it.setProductName(it.getDesignName());
+                                        it.setProductName(it.getProductName());
                                         Log.d("@@","## vasannti"+it.gettIDNumber());
 
 //                                productList.add(j);
@@ -465,7 +465,7 @@ public class ApiProcess {
                                     if (hexvalue != null && !hexvalue.isEmpty()) {
                                         it.settIDNumber(hexvalue);
                                         it.setrFIDCode(item);
-                                        it.setProductName(it.getDesignName());
+                                        it.setProductName(it.getProductName());
 //                                productList.add(j);
                                     }
                                     if (it.gettIDNumber() != null && !it.gettIDNumber().isEmpty()) {

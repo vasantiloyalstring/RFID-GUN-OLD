@@ -91,6 +91,8 @@ public class Stocktransferfragment extends Fragment {
 
     Globalcomponents globalcomponents;
     StorageClass storageClass;
+    
+    Clients clients;
     private final java.util.Set<String> seenEpcs =
             java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
@@ -134,6 +136,8 @@ public class Stocktransferfragment extends Fragment {
         adapter = new ScannedDataAdapter(scannedList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
+
+        clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
 
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         ActionBar actionBar = mainActivity.getSupportActionBar();
@@ -328,7 +332,12 @@ public class Stocktransferfragment extends Fragment {
                         mainActivity.playSound(1);
 
                         // Only map EPC → RFID (Barcode)
-                        String rfidCode = getRfidFromEpc(epc);
+                    String rfidCode;
+                    if(clients.getRfidType().equalsIgnoreCase("webreusable")) {
+                         rfidCode = getRfidFromEpc(epc);
+                    }else {
+                        rfidCode=getTextValuFromEpc(epc); 
+                    }
 
                         if (rfidCode != null) {
                             ScannedDataToService item = new ScannedDataToService();
@@ -383,6 +392,43 @@ public class Stocktransferfragment extends Fragment {
                 singletext.setText("Scan Box");
                 singleimage.setImageResource(R.drawable.ic_scanblack);
             });
+        }
+    }
+
+    private String getTextValuFromEpc(String epc) {
+        if (epc == null || epc.trim().isEmpty()) return "";
+
+        try {
+            epc = epc.trim();
+
+            // 🔥 Remove leading "00" groups (00xx → xx)
+            while (epc.startsWith("00") && epc.length() > 2) {
+                epc = epc.substring(2);
+            }
+
+            // 🔥 Ensure even length
+            if (epc.length() % 2 != 0) {
+                epc = "0" + epc; // Pad left if odd
+            }
+
+            StringBuilder output = new StringBuilder();
+
+            for (int i = 0; i < epc.length(); i += 2) {
+                String hexPair = epc.substring(i, i + 2);
+
+                int decimal = Integer.parseInt(hexPair, 16);
+
+                // Only convert valid ASCII range
+                if (decimal >= 32 && decimal <= 126) {
+                    output.append((char) decimal);
+                }
+            }
+
+            return output.toString();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
         }
     }
 
