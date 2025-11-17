@@ -11,6 +11,7 @@ import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.interfaces;
 import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
+import com.loyalstring.modelclasses.Item;
 import com.loyalstring.modelclasses.StockVerificationFilterModel;
 import com.loyalstring.modelclasses.StockVerificationFilterModelResponse;
 import com.loyalstring.modelclasses.StockVerificationRequestData;
@@ -133,82 +134,94 @@ public class ApiManager {
         }).start();
     }*/
 
-    public void stockVarificationDataDataNew(
-            StockVerificationRequestData stockVerificationRequestData,
-            interfaces.FetchAllVerificxationDataNew fetchAllRFIDData
-    ) {
-        //Call<ScanSessionResponse> call = apiService.stockVarificationNew(stockVerificationRequestData);
+/*    public void stockVarificationDataDataNew(StockVerificationRequestData stockVerificationRequestData, interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
+        // Create a defensive copy of the list to prevent concurrent modifications
+        new Thread(() -> {
+            try {
+                Call<ScanSessionResponse> call = apiService.stockVarificationNew(stockVerificationRequestData);
+                Response<ScanSessionResponse> response = call.execute();
 
-      /*  call.enqueue(new Callback<ScanSessionResponse>() {
-            @Override
-            public void onResponse(Call<ScanSessionResponse> call, Response<ScanSessionResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("@@","data found");
                     fetchAllRFIDData.onSuccess(response.body());
                 } else {
-                    try {
-                        Log.d("@@","not data found");
-                        String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
-                        fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
-                    } catch (IOException e) {
-                        Log.d("@@","not data found111");
-                        fetchAllRFIDData.onError(e);
+                    String errorMsg = response.errorBody() != null ? response.errorBody().string() : "Unknown error";
+                    fetchAllRFIDData.onError(new Exception("Error fetching Labeled Stock: " + errorMsg));
+                }
+            } catch (IOException e) {
+                fetchAllRFIDData.onError(e);
+            }
+        }).start();
+    }*/
+
+    public void stockVarificationDataDataNew(
+            StockVerificationRequestData stockVerificationRequestData,
+            interfaces.FetchAllVerificxationDataNew fetchAllRFIDData) {
+
+        new Thread(() -> {
+            try {
+
+                // 1️⃣ Full item list
+                List<Item> fullList = new ArrayList<>(stockVerificationRequestData.getItems());
+
+                if (fullList == null || fullList.isEmpty()) {
+                    fetchAllRFIDData.onError(new Exception("Item list is empty"));
+                    return;
+                }
+
+                // 2️⃣ Create safe batches
+                int batchSize = 500;
+                List<List<Item>> batches = new ArrayList<>();
+
+                for (int i = 0; i < fullList.size(); i += batchSize) {
+                    int end = Math.min(i + batchSize, fullList.size());
+
+                    // ❗ Copy into NEW ArrayList (IMPORTANT)
+                    List<Item> batchCopy = new ArrayList<>(fullList.subList(i, end));
+
+                    batches.add(batchCopy);
+                }
+
+                ScanSessionResponse lastResponse = null;
+
+                // 3️⃣ Upload each batch one-by-one
+                for (int i = 0; i < batches.size(); i++) {
+
+                    List<Item> singleBatch = batches.get(i);
+
+                    // Prepare request for this batch
+                    StockVerificationRequestData batchRequest =
+                            new StockVerificationRequestData(
+                                    stockVerificationRequestData.getClientCode(),
+                                    singleBatch
+                            );
+
+                    // Call API
+                    Call<ScanSessionResponse> call = apiService.stockVarificationNew(batchRequest);
+                    Response<ScanSessionResponse> response = call.execute();
+
+                    if (!response.isSuccessful() || response.body() == null) {
+                        String errorMsg = response.errorBody() != null
+                                ? response.errorBody().string()
+                                : "Unknown error";
+
+                        fetchAllRFIDData.onError(
+                                new Exception("Batch " + (i + 1) + " failed: " + errorMsg)
+                        );
+
+                        return;
                     }
+
+                    lastResponse = response.body();
                 }
+
+                // 4️⃣ All batches successful
+                fetchAllRFIDData.onSuccess(lastResponse);
+
+            } catch (Exception e) {
+                fetchAllRFIDData.onError(e);
             }
-
-            @Override
-            public void onFailure(Call<ScanSessionResponse> call, Throwable t) {
-                Log.e("@@ NETWORK FAIL", "Exception: " + t.getClass().getSimpleName() + " | Message: " + t.getMessage());
-                if (t instanceof SocketTimeoutException) {
-                    Log.e("NETWORK", "READ TIMEOUT — server took too long to send data");
-                } else if (t instanceof ConnectException) {
-                    Log.e("NETWORK", "CONNECT TIMEOUT — server didn’t accept the connection");
-                } else {
-                    Log.e("NETWORK", "OTHER ERROR: " + t);
-                }
-                fetchAllRFIDData.onError(new Exception("Network call failed: " + t.getMessage(), t));
-            }
-        });*/
-
-        Gson gson = new Gson();
-
-// Convert to JSON once
-        String json = gson.toJson(stockVerificationRequestData);
-
-// Create a streaming request body
-        RequestBody body = RequestBody.create(
-                json,
-                MediaType.parse("application/json; charset=utf-8")
-        );
-
-// Now make the call
-        Call<ResponseBody> call = apiService.stockVarificationNew(body);
-
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    try (Reader reader = new InputStreamReader(response.body().byteStream())) {
-                        ScanSessionResponse parsed = gson.fromJson(reader, ScanSessionResponse.class);
-                        fetchAllRFIDData.onSuccess(parsed);
-                    } catch (Exception e) {
-                        fetchAllRFIDData.onError(e);
-                    }
-                } else {
-                    fetchAllRFIDData.onError(new Exception("HTTP " + response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                Log.e("NETWORK FAIL", t.toString());
-                fetchAllRFIDData.onError(new Exception("Network call failed: " + t.getMessage(), t));
-            }
-        });
-
+        }).start();
     }
-
 
 
 }

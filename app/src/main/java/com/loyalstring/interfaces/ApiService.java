@@ -96,7 +96,7 @@ public interface ApiService {
     /*new*/
 
    @POST("api/ProductMaster/AddStockVerificationBySession")
-   // Call<ScanSessionResponse> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
-   Call<ResponseBody> stockVarificationNew(@Body RequestBody body);
+    Call<ScanSessionResponse> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
+
 
 }

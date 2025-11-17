@@ -109,6 +109,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
     NetworkUtils networkUtils;
     ApiManager apiManager;
+    private ProgressDialog progressDialog;
 
     HashMap<String, Itemmodel> totalitems = new HashMap<>();
     HashMap<String, Itemmodel> filtereditems = new HashMap<>();
@@ -694,9 +695,11 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
                 ApiService apiService = RetrofitClient.getClient().create(ApiService.class);
                 apiManager = new ApiManager(apiService);
                 if (networkUtils.isNetworkAvailable()) {
+                    showLoader();
                     apiManager.stockVarificationDataDataNew(stockVerificationRequestData, new interfaces.FetchAllVerificxationDataNew() {
                         @Override
                         public void onSuccess(ScanSessionResponse result) {
+                            hideLoader();
                             // if (!result=null) {
                             Activity activity = getActivity();
                             if (activity != null) {
@@ -716,6 +719,7 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
 
                         @Override
                         public void onError(Exception e) {
+                            hideLoader();
                             Activity activity = getActivity();
                             if (activity != null) {
                                 activity.runOnUiThread(() -> {
@@ -920,6 +924,31 @@ public class Inventoryfragment extends KeyDwonFragment implements InventoryTopAd
         // Inflate the layout for this fragment
         return b.getRoot();
     }
+
+    private void showLoader() {
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> {
+                if (progressDialog == null) {
+                    progressDialog = new ProgressDialog(activity);
+                    progressDialog.setMessage("Uploading data...");
+                    progressDialog.setCancelable(false);
+                }
+                progressDialog.show();
+            });
+        }
+    }
+    private void hideLoader() {
+        Activity activity = getActivity();
+        if (activity != null) {
+            activity.runOnUiThread(() -> {
+                if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            });
+        }
+    }
+
 
 //    private void checkpause(HashMap<String, Itemmodel> totalitems, List<Itemmodel> pauselist) {
 //

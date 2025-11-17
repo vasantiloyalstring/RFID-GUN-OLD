@@ -15,6 +15,14 @@ public class StockVerificationRequestData {
     @Expose
     private List<Item> items;
 
+    public StockVerificationRequestData(String clientCode, List<Item> items) {
+        this.clientCode = clientCode;
+        this.items = items;
+    }
+
+    public StockVerificationRequestData() {
+    }
+
     public String getClientCode() {
         return clientCode;
     }
