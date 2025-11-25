@@ -143,11 +143,28 @@ public class SyncWorker extends Worker {
         });
     }
 
-    public String convertToHex(String input) {
+  /*  public String convertToHex(String input) {
         StringBuilder hexBuilder = new StringBuilder();
         for (char ch : input.toCharArray()) {
             hexBuilder.append(String.format("%02X", (int) ch)); // Using uppercase hex format
         }
+        return hexBuilder.toString();
+    }*/
+
+    public String convertToHex(String input) {
+        StringBuilder hexBuilder = new StringBuilder();
+
+        // Step 1: Convert each character to 2-digit hex
+        for (char ch : input.toCharArray()) {
+            String hex = String.format("%02X", (int) ch); // e.g., 'A' -> "41"
+            hexBuilder.append(hex);
+        }
+
+        // Step 2: Add "00" at the END until total length is a multiple of 4
+        while (hexBuilder.length() % 4 != 0) {
+            hexBuilder.append("00");   // ✅ now padding at END
+        }
+
         return hexBuilder.toString();
     }
 
