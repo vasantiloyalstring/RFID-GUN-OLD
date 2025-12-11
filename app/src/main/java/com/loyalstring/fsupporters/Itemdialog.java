@@ -68,6 +68,7 @@ public class Itemdialog {
                 "Date: " + checknull(item.getDiamondMetal()) + "\n" +
                 "Category: " + checknull(item.getCategory()) + "\n" +
                         "Product: " + checknull(item.getProduct()) + "\n" +
+                        "Design: " + checknull(item.getDesignName()) + "\n" +
                         "from: " + checknull(item.getDiamondClarity()) + "\n" +
                         "to: " + checknull(item.getDiamondColor()) + "\n" +
                         "Purity: " + checknull(item.getPurity()) + "\n" +
@@ -299,6 +300,7 @@ public class Itemdialog {
         itemDetails.setText(
                 "Category: " + checknull(item.getCategory()) + "\n" +
                         "Product: " + checknull(item.getProduct()) + "\n" +
+                        "Design: " + checknull(item.getDesignName()) + "\n" +
                         "Purity: " + checknull(item.getPurity()) + "\n" +
                         "Barcode: " + checknull(item.getBarCode()) + "\n" +
                         "Itemcode: " + checknull(item.getItemCode()) + "\n" +

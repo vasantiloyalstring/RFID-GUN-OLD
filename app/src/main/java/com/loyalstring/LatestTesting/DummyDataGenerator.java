@@ -41,6 +41,7 @@ public class DummyDataGenerator {
             Itemmodel item = new Itemmodel();
             item.setCategory(category);
             item.setProduct(product);
+            item.setDesignName(category);
             item.setBox(box);
             item.setCounterId("1");
             item.setCounterName("name");

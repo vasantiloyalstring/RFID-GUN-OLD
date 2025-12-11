@@ -11,7 +11,7 @@ public class Itemmodel implements Parcelable {
     String TidValue, EpcValue, Branch, Category, Product, Purity, DiamondMetal, DiamondColor, DiamondClarity, DiamondSetting,
             DiamondShape, DiamondSize, DiamondCertificate, BarCode, ItemCode, Box, HuidCode, PartyCode, Description,
             Status, TagTransaction, Operation, TransactionType, InvoiceNumber, CustomerName, ItemAddmode,
-            PaymentMode, PaymentDescription, GstApplied;
+            PaymentMode, PaymentDescription, GstApplied,designName;
     double DiamondWt, DiamondPcs,
             DiamondRate, DiamondAmount,
             GrossWt, StoneWt, NetWt, MakingGm, MakingPer, FixedAmount,
@@ -46,6 +46,14 @@ public class Itemmodel implements Parcelable {
     public Itemmodel() {
     }
 
+    public String getDesignName() {
+        return designName;
+    }
+
+    public void setDesignName(String designName) {
+        this.designName = designName;
+    }
+
     public int getCategoryId() {
         return categoryId;
     }
@@ -78,7 +86,7 @@ public class Itemmodel implements Parcelable {
         this.purityId = purityId;
     }
 
-    public Itemmodel(long operationTime, long entryDate, long transactionDate, long repaymentDate, String tidValue, String epcValue, String branch, String category, String product, String purity, String diamondMetal, String diamondColor, String diamondClarity, String diamondSetting, String diamondShape, String diamondSize, String diamondCertificate, String barCode, String itemCode, String box, String huidCode, String partyCode, String description, String status, String tagTransaction, String operation, String transactionType, String invoiceNumber, String customerName, String itemAddmode, String paymentMode, String paymentDescription, String gstApplied, double diamondWt, double diamondPcs, double diamondRate, double diamondAmount, double grossWt, double stoneWt, double netWt, double makingGm, double makingPer, double fixedAmount, double fixedWastage, double stoneAmount, double mrp, double hallmarkCharges, double avlQty, double matchQty, double totalGwt, double matchGwt, double totalStonewt, double matchStonewt, double totalNwt, double matchNwt, double goldRate, double totalMaking, double itemPrice, double appliedDiscount, double itempriceAfterdiscount, double gstRate, double payableAmount, double payableAmountincgst, double itemGst, double totalBilleditems, double totalBilledgwt, double totalBilledamount, double totalBillAmountExcGst, double totalBillAmountincgst, double totalGst, double totalDiscount, double paidAmount, double balance, String gunUpdate, String webUpdate, String productCode, String CounterId, String CounterName, int totaPcs, int MatchPcs, int category_Id, int product_Id,int design_Id,int purity_id) {
+    public Itemmodel(long operationTime, long entryDate, long transactionDate, long repaymentDate, String tidValue, String epcValue, String branch, String category, String product, String purity, String diamondMetal, String diamondColor, String diamondClarity, String diamondSetting, String diamondShape, String diamondSize, String diamondCertificate, String barCode, String itemCode, String box, String huidCode, String partyCode, String description, String status, String tagTransaction, String operation, String transactionType, String invoiceNumber, String customerName, String itemAddmode, String paymentMode, String paymentDescription, String gstApplied, double diamondWt, double diamondPcs, double diamondRate, double diamondAmount, double grossWt, double stoneWt, double netWt, double makingGm, double makingPer, double fixedAmount, double fixedWastage, double stoneAmount, double mrp, double hallmarkCharges, double avlQty, double matchQty, double totalGwt, double matchGwt, double totalStonewt, double matchStonewt, double totalNwt, double matchNwt, double goldRate, double totalMaking, double itemPrice, double appliedDiscount, double itempriceAfterdiscount, double gstRate, double payableAmount, double payableAmountincgst, double itemGst, double totalBilleditems, double totalBilledgwt, double totalBilledamount, double totalBillAmountExcGst, double totalBillAmountincgst, double totalGst, double totalDiscount, double paidAmount, double balance, String gunUpdate, String webUpdate, String productCode, String CounterId, String CounterName, int totaPcs, int MatchPcs, int category_Id, int product_Id,int design_Id,int purity_id, String design_name) {
         OperationTime = operationTime;
         EntryDate = entryDate;
         TransactionDate = transactionDate;
@@ -163,6 +171,7 @@ public class Itemmodel implements Parcelable {
         productId = product_Id;
         designId = design_Id;
         purityId = purity_id;
+        designName = design_name;
     }
 
     public int getTotPcs() {
@@ -309,6 +318,7 @@ public class Itemmodel implements Parcelable {
         this.productId = oitem.getProductId();
         this.designId= oitem.getDesignId();
         this.purityId=oitem.getPurityId();
+        this.designName=oitem.getDesignName();
 
 
     }
@@ -417,6 +427,7 @@ public class Itemmodel implements Parcelable {
         productId = in.readInt();
         designId = in.readInt();
         purityId = in.readInt();
+        designName=in.readString();
     }
 
     public static final Creator<Itemmodel> CREATOR = new Creator<Itemmodel>() {
@@ -518,6 +529,7 @@ public class Itemmodel implements Parcelable {
     public void setEntryDate(long entryDate) {
         EntryDate = entryDate;
     }
+
 
     public long getTransactionDate() {
         return TransactionDate;
@@ -1169,6 +1181,7 @@ public class Itemmodel implements Parcelable {
                 ", ImageUrl='" + ImageUrl + '\'' +
                 ", VideoUrl='" + VideoUrl + '\'' +
                 ", ProductCode='" + ProductCode + '\'' +
+                ", DesignName='" + designName + '\'' +
                 '}';
     }
 
@@ -1270,5 +1283,6 @@ public class Itemmodel implements Parcelable {
         parcel.writeInt(productId);
         parcel.writeInt(designId);
         parcel.writeInt(purityId);
+        parcel.writeString(designName);
     }
 }

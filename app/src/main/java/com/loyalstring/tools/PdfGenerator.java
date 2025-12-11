@@ -141,6 +141,10 @@ public class PdfGenerator {
             } else if (i == 44) {
                 List<Itemmodel> itemList = getDummyItems();
                 pushpa11(billmap, 44);
+
+            } else if (i == 56) {
+                List<Itemmodel> itemList = getDummyItems();
+                pushpa11(billmap, 56);
             }
         }
     }
@@ -1835,7 +1839,13 @@ public class PdfGenerator {
             } else if (invoiceId == 44) {
                 footer = new Paragraph("REEVAZZ JEWELLERS\n")
                         .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
+            }
+            else if (invoiceId == 56) {
+                Log.d("invoiceId","invoiceId"+invoiceId);
+                footer = new Paragraph("PRANAV JEWELLERS\n")
+                        .setTextAlignment(TextAlignment.LEFT).setFontSize(10).setBold();
             } else {
+                Log.d("invoiceId","invoiceId"+invoiceId);
                 footer = new Paragraph("PUSHPA JEWELLERS LIMITED\n" +
                         "ADDRESS - 4TH floor, Flat 4A, 22 East Topsia Road, Tirumala - 22, Kolkata - 700046\n" +
                         "Contact - 9831545491\n" +

@@ -791,7 +791,7 @@ public class remap extends KeyDwonFragment implements interfaces.PermissionCallb
                                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                     0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
                                     0, 0, 0, 0, 0, 0, 0, 0,
-                                    0, 0, 0, 0, 0, 0, 0, 0, 0, "", "","","","",0,0,0,0,0,0);
+                                    0, 0, 0, 0, 0, 0, 0, 0, 0, "", "","","","",0,0,0,0,0,0,"");
 
                             itemlist.add(nitem);
 
@@ -849,7 +849,7 @@ public class remap extends KeyDwonFragment implements interfaces.PermissionCallb
                 getdvalue(sstoneamount), getdvalue(smrp), getdvalue(shallmark), 1,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, "", "","","","",0,0,0,0,0,0);
+                0, 0, 0, 0, 0, 0, "", "","","","",0,0,0,0,0,0,"");
 
 
         itemlist.clear();

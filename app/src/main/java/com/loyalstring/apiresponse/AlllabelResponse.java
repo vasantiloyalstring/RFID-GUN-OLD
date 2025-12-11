@@ -39,6 +39,19 @@ public class AlllabelResponse {
         private String LastUpdated;
         private String StoneLessPercent;
         private  String counterName;
+        public String  designName;
+
+
+        public String getDesignName() {
+            return designName;
+        }
+
+        public void setDesignName(String designName) {
+            this.designName = designName;
+        }
+
+
+
 
         public String getCounterName() {
             return counterName;
@@ -410,7 +423,8 @@ public class AlllabelResponse {
         @SerializedName("CounterName")
         public String counterName;
 
-    /*    @SerializedName("CategoryId")
+
+/*    @SerializedName("CategoryId")
         public int CategoryId;
         @SerializedName("ProductId")
         public int ProductId;

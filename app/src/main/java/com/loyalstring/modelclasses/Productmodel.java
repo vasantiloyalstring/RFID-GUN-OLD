@@ -194,7 +194,16 @@ public class Productmodel {
 
     @SerializedName("pcs")
     private String pcs;
+    @SerializedName("DesignName")
+    private String designName;
 
+    public String getDesignName() {
+        return designName;
+    }
+
+    public void setDesignName(String designName) {
+        this.designName = designName;
+    }
 
     public String getImageurl() {
         return imageurl;

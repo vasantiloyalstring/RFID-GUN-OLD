@@ -111,7 +111,8 @@ public class SyncWorker extends Worker {
                                 if (hexvalue != null && !hexvalue.isEmpty()) {
                                     item.settIDNumber(hexvalue);
                                     item.setrFIDCode(item.getItemCode());
-                                    item.setProductName(item.getDesignName());
+                                    item.setProductName(item.getProductName());
+                                    item.setDesignName(item.getDesignName());
 //                                productList.add(j);
                                 }
                                 if (item.gettIDNumber() != null && !item.gettIDNumber().isEmpty()) {
@@ -246,7 +247,7 @@ public class SyncWorker extends Worker {
                                         0, 0, 0, 0, 0,
                                         0, 0, 0, 0, 0,
                                         0, 0, 0, 0, 0,
-                                        0, "done", "done",o.getProductCode(),o.getCounterId(),o.getCounterName(),o.getTotPcs(),o.getTotMPcs(),o.getCategoryId(),o.getProductId(),o.getDesignId(),o.getPurityId());
+                                        0, "done", "done",o.getProductCode(),o.getCounterId(),o.getCounterName(),o.getTotPcs(),o.getTotMPcs(),o.getCategoryId(),o.getProductId(),o.getDesignId(),o.getPurityId(),o.getDesignName());
                                 if (item.getTidValue().length() == 24 && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
                                     nmap.put(item.getTidValue(), item);
                                 }
@@ -266,7 +267,7 @@ public class SyncWorker extends Worker {
                                         0, 0, 0, 0, 0,
                                         0, 0, 0, 0, 0,
                                         0, 0, 0, 0, 0,
-                                        0, "done", "done",p.productCode,String.valueOf(p.getCounterId()),p.getCounterName(),0,0,p.getCategoryId(),p.getProductId(),p.getDesignId(),p.getPurityId());
+                                        0, "done", "done",p.productCode,String.valueOf(p.getCounterId()),p.getCounterName(),0,0,p.getCategoryId(),p.getProductId(),p.getDesignId(),p.getPurityId(),p.getDesignName());
                                 if (item.getTidValue().length() == 24 && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
                                     nmap.put(item.getTidValue(), item);
                                 }
@@ -307,7 +308,7 @@ public class SyncWorker extends Worker {
                                 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0,
-                                0, "done", "done",o.getProductCode(),o.getCounterId(),o.getCounterName(),o.getTotPcs(),o.getTotMPcs(),o.getCategoryId(),o.getProductId(),o.getDesignId(),o.getPurityId());
+                                0, "done", "done",o.getProductCode(),o.getCounterId(),o.getCounterName(),o.getTotPcs(),o.getTotMPcs(),o.getCategoryId(),o.getProductId(),o.getDesignId(),o.getPurityId(),o.getDesignName());
                         item.setPcs(p.getPieces());
                         item.setPartyCode(p.getImages());
                         if (item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {
@@ -331,7 +332,7 @@ public class SyncWorker extends Worker {
                                 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0,
                                 0, 0, 0, 0, 0,
-                                0, "done", "done",p.getProductCode(),String.valueOf(p.getCounterId()),p.getCounterName(),0,0,p.getCategoryId(),p.getProductId(),p.getDesignId(),p.getPurityId());
+                                0, "done", "done",p.getProductCode(),String.valueOf(p.getCounterId()),p.getCounterName(),0,0,p.getCategoryId(),p.getProductId(),p.getDesignId(),p.getPurityId(),p.getDesignName());
                         item.setPcs(p.getPieces());
                         item.setPartyCode(p.getImages());
                         if (item.getTidValue() != null && item.getCategory() != null && !item.getCategory().isEmpty() && item.getProduct() != null && !item.getProduct().isEmpty()) {

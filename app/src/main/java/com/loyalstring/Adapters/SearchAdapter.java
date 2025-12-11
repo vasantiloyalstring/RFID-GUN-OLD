@@ -151,6 +151,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.Viewholder
         builder.setMessage(
                 "Category: " + checknull(item.getCategory()) + "\n" +
                         "Product: " + checknull(item.getProduct()) + "\n" +
+                        "Design: " + checknull(item.getDesignName()) + "\n" +
                         "Purity: " + checknull(item.getPurity()) + "\n" +
                         "Barcode: " + checknull(item.getBarCode()) + "\n" +
                         "Itemcode: " + checknull(item.getItemCode()) + "\n" +
