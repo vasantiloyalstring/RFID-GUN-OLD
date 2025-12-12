@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -76,7 +77,78 @@ public class PdfGenerator {
 
         Log.e("checking formate ", "  "+i);
 
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+
+            // Android 9 and below → ask for WRITE_EXTERNAL_STORAGE
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions((Activity) context,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+
+                return; // WAIT for permission callback
+            }
+        }
+
+// =========================
+// Android 11,12,13,14 reach here directly
+// Android 10- go here after permission granted
+// =========================
+
+        if (i == 15) {
+            savePdfToDownloadFolder(billmap);
+
+        } else if (i == 2) {
+
+            Collections.sort(item, new Comparator<Itemmodel>() {
+                @Override
+                public int compare(Itemmodel item1, Itemmodel item2) {
+                    return item1.getProduct().compareToIgnoreCase(item2.getProduct());
+                }
+            });
+
+            savePdfToDownloadFolder1(item);
+
+        } else if (i == 3) {
+
+            savePdfToDownloadFolder2(item);
+
+        } else if (i == 12) {
+
+            savePdfToDownloadFolder3(item);
+
+        } else if (i == 5) {
+
+            savemvspdf(item);
+
+        } else if (i == 13) {
+
+            savePdfToDownloadFolder7(item);
+
+        } else if (i == 20) {
+
+            pushpa11(billmap, 20);
+
+        } else if (i == 37) {
+
+            Dnj(billmap);
+
+        } else if (i == 43) {
+
+            pushpa11(billmap, 43);
+
+        } else if (i == 44) {
+
+            pushpa11(billmap, 44);
+
+        } else if (i == 56) {
+
+            pushpa11(billmap, 56);
+
+        }
+
+
+       /* if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions((Activity) context,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
@@ -146,7 +218,7 @@ public class PdfGenerator {
                 List<Itemmodel> itemList = getDummyItems();
                 pushpa11(billmap, 56);
             }
-        }
+        }*/
     }
 
     @SuppressLint("Range")

@@ -25,15 +25,19 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.loyalstring.Apis.ApiProcess;
 import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.database.StorageClass;
+import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.fsupporters.Pemissionscheck;
 import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.readersupport.KeyDwonFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class Homefragment extends KeyDwonFragment implements interfaces.PermissionCallback {
@@ -42,6 +46,9 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
     CardView cproduct, cinventory, cbill, csearch, cstocktransfer
             , cstockhistory, cstockreport, csalereport, csettings, remap,stockTransfer, issue;
 
+    private android.os.Handler handler;
+    private Runnable runnable;
+
     MainActivity mainActivity;
     StorageClass storageClass;
 
@@ -49,6 +56,8 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
     Button testbtn;
     Button powercheck;
     private Fragment pendingFragment;
+    MyApplication app;
+    ApiProcess apiprocess;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -56,6 +65,7 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
         view = inflater.inflate(R.layout.fragment_homefragment, container, false);
 
         mainActivity = (MainActivity) getActivity();
+        apiprocess=new ApiProcess();
         ensurePermissions(getActivity());
         storageClass = new StorageClass(getActivity());
         ActionBar actionBar = mainActivity.getSupportActionBar();
@@ -66,6 +76,7 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
             // actionBar.setHomeAsUpIndicator(R.drawable.your_custom_icon); // Set a custom icon
         }
         mainActivity.toolpower.setVisibility(View.GONE);
+     //   startAutoUpdate();
 
         pcheck = new Pemissionscheck(getActivity(), this);
 
@@ -220,6 +231,43 @@ public class Homefragment extends KeyDwonFragment implements interfaces.Permissi
         // Inflate the layout for this fragment
         return view;
     }
+
+
+    /*@Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (handler != null && runnable != null) {
+            handler.removeCallbacks(runnable);
+        }
+    }*/
+    private void startAutoUpdate() {
+        handler = new android.os.Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+
+                ArrayList<Itemmodel> ml = new ArrayList<>();
+
+                if (app.getInventoryMap().size() > 0) {
+                    for (Map.Entry<String, Itemmodel> entry : app.getInventoryMap().entrySet()) {
+                        Itemmodel m = new Itemmodel(entry.getValue());
+                        m.setCounterId("1");
+                        m.setCounterName("name");
+                        ml.add(m);
+                    }
+                }
+
+                if (!ml.isEmpty() && storageClass.getBaseUrl() != null && !storageClass.getBaseUrl().isEmpty()) {
+                    apiprocess.updateproduct(ml, getActivity(), storageClass.getBaseUrl());
+                }
+
+                handler.postDelayed(this, 120000); // <-- calls again after 15 sec
+            }
+        };
+
+        handler.postDelayed(runnable, 120000); // first call
+    }
+
 
     private void ensurePermissions(Activity activity) {
         String[] permissions = {
