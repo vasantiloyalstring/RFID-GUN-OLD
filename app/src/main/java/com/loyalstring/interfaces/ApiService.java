@@ -13,6 +13,8 @@ import com.loyalstring.apiresponse.ProductUpdate;
 import com.loyalstring.apiresponse.ProductUpdateResponse;
 import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
+import com.loyalstring.modelclasses.ClearStockDataModelReq;
+import com.loyalstring.modelclasses.ClearStockDataModelResponse;
 import com.loyalstring.modelclasses.RequestBodyBill;
 import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
@@ -97,6 +99,13 @@ public interface ApiService {
 
    @POST("api/ProductMaster/AddStockVerificationBySession")
     Call<ScanSessionResponse> stockVarificationNew(@Body StockVerificationRequestData stockVerificationRequestData);
+
+
+    @POST("/api/RFIDDevice/DeleteRFIDByClientAndDevice")
+    Call<ClearStockDataModelResponse> clearStockData(@Body ClearStockDataModelReq clearStockDataModelReq);
+
+
+
 
 
 }

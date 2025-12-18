@@ -7,15 +7,32 @@
     android:background="#FFFFFF">
 
     <!-- Scan Box Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
     <TextView
         android:id="@+id/tv_box_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Scan Box Bar Code"
         android:textSize="16sp"
+        android:layout_weight="0.7"
         android:textStyle="bold"
         android:paddingTop="16dp"
         android:layout_marginBottom="8dp" />
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="0dp"
+            android:layout_weight="0.3"
+            android:layout_height="48dp"
+            android:text="Clear"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:importantForAccessibility="yes" />
+
+    </LinearLayout>
 
     <!-- Scan Box Input + Button -->
     <LinearLayout

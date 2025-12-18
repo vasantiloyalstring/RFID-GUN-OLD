@@ -18,6 +18,7 @@ public class SharedPreferencesManager {
     private SharedPreferences sharedPreferences;
     private String key_rfidtype = "RfidType";
     private static final String KEY_STOCK_TRANSFER_URL = "stock_transfer_url";
+    private static final String KEY_DEVICE_ID= "device_id";
 
 
     public SharedPreferencesManager(Context context) {
@@ -237,5 +238,13 @@ public class SharedPreferencesManager {
 
     public String getStockTransferUrl() {
         return sharedPreferences.getString(KEY_STOCK_TRANSFER_URL, "");
+    }
+
+    public void saveDeviceId(String id) {
+        sharedPreferences.edit().putString(KEY_DEVICE_ID, id).apply();
+    }
+
+    public String getDeviceId() {
+        return sharedPreferences.getString(KEY_DEVICE_ID, "");
     }
 }

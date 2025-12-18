@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 
 import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
+import com.loyalstring.modelclasses.ClearStockDataModelResponse;
 import com.loyalstring.modelclasses.Itemmodel;
 import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
@@ -79,6 +80,13 @@ public class interfaces {
         void onSuccess(ScanSessionResponse result);
         void onError(Exception e);
     }
+
+    public interface FetchClearStockData {
+        void onSuccess(ClearStockDataModelResponse res);
+        void onError(Exception e);
+    }
+
+
 
 
 

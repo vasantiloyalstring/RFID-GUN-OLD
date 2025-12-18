@@ -3,6 +3,8 @@ package com.loyalstring.fragments;
 import static android.widget.Toast.LENGTH_SHORT;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -44,6 +46,8 @@ import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.DynamicSyncService;
 import com.loyalstring.interfaces.ScanDataCallback;
 import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.modelclasses.ClearStockDataModelReq;
+import com.loyalstring.modelclasses.ClearStockDataModelResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.SyncRequest;
 import com.loyalstring.network.NetworkUtils;
@@ -70,7 +74,7 @@ public class Stocktransferfragment extends Fragment {
     private TextView singletext;
     private TextView tvTotalItems;
     private EditText editBoxName;
-    private Button btnScanBox;
+    private Button btnScanBox,clearData;
     private LinearLayout layoutScan,layoutSync,singlereset;
     private RecyclerView recyclerView;
     private ImageView singleimage;
@@ -96,6 +100,7 @@ public class Stocktransferfragment extends Fragment {
     private final java.util.Set<String> seenEpcs =
             java.util.Collections.synchronizedSet(new java.util.HashSet<>());
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_stocktransferfragment, container, false);
@@ -115,6 +120,7 @@ public class Stocktransferfragment extends Fragment {
 
 
         btnScanBox = view.findViewById(R.id.btn_scan_box);
+        clearData = view.findViewById(R.id.btn_clear);
         editBoxName = view.findViewById(R.id.ed_boxName);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
         recyclerView = view.findViewById(R.id.recyclerView_scanneddata);
@@ -210,6 +216,24 @@ public class Stocktransferfragment extends Fragment {
             }
         });
 
+        clearData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new androidx.appcompat.app.AlertDialog.Builder(getActivity())
+                        .setTitle("Confirm")
+                        .setMessage("Are you sure you want to clear the data?")
+                        .setCancelable(true)
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            // ✅ OK pressed -> call API
+                            callClearDataApi();
+                        })
+                        .setNegativeButton("Cancel", (dialog, which) -> {
+                            dialog.dismiss();
+                        })
+                        .show();
+            }
+        });
+
         singlereset.setOnClickListener(v -> {
 
             rfidList.clear();
@@ -224,6 +248,46 @@ public class Stocktransferfragment extends Fragment {
         });
         return view;
     }
+
+    private void callClearDataApi() {
+
+        ClearStockDataModelReq req = new ClearStockDataModelReq(clients.getClientCode(), sharedPreferencesManager.getDeviceId());
+
+        apiManager.clearStockDataNew(req, new interfaces.FetchClearStockData() {
+            @Override
+            public void onSuccess(ClearStockDataModelResponse result) {
+              //  hideLoader();
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        new AlertDialog.Builder(activity)
+                                .setTitle("Success")
+                                .setMessage("Cleared successfully. Deleted records: " + result.getDeletedRecords())
+                                .setPositiveButton("OK", null)
+                                .show();
+                    });
+                }
+                Log.e("ClearStockData", "Response: " + result);
+            }
+
+            @Override
+            public void onError(Exception e) {
+               // hideLoader();
+                Activity activity = getActivity();
+                if (activity != null) {
+                    activity.runOnUiThread(() -> {
+                        new AlertDialog.Builder(activity)
+                                .setTitle("Error")
+                                .setMessage(e.getMessage() != null ? e.getMessage() : "Something went wrong")
+                                .setPositiveButton("OK", null)
+                                .show();
+                    });
+                }
+            }
+        });
+    }
+
+
 
 
     private void fetchAllBranches(){
@@ -302,6 +366,8 @@ public class Stocktransferfragment extends Fragment {
 
 
 
+
+
     private void stopScanner() {
         if (mainActivity != null && mainActivity.mReader != null) {
             mainActivity.mReader.stopInventory();
@@ -360,6 +426,7 @@ public class Stocktransferfragment extends Fragment {
                             String formatted = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
 
                             item.setDeviceId(shortSerial(androidId));
+                            sharedPreferencesManager.saveDeviceId(shortSerial(androidId));
                             item.setCreatedOn(formatted);
                             item.setLastUpdated(formatted);
                             item.setStatusType(true);

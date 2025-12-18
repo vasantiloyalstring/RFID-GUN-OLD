@@ -9,6 +9,8 @@ import com.loyalstring.apiresponse.Rfidresponse;
 import com.loyalstring.apiresponse.SkuResponse;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.interfaces;
+import com.loyalstring.modelclasses.ClearStockDataModelReq;
+import com.loyalstring.modelclasses.ClearStockDataModelResponse;
 import com.loyalstring.modelclasses.ScanSessionResponse;
 import com.loyalstring.modelclasses.ScannedDataToService;
 import com.loyalstring.modelclasses.Item;
@@ -222,6 +224,33 @@ public class ApiManager {
             }
         }).start();
     }
+
+    public void clearStockDataNew(
+            ClearStockDataModelReq req,
+            interfaces.FetchClearStockData callback
+    ) {
+        new Thread(() -> {
+            try {
+                Call<ClearStockDataModelResponse> call = apiService.clearStockData(req);
+                Response<ClearStockDataModelResponse> response = call.execute();
+
+                if (!response.isSuccessful() || response.body() == null) {
+                    String errorMsg = response.errorBody() != null
+                            ? response.errorBody().string()
+                            : "Unknown error";
+
+                    callback.onError(new Exception("Clear API failed: " + errorMsg));
+                    return;
+                }
+
+                callback.onSuccess(response.body());
+
+            } catch (Exception e) {
+                callback.onError(e);
+            }
+        }).start();
+    }
+
 
 
 }
