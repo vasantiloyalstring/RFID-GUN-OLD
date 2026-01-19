@@ -145,6 +145,9 @@ public class PdfGenerator {
 
             pushpa11(billmap, 56);
 
+        }else if(i == 61)
+        {
+            savemvspdf(item);
         }
 
 
