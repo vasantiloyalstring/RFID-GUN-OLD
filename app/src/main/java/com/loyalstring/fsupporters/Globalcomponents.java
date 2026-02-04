@@ -588,6 +588,10 @@ public class Globalcomponents {
                     storageClass.setstpower(selecteditem);
                     set = storageClass.getstpower();
                 }
+                if (tit.equalsIgnoreCase("stocktransfer")) {
+                    storageClass.setstapower(selecteditem);
+                    set = storageClass.getstapower();
+                }
                 if (tit.equalsIgnoreCase("stock history")) {
                     storageClass.setshpower(selecteditem);
                     set = storageClass.getshpower();

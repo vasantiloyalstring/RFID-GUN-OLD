@@ -31,6 +31,8 @@ public class StorageClass {
     private static final String BASE_URL = "baseurl";
     private static final String RFID_URL = "rfidurl";
     private static final String SHEET_URL = "sheeturl";
+    /*GemsNy*/
+    private static final String KEY_STOCKTRA = "stocktransfer";
 
 
     private SharedPreferences sharedPreferences;
@@ -186,6 +188,16 @@ public class StorageClass {
         return sharedPreferences.getString(KEY_STOCKTRANSFERPOWER, "");
     }
 
+
+    public void setstapower(String power) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_STOCKTRA, power);
+        editor.apply();
+    }
+
+    public String getstapower() {
+        return sharedPreferences.getString(KEY_STOCKTRA, "");
+    }
     public void setshpower(String power) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_STOCKHISTORYPOWER, power);

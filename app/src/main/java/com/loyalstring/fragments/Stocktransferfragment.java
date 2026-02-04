@@ -34,7 +34,9 @@ import com.loyalstring.LatestStorage.SharedPreferencesManager;
 import com.loyalstring.MainActivity;
 import com.loyalstring.R;
 import com.loyalstring.apiresponse.AlllabelResponse;
+import com.loyalstring.database.StorageClass;
 import com.loyalstring.fsupporters.Globalcomponents;
+import com.loyalstring.fsupporters.MyApplication;
 import com.loyalstring.interfaces.ApiService;
 import com.loyalstring.interfaces.DynamicSyncService;
 import com.loyalstring.interfaces.ScanDataCallback;
@@ -71,6 +73,10 @@ public class Stocktransferfragment extends KeyDwonFragment {
     private ImageView singleimage;
     private Button btnScanBox;
     private ScannedDataAdapter adapter;
+
+    StorageClass storageClass;
+    MyApplication myApplication;
+    Globalcomponents globalcomponents;
 
     private SharedPreferencesManager sharedPreferencesManager;
     private ApiService apiService;
@@ -117,9 +123,24 @@ public class Stocktransferfragment extends KeyDwonFragment {
             actionBar.setTitle("Stock Transfer");
         }
 
-        fetchLabelledStockListFromApi();
+        globalcomponents = new Globalcomponents();
+        storageClass = new StorageClass(getActivity());
+        myApplication = (MyApplication) requireActivity().getApplicationContext();
 
-        handler = new Handler(msg -> {
+
+
+        mainActivity.toolpower.setVisibility(View.VISIBLE);
+        mainActivity.toolpower.setText(String.valueOf(mainActivity.mReader.getPower()));
+        mainActivity.toolpower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                globalcomponents.changepowerg(getActivity(), "stocktransfer", storageClass, mainActivity.toolpower, mainActivity.mReader);
+            }
+        });
+
+      //  fetchLabelledStockListFromApi();
+
+    /*    handler = new Handler(msg -> {
             UHFTAGInfo tagInfo = (UHFTAGInfo) msg.obj;
             if (tagInfo != null) {
                 String epc = tagInfo.getEPC();
@@ -137,7 +158,56 @@ public class Stocktransferfragment extends KeyDwonFragment {
                 }
             }
             return true;
+        });*/
+        handler = new Handler(msg -> {
+            UHFTAGInfo tagInfo = (UHFTAGInfo) msg.obj;
+            if (tagInfo != null) {
+
+                String epcHex = tagInfo.getEPC();
+
+                if (!scannedEpcList.contains(epcHex)) {
+                    scannedEpcList.add(epcHex);
+                    mainActivity.playSound(1);
+
+                    String epcDecimal = hexToAscii(epcHex);
+
+                    ScannedDataToService item = new ScannedDataToService();
+                    item.setTIDValue(epcHex);          // EPC HEX
+                    item.setRFIDCode(epcHex);          // EPC HEX
+                    item.setItemCode(epcDecimal);      // ✅ EPC DECIMAL AS ITEMCODE
+
+                    String androidId = Settings.Secure.getString(
+                            requireActivity().getContentResolver(),
+                            Settings.Secure.ANDROID_ID
+                    );
+
+                    Clients clients = sharedPreferencesManager
+                            .readLoginData()
+                            .getEmployee()
+                            .getClients();
+
+                    String clientCode = clients.getClientCode();
+
+                    String formatted = LocalDateTime.now()
+                            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
+                    item.setDeviceId(androidId);
+                    item.setCreatedOn(formatted);
+                    item.setLastUpdated(formatted);
+                    item.setStatusType(true);
+                    item.setId(0);
+                    item.setClientCode(clientCode);
+
+                    requireActivity().runOnUiThread(() -> {
+                        scannedList.add(item);
+                        adapter.notifyDataSetChanged();
+                        tvTotalItems.setText("Total items: " + scannedList.size());
+                    });
+                }
+            }
+            return true;
         });
+
 
         layoutScan.setOnClickListener(v -> startOrStopScan());
         layoutSync.setOnClickListener(view1 -> syncToServer(scannedList, success -> {
@@ -152,7 +222,7 @@ public class Stocktransferfragment extends KeyDwonFragment {
                     labelledStockList.clear();
                     adapter.notifyDataSetChanged();
                     tvTotalItems.setText("Total items: 0");
-                    fetchLabelledStockListFromApi();
+                   // fetchLabelledStockListFromApi();
                 } else {
                     Toast.makeText(getContext(), "Stock transfer failed", Toast.LENGTH_SHORT).show();
                 }
@@ -190,11 +260,50 @@ public class Stocktransferfragment extends KeyDwonFragment {
             adapter.notifyDataSetChanged();
             tvTotalItems.setText("Total items: 0");
 
-            fetchLabelledStockListFromApi();
+           // fetchLabelledStockListFromApi();
         });
 
         return view;
     }
+
+    private String hexToAscii(String input) {
+        try {
+            if (input == null) return "";
+
+            // 1️⃣ Clean input: uppercase + remove spaces
+            String hex = input.toUpperCase().replaceAll("\\s+", "");
+
+            // 2️⃣ Keep only HEX chars
+            hex = hex.replaceAll("[^0-9A-F]", "");
+
+            // 3️⃣ Length must be even
+            if (hex.length() % 2 != 0) {
+                Log.e("HEX_TO_ASCII", "Invalid HEX length: " + hex);
+                return "";
+            }
+
+            StringBuilder ascii = new StringBuilder();
+
+            // 4️⃣ Convert each byte
+            for (int i = 0; i < hex.length(); i += 2) {
+                String byteStr = hex.substring(i, i + 2);
+                int value = Integer.parseInt(byteStr, 16);
+
+                // printable ASCII only (optional safety)
+                if (value >= 32 && value <= 126) {
+                    ascii.append((char) value);
+                }
+            }
+
+            return ascii.toString().trim();
+
+        } catch (Exception e) {
+            Log.e("HEX_TO_ASCII", "Conversion failed: " + input, e);
+            return "";
+        }
+    }
+
+
 
     private void fetchLabelledStockListFromApi() {
         Clients clients = sharedPreferencesManager.readLoginData().getEmployee().getClients();
